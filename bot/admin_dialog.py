@@ -23,10 +23,6 @@ async def button_zagruz_db(callback: CallbackQuery, widget: Button, dialog_manag
     with open('save_db.pkl', 'rb') as file:
         recover_base = pickle.load(file)
         await dp.storage.set_data(key=bot_storage_key, data=recover_base)
-
-    # with open('spam_db.pkl', 'rb') as spam_file:
-    #     recover_base = pickle.load(spam_file)
-        # spam_list.extend(recover_base)
     await callback.message.answer('База данных успешно загружена !')
     await dialog_manager.done()  # выход из режима админа
 
@@ -35,16 +31,8 @@ async def button_save_db(callback: CallbackQuery, widget: Button, dialog_manager
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
     with open('save_db.pkl', 'wb') as file:
         pickle.dump(bot_dict, file)
-
-    # with open('spam_db.pkl', 'wb') as spam_file:
-    #     pickle.dump(spam_list, spam_file)
-
     await callback.message.answer('База данных успешно записана !')
     await dialog_manager.done()  # выход из режима админа
-
-
-# async def go_to_accepting_msg(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-#     await dialog_manager.next()
 
 async def accepet_admin_message(msg:Message, widget: MessageInput, dialog_manager: DialogManager, *args, **kwargs):
     dialog_manager.dialog_data['admin_msg'] = msg.text

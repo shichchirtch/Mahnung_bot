@@ -82,7 +82,7 @@ zapusk_dialog = Dialog(
 
         state=ZAPUSK.add_show,
         getter=get_languages
-    ),)
+    ))
 
 ####################################################################################
 uniqe_dialog = Dialog(
@@ -100,8 +100,7 @@ uniqe_dialog = Dialog(
     Window(
         Format('{select_data}'),
         Calendar(id='calendar',
-                 on_click=on_date_selected,
-                 ),
+                 on_click=on_date_selected),
         state=WORK_WITH_SCHED.calendar,
         getter=select_data
     ),

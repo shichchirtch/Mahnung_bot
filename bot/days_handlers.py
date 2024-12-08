@@ -12,6 +12,7 @@ from scheduler_functions import day_sched
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ContentType
 from input_handlers import message_not_foto_handler
+from postgres_functions import return_tz, return_lan
 
 class DAY_MAHNUNG(StatesGroup):
     first = State()
@@ -21,10 +22,7 @@ class DAY_MAHNUNG(StatesGroup):
     day_return_to_basic = State()
 
 async def on_confirm_hours_in_days_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    dialog_manager.dialog_data['lan'] = lan # Завожу язык в манаджер
+    lan = await return_lan(callback.from_user.id)
     select_at_least_one ={ 'ru':"Выберите хотя бы один час", 'en':'Select please at least one'}
     selected_days = dialog_manager.dialog_data.get('hours', '')
     if selected_days:
@@ -35,9 +33,7 @@ async def on_confirm_hours_in_days_clicked(callback: CallbackQuery, button: Butt
 
 async def button_hour_for_day_clicked(callback: CallbackQuery, widget: Button,
                              dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(callback.from_user.id)
     dialog_manager.dialog_data['lan'] = lan
     uhr_dict = {'button_00': '00', 'button_1': '01', 'button_2': '02', 'button_3': '03',
                 'button_4': '04', 'button_5': '05', 'button_6': '06', 'button_7': '07',
@@ -61,20 +57,15 @@ async def button_hour_for_day_clicked(callback: CallbackQuery, widget: Button,
     # dialog_manager.show_mode = ShowMode.SEND
 
 async def days_choosing_hour_getter(
-                             dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+                             dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
+    lan = await return_lan(event_from_user.id)
     text_for_day_1_window = {'ru':'Выберите час/часы', 'en':'Choose an Hour'}
     getter_data = {'go_to_minuts_in_days': go_to_minuts_in_days[lan], 'select_hour': text_for_day_1_window[lan]}
     return getter_data
 
 
-async def day_get_minuts(
-                             dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+async def day_get_minuts( dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
+    lan = await return_lan(event_from_user.id)
     text_for_days_2_window = {'ru':'Выберите минуты', 'en':'Choose minuts'}
     getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan], 'form_grafik_dayly_mahnungen': form_grafik[lan]}
     return getter_data
@@ -88,16 +79,16 @@ async def day_button_minut_clicked(callback: CallbackQuery, widget: Button,
                     'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55'
                     }
         dialog_manager.dialog_data['minuts'] = min_dict[callback.data]
-        lan = dialog_manager.dialog_data['lan']
+        lan = await return_lan(callback.from_user.id)
         await callback.message.answer(text=knopka_nazata[lan])
 
 async def button_zapusk_clicked_for_day(callback: CallbackQuery, widget: Button,
                                     dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    dialog_manager.dialog_data['tz']=us_dict['tz']
-    text_for_day_2 = {'ru': 'Выберите минуты', 'en': 'Choose an minuts'}
+    lan = await return_lan(callback.from_user.id)
+    dialog_manager.dialog_data['tz']=await return_tz(callback.from_user.id)
+    text_for_day_2 = {'ru': 'Выберите минуты', 'en': 'Choose an minutes', 'tr': 'Bir dakika seçin',
+                      'uk': 'Виберіть хвилини', 'de': 'Wählen Sie eine Minute',
+                      'fa': 'یک دقیقه انتخاب کنید', 'ar': 'اختر دقيقة' }
     if 'minuts' in dialog_manager.dialog_data:
         dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await dialog_manager.next()
@@ -108,18 +99,16 @@ async def button_zapusk_clicked_for_day(callback: CallbackQuery, widget: Button,
 async def message_text_handler_for_days(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
     user_id = str(message.from_user.id)
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
     chas = dialog_manager.dialog_data['hours']
-    print('chas  =', chas)
+    # print('chas  =', chas)
     minuts = dialog_manager.dialog_data['minuts']
     str_folge = right_folge = ''
     digit_arr = []
     if len(chas)>2:
-        print('mehr 2 titel')
+        # print('mehr 2 titel')
         for stunde in chas.split(','):
             digit_arr.append(int(stunde))
         sort_arr = sorted(digit_arr)
@@ -137,8 +126,6 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
     print('real_time = ', real_time)
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
-    # user_mahnung = Mahnung(titel=titel, foto_id='', za_chas=None, za_sutki=None, selector='D',
-    #                        real_time=real_time, job_id=real_time_key)
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': None, 'za_sutki': None,
                     'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
@@ -158,9 +145,7 @@ async def on_photo_sent_for_day(message: Message, widget:
     user_id = str(message.from_user.id)
     print('161 on_photo_sent works day_handlers')
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     dialog_manager.dialog_data['foto_id'] = foto_id
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
@@ -179,13 +164,11 @@ async def on_photo_sent_for_day(message: Message, widget:
 
     dialog_manager.dialog_data['hours'] = chas
     real_time_key = chas + minuts  # 121050 - составная часть ключа id scheduler
-    # print('real_time_key = ', real_time_key)
+
     real_time = f'{daily[lan]} {chas}:{minuts}'  # 'Dayly 17:15'
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
 
-    # user_mahnung = Mahnung(titel='', foto_id=foto_id, za_chas=None, za_sutki=None, selector='D',
-    #                        real_time=real_time, job_id=real_time_key)
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
                     'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
@@ -201,9 +184,7 @@ async def on_photo_sent_for_day(message: Message, widget:
 
 async def day_get_for_input_data(dialog_manager: DialogManager,
                                   event_from_user: User, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan  = await return_lan(event_from_user.id)
     getter_data = {'day_data_mahnung': set_titel[lan]}
     return getter_data
 
@@ -217,9 +198,7 @@ async def pre_day_sched(callback: CallbackQuery, widget: Button,
     dialog_manager.show_mode = ShowMode.SEND
 
 async def day_get_runner(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'text_for_day_sched': text_for_day[lan], 'day_remind_me':'▶️'}
     return getter_data
 
@@ -232,11 +211,8 @@ async def day_reset_funk_not_for_uniqe(callback: CallbackQuery, widget:Button,
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
 
 async def day_return_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    getter_data = {'day_accepted': accepted_uniq[lan], 'day_return_to_basic':return_to_basic[lan]
-                   }
+    lan = await return_lan(event_from_user.id)
+    getter_data = {'day_accepted': accepted_uniq[lan], 'day_return_to_basic':return_to_basic[lan]}
     return getter_data
 
 day_mahnung_dialog = Dialog(

@@ -20,7 +20,7 @@ class User(Base):
     user_name: Mapped[str] = mapped_column(String(200), nullable=False)
     lan: Mapped[str] = mapped_column(String, default='', nullable=True)
     spam: Mapped[str] = mapped_column(String, default='', nullable=True)
-    timezone: Mapped[str] = mapped_column(String, default='', nullable=True)
+    tz: Mapped[str] = mapped_column(String, default='', nullable=True)
     zametki = mapped_column(LargeBinary, default=None, nullable=True)
 
 

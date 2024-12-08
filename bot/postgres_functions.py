@@ -5,6 +5,7 @@ async def insert_new_user_in_table(user_tg_id: int, name: str):
     async with session_marker() as session:
         query = await session.execute(select(User).filter(User.tg_us_id == user_tg_id))
         needed_data = query.scalar()
+        print('we are here')
         if not needed_data:
             print('Now we are into first function')
             new_us = User(tg_us_id=user_tg_id, user_name=name)
@@ -34,11 +35,11 @@ async def insert_lan_in_spam(user_id:int, lan:str):
         needed_data.spam = lan
         await session.commit()
 
-async def insert_timezone(user_id:int, tz:str):
+async def insert_timezone(user_id:int, us_tz:str):
     async with session_marker() as session:
         query = await session.execute(select(User).filter(User.tg_us_id == user_id))
         needed_data = query.scalar()
-        needed_data.timezone = tz
+        needed_data.tz = us_tz
         await session.commit()
 
 
@@ -55,6 +56,13 @@ async def return_lan(user_id:int):
         query = await session.execute(select(User).filter(User.tg_us_id == user_id))
         needed_data = query.scalar()
         return needed_data.lan
+
+async def return_tz(user_id:int):
+    async with session_marker() as session:
+        print('return tz works')
+        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
+        needed_data = query.scalar()
+        return needed_data.tz
 
 async def return_zametki(user_id:int):
     async with session_marker() as session:

@@ -14,7 +14,7 @@ from days_handlers import DAY_MAHNUNG
 from regular_callback import (go_to_31, button_day_clicked, pre_napominalka, approve_choise,
                               button_hour_clicked, button_minut_clicked, reset_funk_not_for_uniqe,
                               message_text_handler_for_month, on_photo_sent_for_month, button_zapusk_clicked_for_month)
-
+from postgres_functions import return_lan
 
 
 class MONAT_MAHNUNG(StatesGroup):
@@ -28,53 +28,38 @@ class MONAT_MAHNUNG(StatesGroup):
     choose_type = State()
 
 async def get_monat_mahnungen_first_window(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'choose_type': choose_type[lan], 'month':month[lan], 'week':week[lan], 'day':day[lan]}
     return getter_data
 
 async def get_30_days(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'text_for_day_choose': text_for_day_choose[lan], 'approve_choise':approve_choise_lexicon[lan]}
     return getter_data
 
 async def choosing_data_for_monat_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'text_for_2_wind': choose_hours[lan]}
     return getter_data
 
 async def form_mahnung_for_monat_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'text_for_3_wind': choose_minuts[lan],  'form_grafik_mahnungen':form_grafik[lan]}
     return getter_data
 
 async def get_titel_for_monat(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'data_mahnung': set_titel[lan]}
     return getter_data
 
 async def zapusk_napom(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'text_for_napominalka': '⬇️', 'remind_me':zapusk_button[lan]}
     return getter_data
 
 async def mahnung_for_monat_accepted(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    getter_data = {'accepted': accepted_uniq[lan], 'return_to_basic':return_to_basic[lan]
-                   }
+    lan = await return_lan(event_from_user.id)
+    getter_data = {'accepted': accepted_uniq[lan], 'return_to_basic':return_to_basic[lan]}
     return getter_data
 
 monat_mahnung_dialog = Dialog(

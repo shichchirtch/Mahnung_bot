@@ -5,8 +5,8 @@ from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from bot_instans import dp, bot_storage_key, ZAPUSK
 from lexicon import *
 from scheduler_functions import napominalka_sync_for_month
-from mahnung_class import Mahnung
 from aiogram_dialog.widgets.input import MessageInput
+from postgres_functions import return_lan, return_tz
 
 async def go_to_regular(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     print('go_to_regular works')
@@ -15,9 +15,7 @@ async def go_to_regular(callback: CallbackQuery, widget: Button, dialog_manager:
 
 
 async def go_to_31(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(callback.from_user.id)
     dialog_manager.dialog_data['lan'] = lan
     dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.next()
@@ -43,7 +41,7 @@ async def button_day_clicked(callback: CallbackQuery, widget: Button,
             dialog_manager.dialog_data['day'] = day_group
             t = ''
     else:
-        print('here day net')
+        # print('here day net')
         dialog_manager.dialog_data['day'] = day_dict[callback.data]
         t = ''
         dialog_manager.dialog_data['choosing_data'] = 1
@@ -55,7 +53,6 @@ async def button_day_clicked(callback: CallbackQuery, widget: Button,
         sending_data = 'last day of month or 31'
     if not t:
         await callback.message.answer(f'{sobytie_sluchitsa[lan]} {sending_data}')
-    # dialog_manager.show_mode = ShowMode.N
 
 
 async def approve_choise(callback: CallbackQuery, widget: Button,
@@ -70,7 +67,6 @@ async def approve_choise(callback: CallbackQuery, widget: Button,
 async def button_hour_clicked(callback: CallbackQuery, widget: Button,
                              manager: DialogManager):
     print('button_hour_clicked works')
-    # print('callback_data = ', callback.data)
     uhr_dict = {'button_00': '00', 'button_1': '01', 'button_2': '02', 'button_3': '03',
                 'button_4': '04', 'button_5': '05', 'button_6': '06', 'button_7': '07',
                 'button_8': '08', 'button_9': '09', 'button_10': '10', 'button_11': '11',
@@ -91,7 +87,7 @@ async def button_minut_clicked(callback: CallbackQuery, widget: Button,
                 'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
                 }
     manager.dialog_data['minuts'] = min_dict[callback.data]
-    lan = manager.dialog_data['lan']
+    lan = await return_lan(callback.from_user.id)
     await callback.message.answer(text=knopka_nazata[lan])
 
 async def button_zapusk_clicked_for_month(callback: CallbackQuery, widget: Button,
@@ -107,9 +103,7 @@ async def button_zapusk_clicked_for_month(callback: CallbackQuery, widget: Butto
 
 async def message_text_handler_for_month(message: Message, widget: MessageInput, dialog_manager: DialogManager) -> None:
     user_id = str(message.from_user.id)
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
     days = dialog_manager.dialog_data['day']
@@ -123,7 +117,7 @@ async def message_text_handler_for_month(message: Message, widget: MessageInput,
         days_ohne_koma += day_list[x]
 
     real_time_key = days_ohne_koma + chas + minuts  # 301550 - составная часть ключа id scheduler
-    print('real_time_key = ', real_time_key)
+    # print('real_time_key = ', real_time_key)
     real_time = f'{new_days[:-2]}, {chas}:{minuts}'  # '26, 29, 17:15'
     dialog_manager.dialog_data['job_id'] = real_time_key  # 301550
     dialog_manager.dialog_data['real_time'] = real_time  # '26, 29, 17:15'
@@ -145,7 +139,7 @@ async def on_photo_sent_for_month(message: Message, widget: MessageInput, dialog
     # Получаем ID фото
     print('on_photo_sent works')
     user_id = str(message.from_user.id)
-    lan = dialog_manager.dialog_data['lan']
+    lan = await return_lan(message.from_user.id)
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
     dialog_manager.dialog_data['titel'] = ''
     dialog_manager.dialog_data['foto_id'] = foto_id
@@ -160,7 +154,7 @@ async def on_photo_sent_for_month(message: Message, widget: MessageInput, dialog
         days_ohne_koma+=day_list[x]
 
     real_time_key = days_ohne_koma + chas + minuts  # 301550 - составная часть ключа id scheduler
-    print('real_time_key = ', real_time_key)
+    # print('real_time_key = ', real_time_key)
     dialog_manager.dialog_data['job_id'] = real_time_key
     real_time = f'{new_days[:-2]}, {chas}:{minuts}'  #'26, 29, 17:15'
 
@@ -192,9 +186,8 @@ async def reset_funk_not_for_uniqe(callback: CallbackQuery, widget:Button,
 async def pre_napominalka(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('\n\nWe are into napominalka\n\n')
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    dialog_manager.dialog_data['tz'] = us_dict['tz']  # Переливаю значение ТZ в диалоговый словарь
+    us_tz = await return_tz(callback.from_user.id)
+    dialog_manager.dialog_data['tz'] = us_tz  # Переливаю значение ТZ в диалоговый словарь
     dialog_dict = dialog_manager.dialog_data
     user_id = callback.from_user.id
     napominalka_sync_for_month(user_id, dialog_dict) # Запуск планировщика

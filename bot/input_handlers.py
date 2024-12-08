@@ -4,16 +4,14 @@ from aiogram_dialog.widgets.input import ManagedTextInput, MessageInput
 from aiogram_dialog import DialogManager, ShowMode
 from bot_instans  import dp, bot_storage_key, scheduler
 from lexicon import *
-from postgres_functions import return_zametki, insert_serialised_note
+from postgres_functions import return_zametki, insert_serialised_note, return_lan
 import pickle
 
 
 async def message_text_handler(message: Message, widget: MessageInput, dialog_manager: DialogManager) -> None:
     print('message_text_handler works')
     user_id = str(message.from_user.id)
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     dialog_manager.dialog_data['titel'] = message.text
     dialog_manager.dialog_data['foto_id'] = ''
     titel = message.text
@@ -35,9 +33,6 @@ async def message_text_handler(message: Message, widget: MessageInput, dialog_ma
     bot_dict[user_id][str_za_chas] = pseudo_class #user_mahnung # Записываю в словарь бота ЭК манунг
     # print('pseudo_class = ', pseudo_class)
     await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
-    await state.update_data(temp_key=str_za_chas)
-    us_dict = await state.get_data()
-    # print('39 us_dict = ', us_dict)
     us_zam = await return_zametki(message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
     if not us_zam:
         zam_dict = {str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
@@ -50,7 +45,6 @@ async def message_text_handler(message: Message, widget: MessageInput, dialog_ma
         serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
         await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
     # us_dict['events'][za_chas] = user_mahnung  # Записываю в словарь юзе ЭК Mahnung
-    await state.update_data(us_dict)
     await message.answer(text=gut[lan])
     dialog_manager.show_mode = ShowMode.SEND
     await message.delete()
@@ -59,9 +53,7 @@ async def message_text_handler(message: Message, widget: MessageInput, dialog_ma
 
 async def correct_titel_handler(message: Message, widget: ManagedTextInput,
                                dialog_manager: DialogManager, titel: str) -> None:
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']  # Ещё понадобится
+    lan = await return_lan(message.from_user.id)
     await message.answer(text=f'{gut[lan]}, <b>{titel.capitalize()}</b>')
     # await asyncio.sleep(1)
     dialog_manager.show_mode = ShowMode.SEND
@@ -70,9 +62,7 @@ async def correct_titel_handler(message: Message, widget: ManagedTextInput,
 
 
 async def error_titel_handler(message: Message,widget: ManagedTextInput,dialog_manager: DialogManager,error: ValueError):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     await message.answer(text=incorrect_titel[lan])
     await asyncio.sleep(1)
 
@@ -80,8 +70,6 @@ async def error_titel_handler(message: Message,widget: ManagedTextInput,dialog_m
 async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     print('on_photo_sent works')
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
     za_chas = dialog_manager.dialog_data['za_chas']
     str_za_chas = str(za_chas)
     za_sutki = dialog_manager.dialog_data['za_sutki']
@@ -99,8 +87,7 @@ async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: 
 
     us_zam = await return_zametki(message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
     if not us_zam:
-        zam_dict = {
-            str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
+        zam_dict = {str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
         serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
         await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
 
@@ -110,7 +97,6 @@ async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: 
         serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
         await insert_serialised_note(message.from_user.id, serialized_data)
     # us_dict['events'][za_chas] = user_mahnung  # Записываю в словарь юзе ЭК Mahnung
-    await state.update_data(us_dict)
     await message.delete()
     await dialog_manager.next()
 
@@ -118,18 +104,14 @@ async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: 
 async def message_not_foto_handler(message: Message, widget: MessageInput,
         dialog_manager: DialogManager) -> None:
     dialog_manager.show_mode = ShowMode.NO_UPDATE
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     await message.answer(data_mahnung[lan])
 
 
 async def correct_id_handler(message: Message, widget: ManagedTextInput,
         dialog_manager: DialogManager, *args, **kwargs) -> None:
     """Хэндлер удаояет напоминание по введённому id"""
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     user_id = str(message.from_user.id)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)
     us_bot_dict = bot_dict[user_id]
@@ -159,9 +141,7 @@ async def correct_id_handler(message: Message, widget: ManagedTextInput,
 
 
 async def error_id_handler(message: Message, widget: ManagedTextInput, dialog_manager: DialogManager, error: ValueError):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     await message.answer(text=incorrect_id[lan])  # Вы введи неверный id попробуйте ещё раз
     await asyncio.sleep(1)
 

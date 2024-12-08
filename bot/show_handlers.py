@@ -1,4 +1,4 @@
-from aiogram.types import  User, CallbackQuery
+from aiogram.types import User, CallbackQuery
 from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Format
@@ -14,6 +14,7 @@ from bot_instans import bot, bot_storage_key, dp
 import datetime
 import asyncio
 from input_handlers import correct_id_handler, error_id_handler
+from postgres_functions import return_tz, return_lan
 
 class SHOW_MAHNUNG(StatesGroup):
     show_mahnung_start = State()
@@ -21,10 +22,10 @@ class SHOW_MAHNUNG(StatesGroup):
     delete_mahn = State()
     weiter_edit = State()
 
+tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400, 'Asia/Yekaterinburg':18000, 'Asia/Novosibirsk':21600, 'Europe/London':0}
+
 async def get_users_mahnungen(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'welche': neu_or_alt[lan], 'past': alt[lan], 'zukunft':neu[lan]}
     return getter_data
 
@@ -32,12 +33,11 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
     print('schow_last_mahnung works')
     user_id = callback.from_user.id
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(user_id)
+    us_tz  = await return_tz(user_id)
     dialog_manager.dialog_data['lan'] = lan
     in_stamp_dt_obj = datetime.datetime.now().replace(second=0, microsecond=0)  # Прибавить ТаймЗону
-    in_stamp = int(in_stamp_dt_obj.timestamp()) + 3600  # Здесь нужно будет подставляь  параметры таймзоны
+    in_stamp = int(in_stamp_dt_obj.timestamp()) + tz_dict[us_tz]  # Подставлены параметры таймзоны юзера
     print('83 in_stamp = ', in_stamp)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
     us_mahnung_baza = bot_dict[str(callback.from_user.id)] # Получаю базу напоминаний юзера  {1732806300: <mahnung_class.Mahnung object at 0x000001E73F332E50>}
@@ -72,15 +72,12 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
 async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
     print('schow_zukunft_mahnung works')
-    tz_dict = {'Europe/Berlin':3600}
     user_id = callback.from_user.id
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    tz = us_dict['tz']
+    lan = await return_lan(user_id)
+    us_tz = await return_tz(user_id)
     in_stamp_dt_obj = datetime.datetime.now().replace(second=0, microsecond=0)  # Прибавить ТаймЗону
-    in_stamp = int(in_stamp_dt_obj.timestamp()) + tz_dict[tz] # Здесь нужно будет подставлять параметры таймзоны
-    print('83 in_stamp = ', in_stamp)
+    in_stamp = int(in_stamp_dt_obj.timestamp()) + tz_dict[us_tz] # Здесь  параметры таймзоны
+    print('80 in_stamp = ', in_stamp)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
 
     us_mahnung_baza = bot_dict[str(callback.from_user.id)]  # Получаю базу напоминаний юзера
@@ -155,10 +152,8 @@ async def return_funk_to_basic(callback: CallbackQuery, widget:Button,
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
 
 async def get_edit_window(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
     user_id = event_from_user.id
+    lan = await return_lan(user_id)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)
     us_bot_dict = bot_dict[str(user_id)]
     if us_bot_dict:
@@ -174,16 +169,12 @@ async def go_to_3_window(callback: CallbackQuery, widget:Button,
     await dialog_manager.switch_to(state=SHOW_MAHNUNG.show_mahnung_end,  show_mode=ShowMode.SEND)
 
 async def get_data_for_3_window_in_SHOW_MAHNUNG(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     getter_data = {'id_deleted_mahn': give_me_id_mahnung[lan]}
     return getter_data
 
 async def get_weiter_edit(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(event_from_user.id)
     user_id = event_from_user.id
     bot_dict = await dp.storage.get_data(key=bot_storage_key)
     us_bot_dict = bot_dict[str(user_id)]
