@@ -33,6 +33,7 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
         await dialog_manager.start(state=ZAPUSK.set_lan, mode=StartMode.RESET_STACK)
     else:
         print('start else works')
+        await insert_new_user_in_table(user_id, user_name)
         await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
         await message.answer(text='Бот перезапущен на сервере')
         await message.delete()
