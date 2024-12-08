@@ -56,12 +56,13 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
 
 
 async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
-    skolko = skolko_us[lan]
+    # state = dialog_manager.middleware_data["state"]
+    # us_dict = await state.get_data()
+    # lan = us_dict['lan']
+    # skolko = skolko_us[lan]
+    print('button_skolko works')
     taily_users = await get_user_count()
-    await callback.message.answer(f'{skolko} {taily_users}  🔥')
+    await callback.message.answer(f' {taily_users}  🔥')
     await dialog_manager.done()  # выход из режима админа
 
 
