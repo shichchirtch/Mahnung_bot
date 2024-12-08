@@ -16,7 +16,12 @@ async def set_lan(callback: CallbackQuery, widget: Button, dialog_manager: Dialo
 
 async def radio_spam_button_clicked(callback: CallbackQuery, radio: ManagedRadio, dialog_manager: DialogManager, *args, **kwargs):
     user_id = callback.from_user.id
-    temp_dict = {'1': {'ru':'Ну и ладно', 'en':'no problem'}, '2': {'ru':'Очень хорошо  😉', 'en':'Perfect !  😉', 'tr':'Mükemmel !  😉'}}
+    temp_dict = {'1': {'ru':'Ну и ладно', 'en':'no problem', 'de':'kein Problem', 'tr':'sorun değil', 'uk': 'немає проблем',
+                       'fa': 'مشکلی نیست',
+                       'ar':'لا مشكلة'},
+                 '2': {'ru':'Очень хорошо  😉', 'en':'Perfect !  😉', 'ar':'ممتاز ! 😉',
+                       'tr':'Mükemmel !  😉', 'fa': 'عالی! 😉',
+                       'uk':'Ідеально! 😉',}}
     lan = await return_lan(callback.from_user.id)
     ans_data = temp_dict[callback.data[-1]]
     print('ans_data  = ', ans_data )
