@@ -85,7 +85,7 @@ async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: Dia
 async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     # state = dialog_manager.middleware_data["state"]
     # us_dict = await state.get_data()
-    lan = await return_lan(event_from_user.id)
+    lan = 'ru'# await return_lan(event_from_user.id)
     print('89 lan = ', lan)
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
