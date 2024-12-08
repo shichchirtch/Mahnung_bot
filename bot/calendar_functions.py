@@ -15,7 +15,7 @@ async def set_user_tz(callback: CallbackQuery, widget: Button,
     state = dialog_manager.middleware_data["state"]
     tz_dict = {'tz_minus_3':'Europe/London', 'tz_minus_2':'Europe/Berlin', 'tz_minus_1':'Europe/Kiev',
                'tz_gleich':'Europe/Moscow', 'tz_plus_1':'Europe/Berlin',#'Europe/Samara',
-               'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Asia/Novosibirsk'}
+               'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Europe/Moscow'}#'Asia/Novosibirsk'}
 
     await state.update_data(tz=tz_dict[callback.data])
     await insert_timezone(callback.from_user.id, tz_dict[callback.data])

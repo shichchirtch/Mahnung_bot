@@ -62,7 +62,7 @@ async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager:
     # skolko = skolko_us[lan]
     print('button_skolko works')
     taily_users = await get_user_count()
-    await callback.message.answer(f' {taily_users}  🔥')
+    await callback.message.answer(f'Bot have {taily_users} started  🔥')
     await dialog_manager.done()  # выход из режима админа
 
 
