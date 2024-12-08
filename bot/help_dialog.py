@@ -27,9 +27,13 @@ class REVIEW(StatesGroup):
 
 async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    getter_data = {'help_text': help_text[lan], 'back': '⏪', 're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
-                   'show_presentation': show_presentation[lan], 'reset_tz':'⏱️      🔁     ⏰', 'rew_1':send_review[lan]}
-    # print('getter_data = ', getter_data)
+    getter_data = {'help_text': help_text[lan],
+                   'back': '⏪',
+                   're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
+                   'show_presentation': show_presentation[lan],
+                   'reset_tz':'⏱️      🔁     ⏰',
+                   'rew_1':send_review[lan]
+                   }
     return getter_data
 
 
@@ -52,17 +56,18 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
 
 
 async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
+    print('\n\nbutton_skolko works\n\n')
     lan = await return_lan(callback.from_user.id)
     skolko = skolko_us[lan]
-    print('button_skolko works')
+    print('skolk0 = ', skolko)
     taily_users = await get_user_count()
+    print('taily_ussers = ', taily_users)
     await callback.message.answer(f'{skolko} {taily_users} 🔥')
     await dialog_manager.done()  # выход из режима админа
 
 
 async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     print('reset lan works')
-    dialog_manager.dialog_data['lan'] = callback.data
     old_lan = await return_lan(callback.from_user.id)
     new_lan = callback.data
     if old_lan != new_lan:
