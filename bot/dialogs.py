@@ -60,13 +60,13 @@ zapusk_dialog = Dialog(
         getter=get_spam),
     Window(
         Format('{bot_time}'),
-        Button(text=Format('{minus_3}'),id='tz_minus_3', on_click=set_user_tz),
-        Button(text=Format('{minus_2}'), id='tz_minus_2', on_click=set_user_tz),
-        Button(text=Format('{minus_1}'), id='tz_minus_1', on_click=set_user_tz),
         Button(text=Format('{gleich}'), id='tz_gleich', on_click=set_user_tz),
         Button(text=Format('{plus_1}'), id='tz_plus_1', on_click=set_user_tz),
         Button(text=Format('{plus_2}'), id='tz_plus_2', on_click=set_user_tz),
         Button(text=Format('{plus_3}'), id='tz_plus_3', on_click=set_user_tz),
+        Button(text=Format('{plus_4}'), id='tz_plus_4', on_click=set_user_tz),
+        Button(text=Format('{plus_5}'), id='tz_plus_5', on_click=set_user_tz),
+        Button(text=Format('{plus_6}'), id='tz_plus_6', on_click=set_user_tz),
             state=ZAPUSK.set_timezone,
             getter=get_timezone_info),
 

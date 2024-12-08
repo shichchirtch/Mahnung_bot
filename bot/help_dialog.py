@@ -97,9 +97,17 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('reset_user_tz works')
     state = dialog_manager.middleware_data["state"]
-    tz_dict = {'tz_minus_3':'Europe/London', 'tz_minus_2':'Europe/Berlin', 'tz_minus_1':'Europe/Kiev',
-               'tz_gleich':'Europe/Moscow', 'tz_plus_1':'Europe/Berlin', 'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Asia/Novosibirsk'}
-# 'Europe/Samara'
+    # tz_dict = {'tz_minus_3':'Europe/London', 'tz_minus_2':'Europe/Berlin', 'tz_minus_1':'Europe/Kiev',
+    #            'tz_gleich':'Europe/Moscow', 'tz_plus_1':'Europe/Berlin', 'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Asia/Novosibirsk'}
+
+    tz_dict = {'tz_gleich': 'Europe/London',
+               'tz_plus_1': 'Europe/Berlin',
+               'tz_plus_2': "Europe/Kiev",
+               'tz_plus_3': 'Europe/Moscow',
+               'tz_plus_4': 'Europe/Samara',
+               'tz_plus_5': "Asia/Yekaterinburg",
+               'tz_plus_6': 'Asia/Novosibirsk'}
+
     await state.update_data(tz=tz_dict[callback.data])
     dialog_manager.dialog_data['tz']=tz_dict[callback.data]
     att = await callback.message.answer(text=f'Now your TimeZone is {tz_dict[callback.data]}')
