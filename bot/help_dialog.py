@@ -86,6 +86,7 @@ async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user
     # state = dialog_manager.middleware_data["state"]
     # us_dict = await state.get_data()
     lan = await return_lan(event_from_user.id)
+    print('89 lan = ', lan)
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time_reset':f'<b>{bot_time_now[lan]} {bot_time}</b>',
