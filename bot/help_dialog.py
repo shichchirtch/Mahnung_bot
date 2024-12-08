@@ -8,7 +8,7 @@ from lexicon import *
 from aiogram.fsm.state import State, StatesGroup
 import asyncio
 import datetime
-from postgres_functions import get_user_count, return_lan, insert_timezone
+from postgres_functions import get_user_count, return_lan, insert_timezone, insert_lan
 from aiogram_dialog.widgets.input import  MessageInput
 
 
@@ -25,13 +25,11 @@ class REVIEW(StatesGroup):
     post_input = State()
 
 
-async def get_help_1(dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
+    lan = await return_lan(event_from_user.id)
     getter_data = {'help_text': help_text[lan], 'back': '⏪', 're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
                    'show_presentation': show_presentation[lan], 'reset_tz':'⏱️      🔁     ⏰', 'rew_1':send_review[lan]}
-    print('getter_data = ', getter_data)
+    # print('getter_data = ', getter_data)
     return getter_data
 
 
@@ -45,9 +43,7 @@ async def go_to_reset_lan(callback: CallbackQuery, widget: Button, dialog_manage
 
 
 async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(callback.from_user.id)
     chosing_presentation = get_lynk[lan]
     await callback.message.answer(text=chosing_presentation)
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
@@ -56,26 +52,22 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
 
 
 async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    # state = dialog_manager.middleware_data["state"]
-    # us_dict = await state.get_data()
-    # lan = us_dict['lan']
-    # skolko = skolko_us[lan]
+    lan = await return_lan(callback.from_user.id)
+    skolko = skolko_us[lan]
     print('button_skolko works')
     taily_users = await get_user_count()
-    await callback.message.answer(f'Bot has been {taily_users} started  🔥')
+    await callback.message.answer(f'{skolko} {taily_users} 🔥')
     await dialog_manager.done()  # выход из режима админа
 
 
 async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     print('reset lan works')
     dialog_manager.dialog_data['lan'] = callback.data
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    if us_dict['lan'] != callback.data:
-        us_dict['lan'] = callback.data
-        await state.update_data(us_dict)
+    old_lan = await return_lan(callback.from_user.id)
+    new_lan = callback.data
+    if old_lan != new_lan:
+        await insert_lan(callback.from_user.id, new_lan)
         await callback.message.answer(lan_reset[callback.data])
-        dialog_manager.dialog_data['lan'] = callback.data
     else:
         await callback.message.answer(lan_same[callback.data])
     dialog_manager.show_mode = ShowMode.SEND
@@ -83,26 +75,19 @@ async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: Dia
     await dialog_manager.done()
 
 async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    # state = dialog_manager.middleware_data["state"]
-    # us_dict = await state.get_data()
-    lan = 'ru'# await return_lan(event_from_user.id)
-    print('89 lan = ', lan)
+    lan = await return_lan(event_from_user.id)
+    # print('89 lan = ', lan)
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time_reset':f'<b>{bot_time_now[lan]} {bot_time}</b>',
                    'gleich':us_tz_gleich[lan], 'plus_1':us_tz_plus_1[lan], 'plus_2':us_tz_plus_2[lan], 'plus_3':us_tz_plus_3[lan],
-                   'plus_4': us_tz_plus_4[lan], 'plus_5': us_tz_plus_5[lan], 'plus_6': us_tz_plus_6[lan],
-                   }
+                   'plus_4': us_tz_plus_4[lan], 'plus_5': us_tz_plus_5[lan], 'plus_6': us_tz_plus_6[lan]}
     return getter_data
 
 async def reset_user_tz(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('reset_user_tz works')
     user_id = callback.from_user.id
-    # state = dialog_manager.middleware_data["state"]
-    # tz_dict = {'tz_minus_3':'Europe/London', 'tz_minus_2':'Europe/Berlin', 'tz_minus_1':'Europe/Kiev',
-    #            'tz_gleich':'Europe/Moscow', 'tz_plus_1':'Europe/Berlin', 'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Asia/Novosibirsk'}
-
     tz_dict = {'tz_gleich': 'Europe/London',
                'tz_plus_1': 'Europe/Berlin',
                'tz_plus_2': "Europe/Kiev",
@@ -111,7 +96,6 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
                'tz_plus_5': "Asia/Yekaterinburg",
                'tz_plus_6': 'Asia/Novosibirsk'}
     tz = tz_dict[callback.data]
-    # await state.update_data(tz=tz)
     dialog_manager.dialog_data['tz']=tz
     await insert_timezone(user_id, tz)
     att = await callback.message.answer(text=f'Now your TimeZone is {tz}')
@@ -121,10 +105,8 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
     await att.delete()
 #############################################################################################
 
-async def get_review_enter(dialog_manager: DialogManager, *args, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+async def get_review_enter(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
+    lan = await return_lan(event_from_user.id)
     getter_data = {'write_review': write_review[lan]}
     return getter_data
 
@@ -132,9 +114,7 @@ async def get_review_enter(dialog_manager: DialogManager, *args, **kwargs):
 async def message_text_handler_for_review(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
     dialog_manager.show_mode = ShowMode.NO_UPDATE
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     user_id = str(message.from_user.id)
     user_name = message.from_user.first_name
     join_text = f'User_id {user_id}, user_name  {user_name} send MESSAGE {message.text}'
@@ -147,9 +127,7 @@ async def message_not_text_handler(message: Message, widget: MessageInput,
         dialog_manager: DialogManager) -> None:
     print('message_not_text_handler works ')
     dialog_manager.show_mode = ShowMode.NO_UPDATE
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    lan = await return_lan(message.from_user.id)
     await message.answer(data_mahnung_nur_text[lan])
 
 
