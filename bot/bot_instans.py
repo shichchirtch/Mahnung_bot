@@ -54,7 +54,7 @@ otvet_chas_dict = {'button_00': '00', 'button_1': '01', 'button_2': '02', 'butto
                 'button_16': '16', 'button_17': '17', 'button_18': '18', 'button_19': '19',
                 'button_20': '20', 'button_21': '21', 'button_22': '22', 'button_23': '23'}
 
-min_dict = {'button_00': '00', 'button_05': '05', 'button_10': '10', 'button_15': '15',
+real_min_dict = {'button_00': '00', 'button_05': '05', 'button_10': '10', 'button_15': '15',
                 'button_20': '20', 'button_25': '25', 'button_30': '30', 'button_35': '35',
                 'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
                 }

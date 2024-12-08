@@ -90,7 +90,7 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
                 }
     dialog_manager.dialog_data['minuts'] = int(min_dict[callback.data])
     lan = await return_lan(callback.from_user.id)
-    await callback.message.answer(f"{min_selekted[lan]}: {real_min_dict[callback.data]}")
+    await callback.message.answer(f"{real_min_selekted[lan]}: {real_min_dict[callback.data]}")
     await callback.message.answer(text=knopka_nazata[lan])
 
 
