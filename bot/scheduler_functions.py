@@ -1,12 +1,7 @@
 from bot_instans import bot, scheduler
 import time
 from datetime import datetime
-import asyncio
-# from bot_instans import bot
 
-# def async_wrapper(bot, user_id, mahnung_data, time_stamp):
-#     """Синхронная обертка для вызова асинхронной функции."""
-#     asyncio.create_task(mahnung_gearbeitet(bot, user_id, mahnung_data, time_stamp))
 
 async def mahnung_gearbeitet(user_id, mahnung_data, time_stamp):
     print('WE are into mahnung gearbeitet function')
@@ -24,8 +19,6 @@ def scheduler_job(user_id, dialog_dict, tz:str):
     print('future = ', future, type(future))
     id = str(user_id) + str(dialog_dict['za_chas'])
     print('tz = ', tz)
-    # tz = dialog_dict['tz']
-    # print('us_dict = ', dialog_dict)
     if dialog_dict['titel']:
         mahnung_data ='🔶  ' + dialog_dict['titel']
     else:

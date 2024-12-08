@@ -182,7 +182,7 @@ async def pre_scheduler(callback: CallbackQuery, widget: Button,
     # print('sched_dict = ', sched_dict)
     scheduler_job(user_id, dialog_dict, tz)  # Запуск планировщика
     if dialog_dict['za_sutki']:
-        # print('we are za sutki')
+        print('185 we are za sutki')
         scheduler_za_sutki_job(user_id, dialog_dict, tz)
     await dialog_manager.next()
     dialog_manager.show_mode = ShowMode.SEND
