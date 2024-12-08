@@ -8,7 +8,7 @@ from lexicon import *
 from aiogram.fsm.state import State, StatesGroup
 import asyncio
 import datetime
-from postgres_functions import get_user_count
+from postgres_functions import get_user_count, return_lan, insert_timezone
 from aiogram_dialog.widgets.input import  MessageInput
 
 
@@ -62,7 +62,7 @@ async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager:
     # skolko = skolko_us[lan]
     print('button_skolko works')
     taily_users = await get_user_count()
-    await callback.message.answer(f'Bot have {taily_users} started  🔥')
+    await callback.message.answer(f'Bot has been {taily_users} started  🔥')
     await dialog_manager.done()  # выход из режима админа
 
 
@@ -83,19 +83,21 @@ async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: Dia
     await dialog_manager.done()
 
 async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    state = dialog_manager.middleware_data["state"]
-    us_dict = await state.get_data()
-    lan = us_dict['lan']
+    # state = dialog_manager.middleware_data["state"]
+    # us_dict = await state.get_data()
+    lan = await return_lan(event_from_user.id)
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time_reset':f'<b>{bot_time_now[lan]} {bot_time}</b>',
-                   'minus_3':us_tz_minus_3[lan], 'minus_2':us_tz_minus_2[lan], 'minus_1':us_tz_minus_1[lan],
-                   'gleich':us_tz_gleich[lan], 'plus_1':us_tz_plus_1[lan], 'plus_2':us_tz_plus_2[lan], 'plus_3':us_tz_plus_3[lan]}
+                   'gleich':us_tz_gleich[lan], 'plus_1':us_tz_plus_1[lan], 'plus_2':us_tz_plus_2[lan], 'plus_3':us_tz_plus_3[lan],
+                   'plus_4': us_tz_plus_4[lan], 'plus_5': us_tz_plus_5[lan], 'plus_6': us_tz_plus_6[lan],
+                   }
     return getter_data
 
 async def reset_user_tz(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('reset_user_tz works')
+    user_id = callback.from_user.id
     state = dialog_manager.middleware_data["state"]
     # tz_dict = {'tz_minus_3':'Europe/London', 'tz_minus_2':'Europe/Berlin', 'tz_minus_1':'Europe/Kiev',
     #            'tz_gleich':'Europe/Moscow', 'tz_plus_1':'Europe/Berlin', 'tz_plus_2':'Asia/Yekaterinburg', 'tz_plus_3':'Asia/Novosibirsk'}
@@ -107,10 +109,11 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
                'tz_plus_4': 'Europe/Samara',
                'tz_plus_5': "Asia/Yekaterinburg",
                'tz_plus_6': 'Asia/Novosibirsk'}
-
-    await state.update_data(tz=tz_dict[callback.data])
-    dialog_manager.dialog_data['tz']=tz_dict[callback.data]
-    att = await callback.message.answer(text=f'Now your TimeZone is {tz_dict[callback.data]}')
+    tz = tz_dict[callback.data]
+    await state.update_data(tz=tz)
+    dialog_manager.dialog_data['tz']=tz
+    await insert_timezone(user_id, tz)
+    att = await callback.message.answer(text=f'Now your TimeZone is {tz}')
     await dialog_manager.done()
     dialog_manager.show_mode = ShowMode.SEND
     await asyncio.sleep(3)
@@ -203,13 +206,13 @@ dialog_help = Dialog(
 reset_tz_dialog = Dialog(
     Window(
         Format('{bot_time_reset}'),
-        Button(text=Format('{minus_3}'), id='tz_minus_3', on_click=reset_user_tz),
-        Button(text=Format('{minus_2}'), id='tz_minus_2', on_click=reset_user_tz),
-        Button(text=Format('{minus_1}'), id='tz_minus_1', on_click=reset_user_tz),
         Button(text=Format('{gleich}'), id='tz_gleich', on_click=reset_user_tz),
         Button(text=Format('{plus_1}'), id='tz_plus_1', on_click=reset_user_tz),
         Button(text=Format('{plus_2}'), id='tz_plus_2', on_click=reset_user_tz),
         Button(text=Format('{plus_3}'), id='tz_plus_3', on_click=reset_user_tz),
+        Button(text=Format('{plus_4}'), id='tz_plus_4', on_click=reset_user_tz),
+        Button(text=Format('{plus_5}'), id='tz_plus_5', on_click=reset_user_tz),
+        Button(text=Format('{plus_6}'), id='tz_plus_6', on_click=reset_user_tz),
         state=RESET_TZ.one,
         getter=get_timezone_info_reset))
 

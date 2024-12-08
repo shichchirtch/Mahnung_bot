@@ -282,18 +282,6 @@ skolko_us  = {'ru':'Количество запусков бота', 'en':'Quant
 bot_time_now = {'ru':'У меня сейчас ', 'en':'My current Time is ', 'tr':'Şu anki Zamanım ',  'fa':'زمان فعلی من ',
                 'de':'Meine aktuelle Zeit ist ', 'uk':'Мій поточний час ', 'ar':'وقتي الحالي هو ',}
 
-us_tz_minus_3 ={'ru':'Моё время на 3 часа меньше', 'en':'My time is 3 hours less', 'fa': 'زمان من 3 ساعت کمتر است',
-                'tr':'Benim zamanım 3 saat daha az', 'de':'Meine Zeit ist 3 Stunden kürzer',
-                'uk':'Мій час на 3 години менше', 'ar':'وقتي أقل بثلاث ساعات',}
-
-us_tz_minus_2 ={'ru':'Моё время на 2 часа меньше', 'en':'My time is 2 hours less', 'fa': 'زمان من 2 ساعت کمتر است',
-                'tr':'Benim zamanım 2 saat daha az', 'de':'Meine Zeit ist 2 Stunden kürzer',
-                'uk':'Мій час на 2 години менше', 'ar':'وقتي أقل بساعتين',}
-
-us_tz_minus_1 ={'ru':'Моё время на 1 час меньше', 'en':'My time is 1 hour less',  'fa': 'زمان من 1 ساعت کمتر است',
-                'tr':'Benim zamanım 1 saat daha az', 'de':'Meine Zeit ist 1 Stunde kürzer',
-                'uk':'Мій час на 1 годину менше', 'ar':'وقتي أقل بساعة واحدة',}
-
 us_tz_gleich ={'ru':'У меня столько же', 'en':'The same', 'tr':'Aynısı', 'de':'Das Gleiche', 'uk': 'Те саме', 'ar':'نفس الشيء',
                "fa": "همان"}
 
@@ -308,6 +296,17 @@ us_tz_plus_2 ={'ru':'Моё время на 2 часа больше', 'en':'My t
 us_tz_plus_3 ={'ru':'Моё время на 3 часа больше', 'en':'My time is 3 hours mehr', 'fa': 'زمان من 3 ساعت مهر است',
                'tr':'Benim zamanım 3 saat daha fazla', 'de':'Meine Zeit beträgt 3 Stunden mehr',
                'uk':'Мій час 3 години більше', 'ar':'وقتي هو 3 ساعات أكثر',}
+us_tz_plus_4 ={'ru':'Моё время на 4 часа больше', 'en':'My time is 4 hours mehr', 'fa': 'زمان  من4  ساعت مهر است',
+               'tr':'Benim zamanım 4 saat daha fazla', 'de':'Meine Zeit beträgt 4 Stunden mehr',
+               'uk':'Мій час 4 години більше', 'ar':'وقتي هو4  ساعات أكثر',}
+
+us_tz_plus_5 ={'ru':'Моё время на 5 часов больше', 'en':'My time is 5 hours mehr', 'fa': 'زمان من 5 ساعت مهر است',
+               'tr':'Benim zamanım 5 saat daha fazla', 'de':'Meine Zeit beträgt 5 Stunden mehr',
+               'uk':'Мій час 5 години більше', 'ar':'وقتي هو 5 ساعات أكثر',}
+
+us_tz_plus_6 ={'ru':'Моё время на 6 часов больше', 'en':'My time is 6 hours mehr', 'fa': 'زمان من 6 ساعت مهر است',
+               'tr':'Benim zamanım 3 saat daha fazla', 'de':'Meine Zeit beträgt 3 Stunden mehr',
+               'uk':'Мій час 6 години більше', 'ar':'وقتي هو 6 ساعات أكثر',}
 
 send_review = {'ru':'Написать отзыв', 'en':'Write review', 'uk':'Написати відгук', 'de':'Rezension schreiben',
                'tr':'İnceleme yaz', 'ar':'كتابة مراجعة', 'fa':'نوشتن نظر'}
