@@ -20,7 +20,7 @@ async def radio_spam_button_clicked(callback: CallbackQuery, radio: ManagedRadio
                        'fa': 'مشکلی نیست',
                        'ar':'لا مشكلة'},
                  '2': {'ru':'Очень хорошо  😉', 'en':'Perfect !  😉', 'ar':'ممتاز ! 😉',
-                       'tr':'Mükemmel !  😉', 'fa': 'عالی! 😉',
+                       'tr':'Mükemmel !  😉', 'fa': 'عالی! 😉', 'de':'Perfekt! 😉',
                        'uk':'Ідеально! 😉',}}
     lan = await return_lan(callback.from_user.id)
     ans_data = temp_dict[callback.data[-1]]
