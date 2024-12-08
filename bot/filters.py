@@ -1,7 +1,5 @@
 from aiogram.types import Message
 from aiogram.filters import BaseFilter
-from bot_instans import temp_baza
-from aiogram.fsm.context import FSMContext
 
 
 
