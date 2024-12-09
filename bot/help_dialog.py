@@ -27,6 +27,11 @@ class REVIEW(StatesGroup):
     post_input = State()
 
 
+class SCOLKO(StatesGroup):
+    odin = State()
+
+
+
 async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
     getter_data = {'help_text': help_text[lan],
@@ -41,7 +46,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
 
 
 async def go_to_previous(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    await dialog_manager.start(ZAPUSK.add_show, mode=StartMode.RESET_STACK)
+    await dialog_manager.start(ZAPUSK.add_show)
 
 
 async def go_to_reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
@@ -66,7 +71,7 @@ async def button_skolko(callback: CallbackQuery, widget: Button, dialog_manager:
     taily_users = await get_user_count()
     print('taily_ussers = ', taily_users)
     await callback.message.answer(f'{skolko} {taily_users} 🔥')
-    await dialog_manager.done()  # выход из режима админа
+    await dialog_manager.done()
 
 
 async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
@@ -138,6 +143,21 @@ async def message_not_text_handler(message: Message, widget: MessageInput,
     lan = await return_lan(message.from_user.id)
     await message.answer(data_mahnung_nur_text[lan])
 
+async def get_scolco(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
+    lan = await return_lan(event_from_user.id)
+    getter_data = {'skolko_zapustilo': 'Сколько запустило', 's_u':'◀️'}
+    return getter_data
+
+async def return_to_help(callback: CallbackQuery, widget: Button,
+        dialog_manager: DialogManager) -> None:
+    print('\n\nbutton_skolko works\n\n')
+    lan = await return_lan(callback.from_user.id)
+    skolko = skolko_us[lan]
+    print('skolk0 = ', skolko)
+    taily_users = await get_user_count()
+    print('taily_ussers = ', taily_users)
+    await callback.message.answer(f'{skolko} {taily_users} 🔥')
+    await dialog_manager.done()
 
 dialog_help = Dialog(
     Window(
@@ -157,9 +177,9 @@ dialog_help = Dialog(
         Start(text=Format('{rew_1}'),
                id='rew_1_button',
                state=REVIEW.enter),
-        Button(text=Format('{skolko_format}'),
+        Start(text=Format('{skolko_format}'),
                id='skolko_id',
-               on_click=reset_user_tz),
+               state=SCOLKO.odin),
         state=HELP_DIAL.erst,
         getter=get_help_1),
 
@@ -219,4 +239,12 @@ review_dialog = Dialog(
         ),
         state=REVIEW.enter,
         getter=get_review_enter
+    ))
+
+scolco_dialog = Dialog(
+    Window(
+        Format('{skolko_zapustilo}'),
+        Button(text=Format('{s_u}'), id='s_us', on_click=return_to_help),
+        state=SCOLKO.odin,
+        getter=get_scolco
     ))
