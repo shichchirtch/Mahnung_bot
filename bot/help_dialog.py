@@ -32,7 +32,8 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
                    're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
                    'show_presentation': show_presentation[lan],
                    'reset_tz':'⏱️      🔁     ⏰',
-                   'rew_1':send_review[lan]
+                   'rew_1':send_review[lan],
+                   'skolko_format':'👥'
                    }
     return getter_data
 
@@ -154,7 +155,7 @@ dialog_help = Dialog(
         Start(text=Format('{rew_1}'),
                id='rew_1_button',
                state=REVIEW.enter),
-        Button(text=Const('👥'),
+        Button(text=Format('{skolko_format}'),
                id='skolko',
                on_click=button_skolko),
         state=HELP_DIAL.erst,
