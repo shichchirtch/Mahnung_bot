@@ -9,7 +9,9 @@ from aiogram.fsm.state import State, StatesGroup
 import asyncio
 import datetime
 from postgres_functions import get_user_count, return_lan, insert_timezone, insert_lan
-from aiogram_dialog.widgets.input import  MessageInput
+from aiogram_dialog.widgets.input import MessageInput
+from bot_instans import ZAPUSK
+from aiogram_dialog.api.entities.modes import StartMode
 
 
 class HELP_DIAL(StatesGroup):
@@ -39,7 +41,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
 
 
 async def go_to_previous(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    await dialog_manager.done()
+    await dialog_manager.start(ZAPUSK.add_show, mode=StartMode.RESET_STACK)
 
 
 async def go_to_reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
@@ -156,8 +158,8 @@ dialog_help = Dialog(
                id='rew_1_button',
                state=REVIEW.enter),
         Button(text=Format('{skolko_format}'),
-               id='skolko',
-               on_click=button_skolko),
+               id='skolko_id',
+               on_click=reset_user_tz),
         state=HELP_DIAL.erst,
         getter=get_help_1),
 
