@@ -9,6 +9,13 @@ from config import settings
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 
+# from aiogram_dialog.api.exceptions import OutdatedIntent
+# from aiogram_dialog import DialogManager, StartMode, ShowMode
+# from aiogram.types import CallbackQuery
+# from aiogram.dispatcher.middlewares.base import BaseMiddleware
+
+from aiogram_dialog.api.exceptions import OutdatedIntent
+
 key_builder = DefaultKeyBuilder(with_destiny=True)
 
 using_redis = Redis(host=settings.REDIS_HOST)
@@ -22,7 +29,6 @@ job_stores = {
         password=None      # Пароль, если требуется
     )
 }
-
 scheduler = AsyncIOScheduler(timezone='Europe/Moscow')#, jobstores=job_stores)
 
 bot = Bot(token=settings.BOT_TOKEN,
@@ -59,4 +65,17 @@ real_min_dict = {'button_00': '00', 'button_05': '05', 'button_10': '10', 'butto
                 'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
                 }
 
+# class OutdatedIntentMiddleware(BaseMiddleware):
+#     async def __call__(self, handler, event: CallbackQuery, data: dict):
+#         try:
+#             return await handler(event, data)
+#         except OutdatedIntent:
+#             dialog_manager: DialogManager = data["dialog_manager"]
+#             print("Обнаружен OutdatedIntent, перезапуск диалога.")
+#             await dialog_manager.start(
+#                 ZAPUSK.add_show,  # Укажите начальное состояние вашего диалога
+#                 mode=StartMode.RESET_STACK,
+#                 show_mode=ShowMode.SEND,
+#             )
 
+# dp.update.middleware(OutdatedIntentMiddleware())
