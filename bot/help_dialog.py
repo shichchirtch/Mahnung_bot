@@ -10,8 +10,7 @@ import asyncio
 import datetime
 from postgres_functions import get_user_count, return_lan, insert_timezone, insert_lan
 from aiogram_dialog.widgets.input import MessageInput
-from bot_instans import ZAPUSK
-from aiogram_dialog.api.entities.modes import StartMode
+
 
 
 class HELP_DIAL(StatesGroup):
@@ -37,7 +36,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
                    'show_presentation': show_presentation[lan],
                    'reset_tz':'⏱️      🔁     ⏰',
                    'rew_1':send_review[lan],
-                   # 'skolko_format':f'NUMBERS 👥 {taily_users}'
+                   # 'skolko_format':'NUMBERS 👥 '
                    }
     return getter_data
 
@@ -62,6 +61,9 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
 
 # async def skolko_back(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
 #     print('\n\nbutton_skolko works\n\n')
+#     # lan = await return_lan(callback.from_user.id)
+#     taily_users = await get_user_count()
+#     await callback.message.answer(f'Users started {taily_users}')
 #     await dialog_manager.done()
 
 
@@ -141,7 +143,10 @@ dialog_help = Dialog(
         Button(text=Format('{back}'),
                id='go_to_previous_window',
                on_click=go_to_previous),
-        Button(text=Format('{re_set_lan}'),
+        # Button(text=Format('{skolko_format}'),
+        #        id='skolko_id',
+        #        on_click=skolko_back),
+        Button(text=Format('{re_set_lan}'),  #  Кнопка продолжает этот же диалог
                id='lan_reset',
                on_click=go_to_reset_lan),
         Button(text=Format('{show_presentation}'),
@@ -153,9 +158,7 @@ dialog_help = Dialog(
         Start(text=Format('{rew_1}'),
                id='rew_1_button',
                state=REVIEW.enter),
-        # Button(text=Format('{skolko_format}'),
-        #        id='skolko_id',
-        #        on_click=skolko_back),
+
         state=HELP_DIAL.erst,
         getter=get_help_1),
 

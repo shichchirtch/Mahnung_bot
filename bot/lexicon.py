@@ -263,7 +263,13 @@ help_text = {'ru':'Бот присылает вам напоминания о в
              'ar':'يرسل لك الروبوت تذكيرات حول الأحداث المهمة التي قمت بتعيينها',
              'fa': 'ربات در مورد رویدادهای مهمی که تنظیم کرده اید یادآوری هایی برای شما ارسال می کند'}
 
-get_lynk = {'ru':'https://www.youtube.com/watch?v=gDee19N3gqI', 'en':'https://www.youtube.com/watch?v=UGITy9dYrTI'}
+get_lynk = {'ru':'https://youtu.be/n6mEmOKu9Cc',
+            'en':'https://youtu.be/vzJABQ58dzg',
+            'de':'https://youtu.be/xzo1ET4ULak',
+            'tr':'https://youtu.be/frHWxL_WJXc',
+            'fa':'https://youtu.be/PDmu5UcBoJQ',
+            'ar':'https://youtu.be/7wGIXxuQNh0',
+            'uk':'https://youtu.be/rGjrG2FI6bI'}
 
 
 lan_same = {'ru':'Продолжаем коммуникацию на русском', 'en':'We are going on in English', 'fa': 'به فارسی ادامه می دهیم',
