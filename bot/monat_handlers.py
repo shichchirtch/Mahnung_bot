@@ -54,7 +54,7 @@ async def get_titel_for_monat(dialog_manager: DialogManager, event_from_user: Us
 
 async def zapusk_napom(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
-    getter_data = {'text_for_napominalka': '⬇️', 'remind_me':zapusk_button[lan]}
+    getter_data = {'text_for_napominalka': '\-_-*-_-⬇️-_-*-_-/', 'remind_me':zapusk_button[lan]}
     return getter_data
 
 async def mahnung_for_monat_accepted(dialog_manager: DialogManager, event_from_user: User, **kwargs):
