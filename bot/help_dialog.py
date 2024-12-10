@@ -119,7 +119,7 @@ async def get_review_enter(dialog_manager: DialogManager, event_from_user: User,
 
 async def message_text_handler_for_review(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
-    dialog_manager.show_mode = ShowMode.NO_UPDATE
+
     lan = await return_lan(message.from_user.id)
     user_id = str(message.from_user.id)
     user_name = message.from_user.first_name

@@ -30,12 +30,12 @@ async def on_date_selected(callback: CallbackQuery, widget,
                            manager: DialogManager, selected_date: date):
     lan = await return_lan(callback.from_user.id)
     await callback.message.answer(f"{uniqe_date_selekted[lan]}: {selected_date}")
-    print('callback.data = ', callback.data)  # 8CvuU6calendar:173274840
+    # print('callback.data = ', callback.data)  # 8CvuU6calendar:173274840
     day_data = int(callback.data.split(':')[1])  # 1732057200
-    print('day_data = ', day_data)
+    # print('day_data = ', day_data)
     in_stamp = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     current_day = int(in_stamp.timestamp())
-    print('cur day = ', current_day)
+    # print('cur day = ', current_day)
 
     if current_day <= day_data:
         manager.dialog_data['choosing_data'] = True
@@ -97,47 +97,61 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
 async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
                                 dialog_manager: DialogManager):
     '''Запускает напоминание'''
+    print('\n\nButton zapusk_clicked work\n\n')
+
+    tz_dict_int = {'Europe/London': 0,
+                   'Europe/Berlin': 1,  # tz_plus_1
+                   "Europe/Kiev": 2,
+                   'Europe/Moscow': 3,
+                   'Europe/Samara': 4,
+                   "Asia/Yekaterinburg": 5,
+                   'Asia/Novosibirsk': 6}
+
+    user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
-    in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)
-    print('in_stamp = ', in_stamp)  # 2024-12-05 19:56:00
-    current_minut = int(in_stamp.timestamp())
-    # print('current_minut = ', current_minut)  # 1732800900
-    real_event_time = dialog_manager.dialog_data['day'] + dialog_manager.dialog_data['hours'] + \
+    in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
+
+    current_minut = int(in_stamp.timestamp())  # 1732800900
+    razniza_vo_vremeni = tz_dict_int[user_tz] * 3600
+
+    real_event_time = dialog_manager.dialog_data['day'] + \
+                      dialog_manager.dialog_data['hours'] + \
                       dialog_manager.dialog_data['minuts']
 
     lan = await return_lan(user_id)
-    if real_event_time >= current_minut:
+    if real_event_time >= current_minut + razniza_vo_vremeni:  #  !!! razniza_vo_vremeni - это по сути и есть таймзона передаваемая в шедулер
+        # print('\n\nstr 123')
         dialog_manager.dialog_data['choosing_data'] = True
 
         form_vremya = datetime.datetime.fromtimestamp(real_event_time)
-        formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")
-        print('form_vremya = ', formatted_date, type(formatted_date))  # 2024-11-21 15:55:00 <class 'str'>
+        formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")  # 2024-11-21 15:55:00 <class 'str'>
+
         dialog_manager.dialog_data['real_time'] = formatted_date
 
         za_chas = real_event_time - 3600  # Вычитаю час
         zuruck_zu_time = datetime.datetime.fromtimestamp(za_chas)
         # Форматирование времени в формат MM:HH
         formatted_time = zuruck_zu_time.strftime("%H:%M")
-        print('za_chas = ', formatted_time)
+        # print('za_chas = ', formatted_time)
 
         za_sutki = real_event_time - 86400  # Вычитаю сутки
-        print('za sutki = ', za_sutki)
+        # print('za sutki = ', za_sutki)
         zuruck_zu_time_za_sutki = datetime.datetime.fromtimestamp(za_sutki)
         # Форматирование времени в формат MM:HH
         formatted_time = zuruck_zu_time_za_sutki.strftime("%d.%m.%Y %H:%M")
-        print('za sutki = ', formatted_time)
-        if current_minut + 86400 < real_event_time:
+        # print('za sutki = ', formatted_time)
+        if current_minut + razniza_vo_vremeni + 86400 < real_event_time:
             dialog_manager.dialog_data['za_sutki'] = za_sutki
-            dialog_manager.dialog_data['za_chas'] = za_sutki + 82800
+            dialog_manager.dialog_data['za_chas'] = za_sutki + 82800   # (86400 - 3600)
         else:
             dialog_manager.dialog_data['za_sutki'] = ''  # Если напоминание меньше, чем через сутки - ставлю сутки None
-            if real_event_time - 3600 <= current_minut:
-                print('##Block if works')
-                dialog_manager.dialog_data['za_chas'] = current_minut + 30  # прибавляю 30 секунд, если напоминанеи меньше чем за час
-                print('current_minut+10 = ', current_minut + 30)
+            if real_event_time - (current_minut + razniza_vo_vremeni)<=3600:
+                # print('##Block if works')
+                dialog_manager.dialog_data['za_chas'] = current_minut + razniza_vo_vremeni + 150  # прибавляю 30 секунд, если напоминанеи меньше чем за час
+                # print('current_minut+90 = ', current_minut + 90)
 
             else:
-                print('### esle block')
+                # print('### esle block')
                 dialog_manager.dialog_data['za_chas'] = za_chas
 
         dialog_manager.show_mode = ShowMode.SEND
@@ -157,20 +171,10 @@ async def pre_scheduler(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('\n\nWe are into pre_scheduler\n\n')
     user_id = callback.from_user.id
-    # state = dialog_manager.middleware_data["state"]
-    # us_dict = await state.get_data()
-    # await state.update_data(shalter=True)
-    # print('us_dict = ', us_dict)
-    # temp_key = us_dict['temp_key']
     dialog_dict = dialog_manager.dialog_data
-    # print('176 dialog_dict = ', dialog_dict)
-    # bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    # sched_dict = bot_dict[str(callback.from_user.id)][temp_key]  # Получаю словарь события
     tz = await return_tz(user_id)
-    print('tz = ', tz)
     scheduler_job(user_id, dialog_dict, tz)  # Запуск планировщика
     if dialog_dict['za_sutki']:
-        print('188 we are za sutki')
         scheduler_za_sutki_job(user_id, dialog_dict, tz)
     await dialog_manager.next()
     dialog_manager.show_mode = ShowMode.SEND

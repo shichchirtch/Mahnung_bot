@@ -37,10 +37,10 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
     us_tz  = await return_tz(user_id)
     dialog_manager.dialog_data['lan'] = lan
     in_stamp_dt_obj = datetime.datetime.now().replace(second=0, microsecond=0)  # Прибавить ТаймЗону
-    in_stamp = int(in_stamp_dt_obj.timestamp()) + tz_dict[us_tz]  # Подставлены параметры таймзоны юзера
-    print('83 in_stamp = ', in_stamp)
+    in_stamp_s_uchetom_tz = int(in_stamp_dt_obj.timestamp()) + tz_dict[us_tz]  # Подставлены параметры таймзоны юзера
+    # print('41 in_stamp = ', in_stamp)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    us_mahnung_baza = bot_dict[str(callback.from_user.id)] # Получаю базу напоминаний юзера  {1732806300: <mahnung_class.Mahnung object at 0x000001E73F332E50>}
+    us_mahnung_baza = bot_dict[str(callback.from_user.id)] # Получаю базу напоминаний юзера  {'1732806300': {}}
     # print('us_mahnung_baza = ', us_mahnung_baza)
     caunter = 0
     # vsego_ivent = len(us_mahnung_baza)
@@ -50,13 +50,13 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
             if mahnung['selector'] == 'U':  # Только для уникальных напоминаний
                 dt_object = datetime.datetime.strptime(mahn_data, "%d.%m.%Y %H:%M") # Переводим строку в ЭК datetime
                 int_mahn_data = int(dt_object.timestamp())
-                if int_mahn_data < in_stamp:  # Если событие уже в прошлом
-                    if not mahnung.foto_id:  # Для текстовых напоминаний
-                        formed_text = f'<b>{mahn_data}</b>\n\n{mahnung.titel}'
+                if int_mahn_data < in_stamp_s_uchetom_tz:  # Если событие уже в прошлом
+                    if not mahnung['foto_id']:  # Для текстовых напоминаний
+                        formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>ID Mahnung  {za_chas_key}</i>'
                         await bot.send_message(chat_id=user_id, text=formed_text)
                         await asyncio.sleep(0.25)
                     else:
-                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=mahn_data)
+                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'{mahn_data}\n\n<i>ID Mahnung  {za_chas_key}</i>')
                     caunter+=1
 
         await bot.send_message(chat_id=user_id,
@@ -66,7 +66,7 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
         await bot.send_message(chat_id=user_id, text=net_napominaniy[lan])
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
     await asyncio.sleep(0.3)
-    await dialog_manager.done()
+    await dialog_manager.next()
 
 
 async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
@@ -77,11 +77,11 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
     us_tz = await return_tz(user_id)
     in_stamp_dt_obj = datetime.datetime.now().replace(second=0, microsecond=0)  # Прибавить ТаймЗону
     in_stamp = int(in_stamp_dt_obj.timestamp()) + tz_dict[us_tz] # Здесь  параметры таймзоны
-    print('80 in_stamp = ', in_stamp)
+    # print('80 in_stamp = ', in_stamp)
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
 
     us_mahnung_baza = bot_dict[str(callback.from_user.id)]  # Получаю базу напоминаний юзера
-    print('us_mahnung_baza = ', us_mahnung_baza)
+    # print('us_mahnung_baza = ', us_mahnung_baza)
     caunter = 0
     if us_mahnung_baza:
         for user_mahnung_key,  mahnung in sorted(us_mahnung_baza.items()):  # user_mahnung_key = '1732806300'
@@ -90,7 +90,7 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
                 dt_object = datetime.datetime.strptime(mahn_data, "%d.%m.%Y %H:%M") # Переводим строку в ЭК datetime
                 int_mahn_data = int(dt_object.timestamp())
                 if int_mahn_data > in_stamp:  # 20.12.24 > 18.12.20 - нужно заменить на инты
-                    print('za_chas_key = ', type(user_mahnung_key))  # 1732806300
+                    # print('za_chas_key = ', type(user_mahnung_key))  # 1732806300
                     if not mahnung['foto_id']:
                         print('We are at 129 cb_dialogs')
                         formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
@@ -101,11 +101,11 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
                         await bot.send_photo(chat_id=user_id, photo=mahnung["foto_id"], caption=caption)
                 else:
                     caunter+=1
-                    print('caunter = ', caunter)
+                    # print('caunter = ', caunter)
             elif mahnung['selector'] == 'M':
                 repres = return_right_row(mahn_data)  #  121450
                 if not mahnung['foto_id']:
-                    print('We are at 142 cb_dialogs')
+                    # print('We are at 108 cb_dialogs')
                     formed_text = f'<b>{repres}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_message(chat_id=user_id, text=formed_text)
                     await asyncio.sleep(0.25)
@@ -115,7 +115,7 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
             elif mahnung['selector'] == 'W':
                 # repres = return_right_row(mahn_data)  #  121450
                 if not mahnung['foto_id']:
-                    print('We are at 152 cb_dialogs')
+                    # print('We are at 152 cb_dialogs')
                     formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_message(chat_id=user_id, text=formed_text)
                     await asyncio.sleep(0.25)

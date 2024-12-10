@@ -29,7 +29,7 @@ job_stores = {
         password=None      # Пароль, если требуется
     )
 }
-scheduler = AsyncIOScheduler(timezone='Europe/Moscow')#, jobstores=job_stores)
+scheduler = AsyncIOScheduler(timezone='Europe/Moscow', jobstores=job_stores)
 
 bot = Bot(token=settings.BOT_TOKEN,
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))

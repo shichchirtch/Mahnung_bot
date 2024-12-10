@@ -167,6 +167,10 @@ deleted = {'ru':'Напоминание удалено','en':'Remainder is delet
            'de':'Mahnung wird gelöscht', 'uk': 'Залишок видалено', 'ar':'تم حذف الباقي',  'fa': 'باقی مانده حذف شده است'
            }
 
+deleted_past = {'ru':'Напоминание о прошлом событии удалено','en':'Reminder of past event removed', 'tr':'Kalan silindi',
+           'de':'Eine Erinnerung an ein vergangenes Ereignis wurde gelöscht', 'uk': 'ЗНагадування про подію у минулому видалено', 'ar':'تم حذف الباقي',  'fa': 'باقی مانده حذف شده است'
+           }
+
 no_id = {'ru':'У вас нет напоминания с таким номером', 'en':'You do not have a Reminder with this id',  'fa': 'شما یادآوری با این شناسه ندارید',
          'tr':'Bu kimliğe sahip bir Hatırlatıcınız yok', 'de':'Sie haben keine Mahnung mit dieser ID',
          'uk': 'У вас немає нагадування з цим ідентифікатором', 'ar':'ليس لديك تذكير بهذا المعرف',}

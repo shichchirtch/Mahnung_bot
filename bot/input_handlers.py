@@ -126,7 +126,7 @@ async def correct_id_handler(message: Message, widget: ManagedTextInput,
             scheduler.remove_job(scheduler_id)
             await message.answer(text=stroka)
         except Exception as ex:  # JobLookupError:
-            await message.answer('_*🤷*_')
+            await message.answer(f'{deleted_past[lan]}\n\nid = {message.text}')
             # del us_bot_dict[mahn_id]
             # await dp.storage.update_data(key=bot_storage_key, data=bot_dict)
             # stroka = f'{deleted[lan]}\n\nid = {message.text}'
