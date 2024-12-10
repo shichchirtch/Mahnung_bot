@@ -52,11 +52,11 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
                 int_mahn_data = int(dt_object.timestamp())
                 if int_mahn_data < in_stamp_s_uchetom_tz:  # Если событие уже в прошлом
                     if not mahnung['foto_id']:  # Для текстовых напоминаний
-                        formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>ID Mahnung  {za_chas_key}</i>'
+                        formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>ID Mahnung  {za_chas_key}</i>'
                         await bot.send_message(chat_id=user_id, text=formed_text)
                         await asyncio.sleep(0.25)
                     else:
-                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'{mahn_data}\n\n<i>ID Mahnung  {za_chas_key}</i>')
+                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'🔕 {mahn_data}\n\n<i>ID Mahnung  {za_chas_key}</i>')
                     caunter+=1
 
         await bot.send_message(chat_id=user_id,
@@ -92,12 +92,11 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
                 if int_mahn_data > in_stamp:  # 20.12.24 > 18.12.20 - нужно заменить на инты
                     # print('za_chas_key = ', type(user_mahnung_key))  # 1732806300
                     if not mahnung['foto_id']:
-                        print('We are at 129 cb_dialogs')
-                        formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                        formed_text = f'🔺 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                         await bot.send_message(chat_id=user_id, text=formed_text)
                         await asyncio.sleep(0.25)
                     else:
-                        caption = f'<b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                        caption = f'🔺 <b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                         await bot.send_photo(chat_id=user_id, photo=mahnung["foto_id"], caption=caption)
                 else:
                     caunter+=1
@@ -106,30 +105,30 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
                 repres = return_right_row(mahn_data)  #  121450
                 if not mahnung['foto_id']:
                     # print('We are at 108 cb_dialogs')
-                    formed_text = f'<b>{repres}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    formed_text = f'🔺 <b>{repres}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_message(chat_id=user_id, text=formed_text)
                     await asyncio.sleep(0.25)
                 else:
-                    caption = f'<b>{repres}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    caption = f'🔺 <b>{repres}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_photo(chat_id=user_id, photo=mahnung["foto_id"], caption=caption)
             elif mahnung['selector'] == 'W':
                 # repres = return_right_row(mahn_data)  #  121450
                 if not mahnung['foto_id']:
                     # print('We are at 152 cb_dialogs')
-                    formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    formed_text = f'🔺 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_message(chat_id=user_id, text=formed_text)
                     await asyncio.sleep(0.25)
                 else:
-                    caption = f'<b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    caption = f'🔺 <b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_photo(chat_id=user_id, photo=mahnung["foto_id"], caption=caption)
             else:
                 if not mahnung["foto_id"]:
-                    print('We are at 160 cb_dialogs')
-                    formed_text = f'<b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    # print('We are at 160 cb_dialogs')
+                    formed_text = f'🔺 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_message(chat_id=user_id, text=formed_text)
                     await asyncio.sleep(0.25)
                 else:
-                    caption = f'<b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
+                    caption = f'🔺 <b>{mahn_data}</b>\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                     await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=caption)
 
         if caunter:
