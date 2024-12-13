@@ -22,10 +22,12 @@ class User(Base):
     spam: Mapped[str] = mapped_column(String, default='', nullable=True)
     tz: Mapped[str] = mapped_column(String, default='', nullable=True)
     zametki = mapped_column(LargeBinary, default=None, nullable=True)
+    last: Mapped[str] = mapped_column(String, default='', nullable=True)
+
 
 
 async def init_models():
     async with engine.begin() as conn:
-        # await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 

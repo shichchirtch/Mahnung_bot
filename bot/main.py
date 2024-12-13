@@ -7,7 +7,7 @@ from start_menu import set_main_menu
 from days_handlers import day_mahnung_dialog
 from monat_handlers import monat_mahnung_dialog
 from week_handlers import week_mahnung_dialog
-from show_handlers import show_mahnung_dialog
+from show_handlers import show_mahnung_dialog, show_last_dialog
 from admin_dialog import admin_dialog
 from bot_instans import scheduler
 from help_dialog import dialog_help, reset_tz_dialog, review_dialog
@@ -31,6 +31,7 @@ async def main():
     dp.include_router(admin_dialog)
     dp.include_router(reset_tz_dialog)
     dp.include_router(review_dialog)
+    dp.include_router(show_last_dialog)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)

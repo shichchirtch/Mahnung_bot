@@ -4,8 +4,7 @@ from getters import (get_languages, get_spam, choosing_data_getter,
                      choosing_minut_getter, get_type, select_data,
                      get_titel, get_timezone_info)
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import (Button, Row,
-                                        Radio, Start, Calendar, Cancel)
+from aiogram_dialog.widgets.kbd import Button, Row, Group, Radio, Start, Calendar, Cancel
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram.types import ContentType
 from callback_dialogs import radio_spam_button_clicked, set_lan, go_to_unique, reset_funk
@@ -87,13 +86,16 @@ zapusk_dialog = Dialog(
 ####################################################################################
 uniqe_dialog = Dialog(
     Window(
-        Format('{type}'),
+        Format('{type}'),   #  Выберите тип напоминания
         Button(text=Format('{uniq}'),
                id='unique_mahnung',
                on_click=go_to_unique),
+        Group(Row(Cancel(Const('◀️'),
+                         id='zuruck'),
+
         Start(text=Format('{reg}'),
                id='regular_mahnung',
-               state=MONAT_MAHNUNG.general),
+               state=MONAT_MAHNUNG.general))),
     state=WORK_WITH_SCHED.choose_regular_or_unique,
     getter=get_type),
 
@@ -197,6 +199,6 @@ uniqe_dialog = Dialog(
               id='see_stelle_button',
               on_click=reset_funk),
         state=WORK_WITH_SCHED.nach_mahnung_accepting,
-        getter=mahnung_accepted),)
+        getter=mahnung_accepted))
 
 

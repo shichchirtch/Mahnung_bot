@@ -1,7 +1,7 @@
 from aiogram.types import User, CallbackQuery
 from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.text import Format
+from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.kbd import Row, Group
 from aiogram_dialog.widgets.kbd import Button, Cancel
 from lexicon import *
@@ -14,7 +14,8 @@ from bot_instans import bot, bot_storage_key, dp
 import datetime
 import asyncio
 from input_handlers import correct_id_handler, error_id_handler
-from postgres_functions import return_tz, return_lan
+from postgres_functions import return_tz, return_lan, insert_last_1
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 class SHOW_MAHNUNG(StatesGroup):
     show_mahnung_start = State()
@@ -22,12 +23,19 @@ class SHOW_MAHNUNG(StatesGroup):
     delete_mahn = State()
     weiter_edit = State()
 
+class LAST_MAHN(StatesGroup):
+    indefinite = State()
+    single = State()
+
+
 tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400, 'Asia/Yekaterinburg':18000, 'Asia/Novosibirsk':21600, 'Europe/London':0}
 
 async def get_users_mahnungen(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
     getter_data = {'welche': neu_or_alt[lan], 'past': alt[lan], 'zukunft':neu[lan]}
     return getter_data
+
+
 
 async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
@@ -53,20 +61,31 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
                 if int_mahn_data < in_stamp_s_uchetom_tz:  # Если событие уже в прошлом
                     if not mahnung['foto_id']:  # Для текстовых напоминаний
                         formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>ID Mahnung  {za_chas_key}</i>'
-                        await bot.send_message(chat_id=user_id, text=formed_text)
+                        mahn_button = InlineKeyboardButton(text='delete', callback_data=za_chas_key)
+                        delet_kb = InlineKeyboardMarkup(inline_keyboard=[[mahn_button]])
+                        await bot.send_message(chat_id=user_id, text=formed_text, reply_markup=delet_kb)
                         await asyncio.sleep(0.25)
                     else:
                         await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'🔕 {mahn_data}\n\n<i>ID Mahnung  {za_chas_key}</i>')
+
                     caunter+=1
 
         await bot.send_message(chat_id=user_id,
                                        text=f'{event_in_future[lan]} <b>{len(us_mahnung_baza) - caunter}</b>')
 
+        await insert_last_1(user_id)
     else:
         await bot.send_message(chat_id=user_id, text=net_napominaniy[lan])
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await asyncio.sleep(0.3)
-    await dialog_manager.next()
+
+    if not caunter:
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await asyncio.sleep(0.3)
+        await dialog_manager.done()
+    else:
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await asyncio.sleep(0.3)
+        await dialog_manager.start(state=LAST_MAHN.single)
+
 
 
 async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
@@ -89,8 +108,8 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
             if mahnung['selector'] == 'U':
                 dt_object = datetime.datetime.strptime(mahn_data, "%d.%m.%Y %H:%M") # Переводим строку в ЭК datetime
                 int_mahn_data = int(dt_object.timestamp())
-                if int_mahn_data > in_stamp:  # 20.12.24 > 18.12.20 - нужно заменить на инты
-                    # print('za_chas_key = ', type(user_mahnung_key))  # 1732806300
+                if int_mahn_data > in_stamp:
+
                     if not mahnung['foto_id']:
                         formed_text = f'🔺 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'
                         await bot.send_message(chat_id=user_id, text=formed_text)
@@ -135,20 +154,45 @@ async def schow_zukunft_mahnung(callback: CallbackQuery, widget:Button,
             await bot.send_message(chat_id=user_id, text=f'{event_in_past[lan]} <b>{caunter}</b>')
     else:
         await bot.send_message(chat_id=user_id, text=net_napominaniy[lan])
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await asyncio.sleep(0.3)
-    await dialog_manager.next()
+    if caunter and caunter==len(us_mahnung_baza):
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await asyncio.sleep(0.3)
+        await dialog_manager.done()
+    elif not us_mahnung_baza:
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await asyncio.sleep(0.3)
+        await dialog_manager.done()
+    else:
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await asyncio.sleep(0.3)
+        await dialog_manager.next()
 
+
+
+async def go_to_basic_func(callback: CallbackQuery, widget:Button,
+                     dialog_manager: DialogManager, *args, **kwargs):
+    await dialog_manager.done()
+
+async def go_to_basic_func_for_last_dialog(callback: CallbackQuery, widget:Button,
+                     dialog_manager: DialogManager, *args, **kwargs):
+    await dialog_manager.done()
 
 async def go_to_input_mahnung_id_for_show(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
+    print('CALLBACK_DATA = ', callback.data)
     dialog_manager.show_mode = ShowMode.SEND
-    await dialog_manager.next()
+    await dialog_manager.next() #  switch_to(state=SHOW_MAHNUNG.weiter_edit)
 
 
 async def return_funk_to_basic(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+    print('\n\n202 return_funk_to_basic &&&&&&&&&&&&&&&&& ')
+    await dialog_manager.back()# start(state=ZAPUSK.add_show, show_mode=ShowMode.SEND)
+
+async def return_funk_to_basic_2(callback: CallbackQuery, widget:Button,
+                     dialog_manager: DialogManager, *args, **kwargs):
+    print('\n\n206 return_funk_to_basic_2 ')
+    await dialog_manager.done() #start(state=ZAPUSK.add_show, show_mode=ShowMode.DELETE_AND_SEND)
 
 async def get_edit_window(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     user_id = event_from_user.id
@@ -165,7 +209,8 @@ async def get_edit_window(dialog_manager: DialogManager, event_from_user: User, 
 
 async def go_to_3_window(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
-    await dialog_manager.switch_to(state=SHOW_MAHNUNG.show_mahnung_end,  show_mode=ShowMode.SEND)
+    print('\n\ngo_to_3_window works = ')
+    await dialog_manager.switch_to(state=SHOW_MAHNUNG.show_mahnung_start,  show_mode=ShowMode.DELETE_AND_SEND)
 
 async def get_data_for_3_window_in_SHOW_MAHNUNG(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
@@ -186,31 +231,46 @@ async def get_weiter_edit(dialog_manager: DialogManager, event_from_user: User, 
     return getter_data
 
 
+async def get_len_user_mahn_list(dialog_manager: DialogManager, event_from_user: User, **kwargs):
+    lan = await return_lan(event_from_user.id)
+    user_id = event_from_user.id
+    bot_dict = await dp.storage.get_data(key=bot_storage_key)
+    us_bot_dict = bot_dict[str(user_id)]
+    if us_bot_dict:
+        gibt_es_mahnung = False
+    else:
+        gibt_es_mahnung = True
+
+    getter_data = {'not_mahnung': gibt_es_mahnung, 'last_dialog_text':last_dialog_text[lan]}
+    return getter_data
+
+
 show_mahnung_dialog = Dialog(
     Window(  # Окно отправляющее запланированные ивенты
-        Format('{welche}'),
-        Button(text=Format('{past}'),
+        Format('{welche}'), #  Выберите будущие или прошедшие напоминания вы хотети посмотреть
+        Group(Row(
+            Button(Const('◀️'),
+              id='zuruck_button',
+               on_click=go_to_basic_func),
+            Button(text=Format('{past}'),
               id='past_button',
-              on_click=schow_last_mahnung),
-        Button(text=Format('{zukunft}'),
+              on_click=schow_last_mahnung))),
+            Button(text=Format('{zukunft}'),
               id='zukunft_button',
               on_click=schow_zukunft_mahnung),
-
         state=SHOW_MAHNUNG.show_mahnung_start,
         getter=get_users_mahnungen
     ),
-
+#############################################################################################
     Window( # В окне происходит выбор, удалять ивенты или вернуться к басик окну
-        Format('{wahl}'),
-        Group(
-            Row(
-                Button(text=Format('{edit}', when='gibt_es_mahnung'),
+        Format('{wahl}'), # Хотите удалить напоминание ?
+        Group(Row(Button(text=Format('{edit}', when='gibt_es_mahnung'),
                       id='edit_button',
                       on_click=go_to_input_mahnung_id_for_show),
-                Cancel(
+                Button(
                       Format(text='{return_to_basic}'),
-                      id='return_button',
-                      on_click=return_funk_to_basic),
+                      id='return_button_1',
+                      on_click=return_funk_to_basic)
             ),
         ),
         state=SHOW_MAHNUNG.show_mahnung_end,
@@ -222,22 +282,34 @@ show_mahnung_dialog = Dialog(
             id='id_input',
             type_factory=id_check,
             on_success=correct_id_handler,
-            on_error=error_id_handler,
+            on_error=error_id_handler
         ),
         state=SHOW_MAHNUNG.delete_mahn,
         getter=get_data_for_3_window_in_SHOW_MAHNUNG
     ),
 
 Window( # В окне происходит выбор удалить ещё одно сообщение или вернуться назад
-        Format('{weiter_edit}'),
-        Group(
-                Cancel(text=Format(text='{return_to_basic}'),
-                      id='return_button',
-                      on_click=return_funk_to_basic),
-                Button(text=Format('{edit}', when='gibt_es_mahnung'),
+        Format('{weiter_edit}'),  # Удалить другие напоминания ?
+        Group(Row(
+                Button(text=Format('{edit}', when='gibt_es_mahnung'),  # Удалить напоминания
                       id='edit_button',
-                      on_click=go_to_3_window)
+                      on_click=go_to_3_window),
+                Cancel(text=Format(text='{return_to_basic}'),
+                      id='return_button_2',  #  Вернусь в коренвое окно
+                      )),
         ),
         state=SHOW_MAHNUNG.weiter_edit,
         getter=get_weiter_edit),
+)
+
+show_last_dialog = Dialog(
+    Window(  # Окно отправляющее запланированные ивенты
+        Format('{last_dialog_text}'), #  Выберите будущие или прошедшие напоминания вы хотети посмотреть
+        Button(text=Const('◀️'),  # Удалить напоминания
+                      id='sl_button',
+                      on_click=go_to_basic_func_for_last_dialog,
+                     when='not_mahnung'),
+        state=LAST_MAHN.single,
+        getter=get_len_user_mahn_list
+    )
 )

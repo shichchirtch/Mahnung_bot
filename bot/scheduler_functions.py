@@ -1,6 +1,7 @@
 from bot_instans import bot, scheduler
 import time
 from datetime import datetime
+from bot_instans import baza_id
 
 
 async def mahnung_gearbeitet(user_id, mahnung_data, time_stamp):
@@ -19,6 +20,7 @@ def scheduler_job(user_id, dialog_dict, tz:str):
     print('future = ', future, type(future))
     id = str(user_id) + str(dialog_dict['za_chas'])
     print('tz = ', tz)
+    baza_id.append(str(dialog_dict['za_chas']))
     if dialog_dict['titel']:
         mahnung_data ='🔶  ' + dialog_dict['titel']
     else:

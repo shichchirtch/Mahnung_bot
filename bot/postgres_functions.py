@@ -42,6 +42,20 @@ async def insert_timezone(user_id:int, us_tz:str):
         needed_data.tz = us_tz
         await session.commit()
 
+async def insert_last_1(user_id:int):
+    async with session_marker() as session:
+        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
+        needed_data = query.scalar()
+        needed_data.last = '1'
+        await session.commit()
+
+async def insert_last_null(user_id:int):
+    async with session_marker() as session:
+        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
+        needed_data = query.scalar()
+        needed_data.last = ''
+        await session.commit()
+
 
 async def insert_serialised_note(user_id:int, zametka):  # Можно использовать для хранения индивидуальной базы напоминаний юзера
     async with session_marker() as session:
@@ -56,6 +70,12 @@ async def return_lan(user_id:int):
         query = await session.execute(select(User).filter(User.tg_us_id == user_id))
         needed_data = query.scalar()
         return needed_data.lan
+
+async def return_last(user_id:int):
+    async with session_marker() as session:
+        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
+        needed_data = query.scalar()
+        return needed_data.last
 
 async def return_tz(user_id:int):
     async with session_marker() as session:

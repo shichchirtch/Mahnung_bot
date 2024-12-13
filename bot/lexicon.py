@@ -345,3 +345,11 @@ real_min_selekted = {'ru':'Вы выбрали минуты ', 'en':'You have se
                 'tr':'Dakikaları seçtiniz',
                     'uk': 'Ви вибрали хвилини', 'de':'Sie haben Minuten ausgewählt ',
                 }
+
+
+
+last_dialog_text = {'ru':'Если не хотите удалять сообщения - воспользуйтесь основным меню', 'en':"If you don't want to delete messages, use the main menu",
+                    'tr':'Mesajları silmek istemiyorsanız ana menüyü kullanın', 'de':'Wenn Sie keine Nachrichten löschen möchten, verwenden Sie das Hauptmenü',
+                    'fa':'اگر نمی خواهید پیام ها را حذف کنید، از منوی اصلی استفاده کنید',
+                    'ar':'إذا كنت لا تريد حذف الرسائل، استخدم القائمة الرئيسية',
+                    'uk':'Якщо ви не хочете видаляти повідомлення, скористайтеся головним меню'}

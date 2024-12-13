@@ -147,7 +147,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
             dialog_manager.dialog_data['za_sutki'] = ''  # Если напоминание меньше, чем через сутки - ставлю сутки None
             if real_event_time - (current_minut + razniza_vo_vremeni)<=3600:
                 # print('##Block if works')
-                dialog_manager.dialog_data['za_chas'] = current_minut + razniza_vo_vremeni + 150  # прибавляю 30 секунд, если напоминанеи меньше чем за час
+                dialog_manager.dialog_data['za_chas'] = current_minut + razniza_vo_vremeni + 60  # прибавляю 30 секунд, если напоминанеи меньше чем за час
                 # print('current_minut+90 = ', current_minut + 90)
 
             else:
