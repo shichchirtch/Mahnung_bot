@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 import operator
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Row,  Column
+from aiogram_dialog.widgets.kbd import Row,  Column, Cancel
 from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect, Multiselect
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from bot_instans import dp, bot_storage_key,  ZAPUSK
@@ -43,7 +43,7 @@ async def get_weekdays(dialog_manager: DialogManager, event_from_user: User, *ar
         (f"{saturday[lan]}", '5'),
         (f"{sunday[lan]}", '6'),
     ]
-    return {"wd": day_of_week, 'choose_week_day':choose_weekday[lan]}
+    return {"wd": day_of_week, 'choose_week_day':choose_weekday[lan], 'approve':approve_choise_lexicon[lan]}
 
 async def category_filled(callback: CallbackQuery, checkbox: ManagedMultiselect, dialog_manager: DialogManager, *args,
                           **kwargs):
@@ -83,14 +83,14 @@ async def button_hour_for_week_clicked(callback: CallbackQuery, widget: Button,
 async def week_choosing_hour_getter(
                              dialog_manager: DialogManager, event_from_user: User,*args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    text_for_week_2_window = {'ru':'Выберите час', 'en':'Choose an Hour'}
+    text_for_week_2_window = choose_hours
     getter_data = {'text_for_week_wind': text_for_week_2_window[lan], 'remind_me': zapusk_button[lan]}
     return getter_data
 
 
 async def week_get_minuts( dialog_manager: DialogManager,event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    text_for_week_3_window = {'ru': 'Выберите минуты', 'en': 'Choose an minuts'}
+    text_for_week_3_window = vibor_minut
     getter_data = {'text_for_3_week_wind': text_for_week_3_window[lan], 'form_grafik_week_mahnungen':form_grafik[lan]}
     return getter_data
 
@@ -108,7 +108,7 @@ async def button_zapusk_clicked_for_week(callback: CallbackQuery, widget: Button
                                     dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
     dialog_manager.dialog_data['tz'] = await return_tz(callback.from_user.id)
-    text_for_week_3 = {'ru': 'Выберите минуты', 'en': 'Choose an minuts'}
+    text_for_week_3 = vibor_minut
     if 'minuts' in dialog_manager.dialog_data:
         dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await dialog_manager.next()
@@ -141,20 +141,21 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
 
-    # user_mahnung = Mahnung(titel=titel, foto_id='', za_chas=None, za_sutki=None, selector='W',
-    #                        real_time=real_time, job_id=real_time_key)
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': None, 'za_sutki': None,
                     'selector': 'W', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
         bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 
 async def on_photo_sent_for_week(message: Message, widget:
@@ -187,15 +188,18 @@ async def on_photo_sent_for_week(message: Message, widget:
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
                     'selector': 'W', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
         bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    await message.delete()
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 async def week_get_for_input_data(dialog_manager: DialogManager,
                                   event_from_user: User, *args, **kwargs):
@@ -245,9 +249,11 @@ week_mahnung_dialog = Dialog(
                 min_selected=1,
                 max_selected=6,
                 on_state_changed=category_filled
-            ),
-
-            Button(Const("Подтвердить"), id="confirm_button", on_click=on_confirm_clicked)
+            )),
+        Row(
+            Cancel(Const('◀️'),
+                    id='week_cancel'),
+            Button(Format("{approve}"), id="confirm_button", on_click=on_confirm_clicked)
         ),
         state=WEEK_MAHNUNG.choose_weekdays,
         getter=get_weekdays

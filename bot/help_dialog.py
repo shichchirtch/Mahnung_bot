@@ -59,13 +59,6 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
     await dialog_manager.done()
 
 
-# async def skolko_back(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-#     print('\n\nbutton_skolko works\n\n')
-#     # lan = await return_lan(callback.from_user.id)
-#     taily_users = await get_user_count()
-#     await callback.message.answer(f'Users started {taily_users}')
-#     await dialog_manager.done()
-
 
 async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     print('reset lan works')

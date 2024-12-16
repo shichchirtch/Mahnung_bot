@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Row
-from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog.widgets.kbd import Button, Cancel
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from bot_instans import dp, bot_storage_key,  ZAPUSK
 from lexicon import *
@@ -23,7 +23,10 @@ class DAY_MAHNUNG(StatesGroup):
 
 async def on_confirm_hours_in_days_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
-    select_at_least_one ={ 'ru':"Выберите хотя бы один час", 'en':'Select please at least one'}
+    select_at_least_one ={ 'ru':"Выберите хотя бы один час", 'en':'Select please at least one',
+                           'de':'Wählen Sie bitte mindestens eine Stunde', 'tr':'Lütfen en az birini seçin', 'uk':'Будь ласка, виберіть принаймні одну годину',
+                           'ar':'الرجاء تحديد واحد على الأقل',
+                           'fa':'لطفا حداقل یکی را انتخاب کنید'}
     selected_days = dialog_manager.dialog_data.get('hours', '')
     if selected_days:
         await dialog_manager.next()  # Переход к следующему окну
@@ -59,14 +62,14 @@ async def button_hour_for_day_clicked(callback: CallbackQuery, widget: Button,
 async def days_choosing_hour_getter(
                              dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    text_for_day_1_window = {'ru':'Выберите час/часы', 'en':'Choose an Hour'}
+    text_for_day_1_window = choose_hours
     getter_data = {'go_to_minuts_in_days': go_to_minuts_in_days[lan], 'select_hour': text_for_day_1_window[lan]}
     return getter_data
 
 
 async def day_get_minuts( dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    text_for_days_2_window = {'ru':'Выберите минуты', 'en':'Choose minuts'}
+    text_for_days_2_window = vibor_minut
     getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan], 'form_grafik_dayly_mahnungen': form_grafik[lan]}
     return getter_data
 
@@ -129,15 +132,18 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': None, 'za_sutki': None,
                     'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
         bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 
 async def on_photo_sent_for_day(message: Message, widget:
@@ -172,15 +178,18 @@ async def on_photo_sent_for_day(message: Message, widget:
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
                     'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
         bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    await message.delete()
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 async def day_get_for_input_data(dialog_manager: DialogManager,
                                   event_from_user: User, *args, **kwargs):
@@ -247,7 +256,10 @@ day_mahnung_dialog = Dialog(
             Button(text=Const('22'), id='button_22', on_click=button_hour_for_day_clicked),
             Button(text=Const('23'), id='button_23', on_click=button_hour_for_day_clicked)
         ),
-        Button(text=Format('{go_to_minuts_in_days}'), id='choose_minuts', on_click=on_confirm_hours_in_days_clicked),
+        Row(
+        Cancel(Const('◀️'),
+               id='day_cancel'),
+        Button(text=Format('{go_to_minuts_in_days}'), id='choose_minuts', on_click=on_confirm_hours_in_days_clicked)),
         state=DAY_MAHNUNG.first,
         getter=days_choosing_hour_getter),
 

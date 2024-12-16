@@ -125,15 +125,18 @@ async def message_text_handler_for_month(message: Message, widget: MessageInput,
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': chas, 'za_sutki': days,
                     'selector': 'M', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота псевдоманунг
+        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 async def on_photo_sent_for_month(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     # Получаем ID фото
@@ -163,15 +166,18 @@ async def on_photo_sent_for_month(message: Message, widget: MessageInput, dialog
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': chas, 'za_sutki': days,
                     'selector': 'M', 'real_time': real_time, 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
     if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота pseudoclass
+        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await message.delete()
+        await dialog_manager.next()
     else:
-        await message.answer('error 🤷')
-    await message.delete()
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
 
 
 async def reset_funk_not_for_uniqe(callback: CallbackQuery, widget:Button,

@@ -60,13 +60,13 @@ async def schow_last_mahnung(callback: CallbackQuery, widget:Button,
                 int_mahn_data = int(dt_object.timestamp())
                 if int_mahn_data < in_stamp_s_uchetom_tz:  # Если событие уже в прошлом
                     if not mahnung['foto_id']:  # Для текстовых напоминаний
-                        formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>ID Mahnung  {za_chas_key}</i>'
+                        formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}'#\n\n<i>ID Mahnung  {za_chas_key}</i>'
                         mahn_button = InlineKeyboardButton(text='delete', callback_data=za_chas_key)
                         delet_kb = InlineKeyboardMarkup(inline_keyboard=[[mahn_button]])
                         await bot.send_message(chat_id=user_id, text=formed_text, reply_markup=delet_kb)
                         await asyncio.sleep(0.25)
                     else:
-                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'🔕 {mahn_data}\n\n<i>ID Mahnung  {za_chas_key}</i>')
+                        await bot.send_photo(chat_id=user_id, photo=mahnung['foto_id'], caption=f'🔕 {mahn_data}')#\n\n<i>ID Mahnung  {za_chas_key}</i>')
 
                     caunter+=1
 
@@ -186,12 +186,12 @@ async def go_to_input_mahnung_id_for_show(callback: CallbackQuery, widget:Button
 
 async def return_funk_to_basic(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
-    print('\n\n202 return_funk_to_basic &&&&&&&&&&&&&&&&& ')
+    # print('\n\n202 return_funk_to_basic &&&&&&&&&&&&&&&&& ')
     await dialog_manager.back()# start(state=ZAPUSK.add_show, show_mode=ShowMode.SEND)
 
 async def return_funk_to_basic_2(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
-    print('\n\n206 return_funk_to_basic_2 ')
+    # print('\n\n206 return_funk_to_basic_2 ')
     await dialog_manager.done() #start(state=ZAPUSK.add_show, show_mode=ShowMode.DELETE_AND_SEND)
 
 async def get_edit_window(dialog_manager: DialogManager, event_from_user: User, **kwargs):

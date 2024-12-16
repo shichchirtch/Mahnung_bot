@@ -4,7 +4,7 @@ from getters import (get_languages, get_spam, choosing_data_getter,
                      choosing_minut_getter, get_type, select_data,
                      get_titel, get_timezone_info)
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Row, Group, Radio, Start, Calendar, Cancel
+from aiogram_dialog.widgets.kbd import Button, Row, Group, Radio, Start, Calendar, Cancel, Back
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram.types import ContentType
 from callback_dialogs import radio_spam_button_clicked, set_lan, go_to_unique, reset_funk
@@ -103,6 +103,8 @@ uniqe_dialog = Dialog(
         Format('{select_data}'),
         Calendar(id='calendar',
                  on_click=on_date_selected),
+        Back(Const('◀️'),
+            id='prev_win'),
         state=WORK_WITH_SCHED.calendar,
         getter=select_data
     ),
@@ -110,33 +112,33 @@ uniqe_dialog = Dialog(
     Window(
         Format('{text_for_2_wind}', when='choosing_data'),
         Row(
-            Button(text=Const('00'), id='button_00', on_click=button_uhr_clicked),
-            Button(text=Const('01'), id='button_1', on_click=button_uhr_clicked),
-            Button(text=Const('02'), id='button_2', on_click=button_uhr_clicked),
-            Button(text=Const('03'), id='button_3', on_click=button_uhr_clicked),
-            Button(text=Const('04'), id='button_4', on_click=button_uhr_clicked),
-            Button(text=Const('05'), id='button_5', on_click=button_uhr_clicked), ),
+            Button(text=Const('00'), id='ubutton_00', on_click=button_uhr_clicked),
+            Button(text=Const('01'), id='ubutton_1', on_click=button_uhr_clicked),
+            Button(text=Const('02'), id='ubutton_2', on_click=button_uhr_clicked),
+            Button(text=Const('03'), id='ubutton_3', on_click=button_uhr_clicked),
+            Button(text=Const('04'), id='ubutton_4', on_click=button_uhr_clicked),
+            Button(text=Const('05'), id='ubutton_5', on_click=button_uhr_clicked)),
         Row(
-            Button(text=Const('06'), id='button_6', on_click=button_uhr_clicked),
-            Button(text=Const('07'), id='button_7', on_click=button_uhr_clicked),
-            Button(text=Const('08'), id='button_8', on_click=button_uhr_clicked),
-            Button(text=Const('09'), id='button_9', on_click=button_uhr_clicked),
-            Button(text=Const('10'), id='button_10', on_click=button_uhr_clicked),
-            Button(text=Const('11'), id='button_11', on_click=button_uhr_clicked), ),
+            Button(text=Const('06'), id='ubutton_6', on_click=button_uhr_clicked),
+            Button(text=Const('07'), id='ubutton_7', on_click=button_uhr_clicked),
+            Button(text=Const('08'), id='ubutton_8', on_click=button_uhr_clicked),
+            Button(text=Const('09'), id='ubutton_9', on_click=button_uhr_clicked),
+            Button(text=Const('10'), id='ubutton_10', on_click=button_uhr_clicked),
+            Button(text=Const('11'), id='ubutton_11', on_click=button_uhr_clicked)),
         Row(
-            Button(text=Const('12'), id='button_12', on_click=button_uhr_clicked),
-            Button(text=Const('13'), id='button_13', on_click=button_uhr_clicked),
-            Button(text=Const('14'), id='button_14', on_click=button_uhr_clicked),
-            Button(text=Const('15'), id='button_15', on_click=button_uhr_clicked),
-            Button(text=Const('16'), id='button_16', on_click=button_uhr_clicked),
-            Button(text=Const('17'), id='button_17', on_click=button_uhr_clicked), ),
+            Button(text=Const('12'), id='ubutton_12', on_click=button_uhr_clicked),
+            Button(text=Const('13'), id='ubutton_13', on_click=button_uhr_clicked),
+            Button(text=Const('14'), id='ubutton_14', on_click=button_uhr_clicked),
+            Button(text=Const('15'), id='ubutton_15', on_click=button_uhr_clicked),
+            Button(text=Const('16'), id='ubutton_16', on_click=button_uhr_clicked),
+            Button(text=Const('17'), id='ubutton_17', on_click=button_uhr_clicked)),
         Row(
-            Button(text=Const('18'), id='button_18', on_click=button_uhr_clicked),
-            Button(text=Const('19'), id='button_19', on_click=button_uhr_clicked),
-            Button(text=Const('20'), id='button_20', on_click=button_uhr_clicked),
-            Button(text=Const('21'), id='button_21', on_click=button_uhr_clicked),
-            Button(text=Const('22'), id='button_22', on_click=button_uhr_clicked),
-            Button(text=Const('23'), id='button_23', on_click=button_uhr_clicked)
+            Button(text=Const('18'), id='ubutton_18', on_click=button_uhr_clicked),
+            Button(text=Const('19'), id='ubutton_19', on_click=button_uhr_clicked),
+            Button(text=Const('20'), id='ubutton_20', on_click=button_uhr_clicked),
+            Button(text=Const('21'), id='ubutton_21', on_click=button_uhr_clicked),
+            Button(text=Const('22'), id='ubutton_22', on_click=button_uhr_clicked),
+            Button(text=Const('23'), id='ubutton_23', on_click=button_uhr_clicked)
         ),
         state=WORK_WITH_SCHED.uhr,
         getter=choosing_data_getter

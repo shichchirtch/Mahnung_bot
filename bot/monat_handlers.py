@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Row
-from aiogram_dialog.widgets.kbd import Button, Start
+from aiogram_dialog.widgets.kbd import Button, Start, Cancel
 from lexicon import *
 from aiogram_dialog.widgets.input import  MessageInput
 from aiogram.fsm.state import State, StatesGroup
@@ -122,9 +122,12 @@ Window(
             Button(text=Const('30'), id='button_30', on_click=button_day_clicked),
             Button(text=Const('31'), id='button_31', on_click=button_day_clicked)
         ),
+    Row(
+        Cancel(Const('◀️'),
+               id='monat_cancel'),
         Button(text=Format('{approve_choise}'),
                id='approve_choise_button',
-               on_click=approve_choise),
+               on_click=approve_choise)),
         state=MONAT_MAHNUNG.taily,
         getter=get_30_days
     ),

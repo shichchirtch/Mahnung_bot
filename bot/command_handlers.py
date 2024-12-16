@@ -55,7 +55,7 @@ async def basic_menu_start(message: Message, dialog_manager: DialogManager):
 
 
 @ch_router.message(Command('help'))
-async def basic_menu_start(message: Message, dialog_manager: DialogManager):
+async def basic_menu_help(message: Message, dialog_manager: DialogManager):
     await message.answer(text='help works')
     await dialog_manager.start(state=HELP_DIAL.erst)
     await asyncio.sleep(1)
@@ -63,7 +63,7 @@ async def basic_menu_start(message: Message, dialog_manager: DialogManager):
 
 
 @ch_router.message(Command('admin'), IS_ADMIN())
-async def basic_menu_start(message: Message, dialog_manager: DialogManager):
+async def admin_enter(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(ADMIN.first)
     await asyncio.sleep(1)
     await message.delete()

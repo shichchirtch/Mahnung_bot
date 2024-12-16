@@ -29,26 +29,36 @@ async def message_text_handler(message: Message, widget: MessageInput, dialog_ma
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': str_za_chas, 'za_sutki': str_za_sutki,
                     'selector': 'U', 'real_time': real_time, 'job_id': job_id}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    # print('bot_dict = ', bot_dict)
-    bot_dict[user_id][str_za_chas] = pseudo_class #user_mahnung # Записываю в словарь бота ЭК манунг
-    # print('pseudo_class = ', pseudo_class)
-    await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
-    us_zam = await return_zametki(message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
-    if not us_zam:
-        zam_dict = {str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
-        serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
-        await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
+    if str_za_chas not in b_u_dict:
+        bot_dict[user_id][str_za_chas] = pseudo_class
+        await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
 
+        us_zam = await return_zametki(message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
+
+        if not us_zam:
+            print('\n\nNOT ZAM WORKS')
+            zam_dict = {str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
+            serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
+            await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
+            await message.answer(text=gut[lan])
+            dialog_manager.show_mode = ShowMode.SEND
+            await message.delete()
+            await dialog_manager.next()
+        else:
+            zam_dict = pickle.loads(us_zam)
+            zam_dict[str_za_chas] = pseudo_class
+            serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
+            await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
+            await message.answer(text=gut[lan])
+            dialog_manager.show_mode = ShowMode.SEND
+            await message.delete()
+            await dialog_manager.next()
     else:
-        zam_dict = pickle.loads(us_zam)
-        zam_dict[str_za_chas] = pseudo_class
-        serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
-        await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
-    # us_dict['events'][za_chas] = user_mahnung  # Записываю в словарь юзе ЭК Mahnung
-    await message.answer(text=gut[lan])
-    dialog_manager.show_mode = ShowMode.SEND
-    await message.delete()
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await dialog_manager.done()
+
 
 
 async def correct_titel_handler(message: Message, widget: ManagedTextInput,
@@ -69,6 +79,8 @@ async def error_titel_handler(message: Message,widget: ManagedTextInput,dialog_m
 
 async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     print('on_photo_sent works')
+    user_id = message.from_user.id
+    lan = await return_lan(message.from_user.id)
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
     za_chas = dialog_manager.dialog_data['za_chas']
     str_za_chas = str(za_chas)
@@ -85,20 +97,34 @@ async def on_photo_sent(message: Message, widget: MessageInput, dialog_manager: 
     bot_dict[str(message.from_user.id)][str_za_chas] = pseudo_class  # Записываю в словарь бота ЭК манунг
     await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
 
-    us_zam = await return_zametki(message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
-    if not us_zam:
-        zam_dict = {str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
-        serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
-        await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
-
+    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
+    if str_za_chas not in b_u_dict:
+        bot_dict[user_id][str_za_chas] = pseudo_class
+        await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
+        us_zam = await return_zametki(
+            message.from_user.id)  # Получаю из Постгресса пикл представление словаря с заметками
+        if not us_zam:
+            zam_dict = {
+                str_za_chas: pseudo_class}  # Создаю словарь - Интоваое представление за час с 1970 в форме строки: словарь с данными заметки
+            serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
+            await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
+            await message.answer(text=gut[lan])
+            dialog_manager.show_mode = ShowMode.SEND
+            await message.delete()
+            await dialog_manager.next()
+        else:
+            zam_dict = pickle.loads(us_zam)
+            zam_dict[str_za_chas] = pseudo_class
+            serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
+            await insert_serialised_note(message.from_user.id, serialized_data)  # Вставляю его в Postgress
+            await message.answer(text=gut[lan])
+            dialog_manager.show_mode = ShowMode.SEND
+            await message.delete()
+            await dialog_manager.next()
     else:
-        zam_dict = pickle.loads(us_zam)
-        zam_dict[str_za_chas] = pseudo_class
-        serialized_data = pickle.dumps(zam_dict)  # Сериализую объект
-        await insert_serialised_note(message.from_user.id, serialized_data)
-    # us_dict['events'][za_chas] = user_mahnung  # Записываю в словарь юзе ЭК Mahnung
-    await message.delete()
-    await dialog_manager.next()
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await dialog_manager.done()
 
 
 async def message_not_foto_handler(message: Message, widget: MessageInput,
