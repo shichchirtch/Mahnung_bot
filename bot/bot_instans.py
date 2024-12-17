@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-# from aiogram.fsm.storage.memory import StorageKey, MemoryStorage
+import asyncio
 from aiogram.fsm.storage.redis import RedisStorage, Redis, StorageKey
 from apscheduler.jobstores.redis import RedisJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -9,12 +9,8 @@ from config import settings
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 
-# from aiogram_dialog.api.exceptions import OutdatedIntent
-# from aiogram_dialog import DialogManager, StartMode, ShowMode
-# from aiogram.types import CallbackQuery
-# from aiogram.dispatcher.middlewares.base import BaseMiddleware
 
-from aiogram_dialog.api.exceptions import OutdatedIntent
+
 
 key_builder = DefaultKeyBuilder(with_destiny=True)
 
@@ -65,19 +61,42 @@ real_min_dict = {'button_00': '00', 'button_05': '05', 'button_10': '10', 'butto
                 'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
                 }
 
-baza_id = []
 
-# class OutdatedIntentMiddleware(BaseMiddleware):
-#     async def __call__(self, handler, event: CallbackQuery, data: dict):
-#         try:
-#             return await handler(event, data)
-#         except OutdatedIntent:
-#             dialog_manager: DialogManager = data["dialog_manager"]
-#             print("Обнаружен OutdatedIntent, перезапуск диалога.")
-#             await dialog_manager.start(
-#                 ZAPUSK.add_show,  # Укажите начальное состояние вашего диалога
-#                 mode=StartMode.RESET_STACK,
-#                 show_mode=ShowMode.SEND,
-#             )
+# Очередь для сообщений
+message_queue = asyncio.Queue()
+# Фоновый воркер для обработки сообщений
+async def background_worker():
+    while True:
+        message = await message_queue.get()
+        chat_id = message["chat_id"]
+        content_type = message["content_type"]
+        content = message["content"]
+        caption = message.get("caption")  # Подпись для фото
+        try:
+            if content_type == "text":
+                await bot.send_message(chat_id=chat_id, text=content)
+            elif content_type == "photo":
+                await bot.send_photo(chat_id=chat_id, photo=content, caption=caption)
+        except Exception as e:
+            print(f"Ошибка при отправке сообщения: {e}")
+            await asyncio.sleep(1)  # Повторная попытка через 1 секунду
+        finally:
+            await asyncio.sleep(0.05)  # Соблюдаем лимит Telegram API
 
-# dp.update.middleware(OutdatedIntentMiddleware())
+# Функция для добавления сообщений в очередь
+# Добавляем сообщение в очередь (для текстовых и фото сообщений)
+async def queue_sender_message(chat_id: int, content: str, content_type: str = "text", caption: str = None):
+    """
+    Добавляет сообщение в очередь на отправку.
+    :param chat_id: ID чата
+    :param content: Текст сообщения или путь/ссылка на фото
+    :param content_type: Тип содержимого ('text' или 'photo')
+    :param caption: Подпись для фото (только для content_type='photo')
+    """
+    await message_queue.put({
+        "chat_id": chat_id,
+        "content_type": content_type,
+        "content": content,
+        "caption": caption
+    })
+

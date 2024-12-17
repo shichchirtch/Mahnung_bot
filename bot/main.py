@@ -9,7 +9,7 @@ from monat_handlers import monat_mahnung_dialog
 from week_handlers import week_mahnung_dialog
 from show_handlers import show_mahnung_dialog, show_last_dialog
 from admin_dialog import admin_dialog
-from bot_instans import scheduler
+from bot_instans import scheduler, background_worker
 from help_dialog import dialog_help, reset_tz_dialog, review_dialog
 from postgres_table import init_models
 
@@ -33,9 +33,18 @@ async def main():
     dp.include_router(review_dialog)
     dp.include_router(show_last_dialog)
 
+
+    background_task = asyncio.create_task(background_worker())
+
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
     setup_dialogs(dp)
-    await dp.start_polling(bot)
+
+    try:
+        await dp.start_polling(bot)
+    finally:
+        background_task.cancel()  # Отменить фоновую задачу
+        await background_task  # Дождаться завершения
 
 asyncio.run(main())
+

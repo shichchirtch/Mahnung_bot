@@ -57,14 +57,6 @@ async def insert_last_null(user_id:int):
         await session.commit()
 
 
-async def insert_serialised_note(user_id:int, zametka):  # Можно использовать для хранения индивидуальной базы напоминаний юзера
-    async with session_marker() as session:
-        print('insert_serialised_note\n\n')
-        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
-        needed_data = query.scalar()
-        needed_data.zametki = zametka
-        await session.commit()
-
 async def return_lan(user_id:int):
     async with session_marker() as session:
         query = await session.execute(select(User).filter(User.tg_us_id == user_id))
@@ -83,12 +75,6 @@ async def return_tz(user_id:int):
         query = await session.execute(select(User).filter(User.tg_us_id == user_id))
         needed_data = query.scalar()
         return needed_data.tz
-
-async def return_zametki(user_id:int):
-    async with session_marker() as session:
-        query = await session.execute(select(User).filter(User.tg_us_id == user_id))
-        needed_data = query.scalar()
-        return needed_data.zametki
 
 
 async def get_user_count():

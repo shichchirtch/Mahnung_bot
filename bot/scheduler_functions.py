@@ -1,17 +1,19 @@
 from bot_instans import bot, scheduler
 import time
 from datetime import datetime
-from bot_instans import baza_id
+from bot_instans import queue_sender_message
 
+ # await schedule_message(message.chat.id, "Добро пожаловать! Это ваш бот!")
 
 async def mahnung_gearbeitet(user_id, mahnung_data, time_stamp):
     print('WE are into mahnung gearbeitet function')
     formatted_date = f'‼️ <b>MAHNUNG   {time_stamp}</b>'
     if mahnung_data.startswith('🔶'):
         titel = formatted_date +'\n\n' + mahnung_data
-        await bot.send_message(chat_id=user_id, text=titel)
+        await queue_sender_message(chat_id=user_id, content=titel, content_type="text")
     else:
-        await bot.send_photo(chat_id=user_id, photo=mahnung_data, caption=formatted_date)
+        # Это фото с подписью
+        await queue_sender_message(chat_id=user_id, content=mahnung_data, content_type="photo", caption=formatted_date)
 
 
 def scheduler_job(user_id, dialog_dict, tz:str):
@@ -20,7 +22,7 @@ def scheduler_job(user_id, dialog_dict, tz:str):
     print('future = ', future, type(future))
     id = str(user_id) + str(dialog_dict['za_chas'])
     print('tz = ', tz)
-    baza_id.append(str(dialog_dict['za_chas']))
+
     if dialog_dict['titel']:
         mahnung_data ='🔶  ' + dialog_dict['titel']
     else:
@@ -30,15 +32,18 @@ def scheduler_job(user_id, dialog_dict, tz:str):
     scheduler.add_job(mahnung_gearbeitet, "date", run_date=future, timezone=tz, args=(user_id, mahnung_data, time_stamp), id=id)
     time.sleep(0.2)
 
+#################################################################################
 
 async def mahnung_za_sutki_gearbeitet(user_id, mahnung_data, time_stamp):
     print('WE are into mahnung gearbeitet za sutki function')
     formatted_date = f'‼️ <b>MAHNUNG   {time_stamp}</b>'
     if mahnung_data.startswith('🔶'):
         titel = formatted_date + '\n\n' + mahnung_data
-        await bot.send_message(chat_id=user_id, text=titel)
+        await queue_sender_message(chat_id=user_id, content=titel, content_type="text")
     else:
-        await bot.send_photo(chat_id=user_id, photo=mahnung_data, caption=formatted_date)
+        # Это фото с подписью
+        await queue_sender_message(chat_id=user_id, content=mahnung_data, content_type="photo", caption=formatted_date)
+
 
 def scheduler_za_sutki_job(user_id:int, dialog_dict, tz:str):
     future_za_sutki = datetime.fromtimestamp(dialog_dict['za_sutki'])  # Время когда действие должно быть закончено
@@ -58,9 +63,10 @@ async  def napominalka_async_for_month(user_id, mahnung_data, time_data):
     formatted_date = f'🔆 <b>MAHNUNG   {time_data}</b>'
     if mahnung_data.startswith('🔶'):
         titel = formatted_date + '\n\n' + mahnung_data
-        await bot.send_message(chat_id=user_id, text=titel)
+        await queue_sender_message(chat_id=user_id, content=titel, content_type="text")
     else:
-        await bot.send_photo(chat_id=user_id, photo=mahnung_data, caption=formatted_date)
+        # Это фото с подписью
+        await queue_sender_message(chat_id=user_id, content=mahnung_data, content_type="photo", caption=formatted_date)
 
 
 def napominalka_sync_for_month(user_id, dialog_dict:dict):
@@ -77,13 +83,10 @@ def napominalka_sync_for_month(user_id, dialog_dict:dict):
     else:
         mahnung_data = dialog_dict['foto_id']
     data_s_tochkami = dialog_dict['real_time']
-    # time_data =  data_s_tochkami.replace(',', '').replace(':', '').replace(' ','')
-    # print('time_data = ', time_data)
     tz = dialog_dict['tz']
     job_id =dialog_dict['job_id']
 
     id = str(user_id) + job_id  # 6685637602301550
-    # print('id = ', id)
     scheduler.add_job(napominalka_async_for_month, "cron", day=day_of_month, hour = chas,
                       minute = minutusy, end_date='2037-05-30',  timezone=tz,
                       args=(user_id, mahnung_data, data_s_tochkami), id=id)
@@ -93,9 +96,11 @@ async  def async_week_sched(user_id, mahnung_data, time_data):
     formatted_date = f'⭐️ <b>MAHNUNG   {time_data}</b>'
     if mahnung_data.startswith('🔹'):
         titel = formatted_date + '\n\n' + mahnung_data
-        await bot.send_message(chat_id=user_id, text=titel)
+        await queue_sender_message(chat_id=user_id, content=titel, content_type="text")
     else:
-        await bot.send_photo(chat_id=user_id, photo=mahnung_data, caption=formatted_date)
+        # Это фото с подписью
+        await queue_sender_message(chat_id=user_id, content=mahnung_data, content_type="photo",
+                                   caption=formatted_date)
 
 
 def week_sched(user_id, dialog_dict:dict):
@@ -127,9 +132,11 @@ async  def async_day_sched(user_id, mahnung_data, time_data):
     formatted_date = f'🔔 <b>MAHNUNG   {time_data}</b>'
     if mahnung_data.startswith('♦️'):
         titel = formatted_date + '\n\n' + mahnung_data
-        await bot.send_message(chat_id=user_id, text=titel)
+        await queue_sender_message(chat_id=user_id, content=titel, content_type="text")
     else:
-        await bot.send_photo(chat_id=user_id, photo=mahnung_data, caption=formatted_date)
+        # Это фото с подписью
+        await queue_sender_message(chat_id=user_id, content=mahnung_data, content_type="photo",
+                                   caption=formatted_date)
 
 
 def day_sched(user_id, dialog_dict:dict):

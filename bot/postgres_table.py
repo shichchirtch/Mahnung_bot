@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, BigInteger, String, LargeBinary
+from sqlalchemy import Integer, BigInteger, String
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from config import settings
@@ -21,7 +21,6 @@ class User(Base):
     lan: Mapped[str] = mapped_column(String, default='', nullable=True)
     spam: Mapped[str] = mapped_column(String, default='', nullable=True)
     tz: Mapped[str] = mapped_column(String, default='', nullable=True)
-    zametki = mapped_column(LargeBinary, default=None, nullable=True)
     last: Mapped[str] = mapped_column(String, default='', nullable=True)
 
 

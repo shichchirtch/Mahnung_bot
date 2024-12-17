@@ -149,7 +149,6 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
 async def on_photo_sent_for_day(message: Message, widget:
                                 MessageInput, dialog_manager: DialogManager, *args, **kwargs):
     user_id = str(message.from_user.id)
-    print('161 on_photo_sent works day_handlers')
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
     lan = await return_lan(message.from_user.id)
     dialog_manager.dialog_data['foto_id'] = foto_id
@@ -199,7 +198,7 @@ async def day_get_for_input_data(dialog_manager: DialogManager,
 
 async def pre_day_sched(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
-    print('\n\nWe are into pre_sched\n\n')
+    # print('\n\nWe are into pre_sched\n\n')
     dialog_dict = dialog_manager.dialog_data
     user_id = callback.from_user.id
     day_sched(user_id, dialog_dict) # Запуск планировщика

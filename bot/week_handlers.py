@@ -161,7 +161,6 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
 async def on_photo_sent_for_week(message: Message, widget:
                                 MessageInput, dialog_manager: DialogManager, *args, **kwargs):
     user_id = str(message.from_user.id)
-    print('176 on_photo_sent works week_handlers')
     foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
     lan = await return_lan(message.from_user.id)
     days_list = dialog_manager.dialog_data['week_days']
@@ -180,7 +179,6 @@ async def on_photo_sent_for_week(message: Message, widget:
 
     new_days = week_day_bearbeiten(digit_arr)
     real_time_key = day_digit + chas + minuts  # 121050 - составная часть ключа id scheduler
-    # print('real_time_key = ', real_time_key)
     dialog_manager.dialog_data['key'] = real_time_key
     real_time = f'{new_days}, {chas}:{minuts}'  # 'Mon, Tue, 17:15'
 
