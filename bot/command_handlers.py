@@ -49,6 +49,8 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
 async def basic_menu_start(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
     await message.answer('return to basic window')
+    print('dialog_manager.dialog_data = ', dialog_manager.dialog_data)
+    dialog_manager.dialog_data.clear()
     await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
     await asyncio.sleep(1)
     await message.delete()

@@ -34,6 +34,7 @@ async def on_date_selected(callback: CallbackQuery, widget,
     day_data = int(callback.data.split(':')[1])  # 1732057200
     print('\n\nday_data = ', datetime.datetime.fromtimestamp(day_data))  #  day_data =  2024-12-16 00:00:00
     in_stamp = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)  # day_data =  2024-12-16 00:00:00
+    print('NOW = ', in_stamp)
     current_day = int(in_stamp.timestamp())
     # print('cur day = ', current_day)
 
@@ -55,7 +56,7 @@ async def button_uhr_clicked(callback: CallbackQuery, widget: Button,
                              manager: DialogManager):
     uhr_dict = {'ubutton_00': '0', 'ubutton_1': '3600', 'ubutton_2': '7200', 'ubutton_3': '10800',
                 'ubutton_4': '14400', 'ubutton_5': '18000', 'ubutton_6': '21600', 'ubutton_7': '25200',
-                'ubutton_8': '28800', 'ubutton_9': '324000', 'ubutton_10': '36000', 'ubutton_11': '39600',
+                'ubutton_8': '28800', 'ubutton_9': '32400', 'ubutton_10': '36000', 'ubutton_11': '39600',
                 'ubutton_12': '43200', 'ubutton_13': '46800', 'ubutton_14': '50400', 'ubutton_15': '54000',
                 'ubutton_16': '57600', 'ubutton_17': '61200', 'ubutton_18': '64800', 'ubutton_19': '68400',
                 'ubutton_20': '72000', 'ubutton_21': '75600', 'ubutton_22': '79200', 'ubutton_23': '82800',
@@ -69,7 +70,7 @@ async def button_uhr_clicked(callback: CallbackQuery, widget: Button,
     in_stamp = datetime.datetime.now().replace(minute=0, second=0, microsecond=0)
     current_hour = int(in_stamp.timestamp())
     # print('cur houres = ', current_hour)
-    print('\n\nim choosing hours dict = ', manager.dialog_data)
+    # print('\n\nim choosing hours dict = ', manager.dialog_data)
     temp_day = manager.dialog_data['day']
     # print('temp day = ', temp_day, type(temp_day))
     additional_hours = int(uhr_dict[callback.data])
@@ -81,6 +82,7 @@ async def button_uhr_clicked(callback: CallbackQuery, widget: Button,
         manager.dialog_data['choosing_data'] = True  # ставлю индикатор на True для геттера
         manager.dialog_data['hours'] = int(uhr_dict[callback.data])
         manager.dialog_data['minuts'] = 0
+        # print("manager.dialog_data['hours'] = ", manager.dialog_data['hours'])
         # await callback.message.answer(uhr_dict[callback.data])
         await manager.next()
         # manager.show_mode = ShowMode.SEND
@@ -97,6 +99,7 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
                 'button_40': '2400', 'button_45': '2700', 'button_50': '3000', 'button_55': '3300',
                 }
     dialog_manager.dialog_data['minuts'] = int(min_dict[callback.data])
+    # print("dialog_manager.dialog_data['minuts'] = ", dialog_manager.dialog_data['minuts'])
     lan = await return_lan(callback.from_user.id)
     await callback.message.answer(f"{real_min_selekted[lan]}: {real_min_dict[callback.data]}")
     await callback.message.answer(text=knopka_nazata[lan])
@@ -105,7 +108,7 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
 async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
                                 dialog_manager: DialogManager):
     '''Запускает напоминание'''
-    print('\n\nButton zapusk_clicked work\n\n')
+    # print('\n\nButton zapusk_clicked work\n\n')
 
     tz_dict_int = {'Europe/London': 0,
                    'Europe/Berlin': 1,  # tz_plus_1
@@ -121,7 +124,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
 
     current_minut = int(in_stamp.timestamp())  # 1732800900
     razniza_vo_vremeni = tz_dict_int[user_tz] * 3600
-
+    # print('temp_dict = ',dialog_manager.dialog_data)
     real_event_time = dialog_manager.dialog_data['day'] + \
                       dialog_manager.dialog_data['hours'] + \
                       dialog_manager.dialog_data['minuts']
@@ -133,7 +136,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
 
         form_vremya = datetime.datetime.fromtimestamp(real_event_time)
         formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")  # 2024-11-21 15:55:00 <class 'str'>
-        print('\n\nSOBITIE = ', formatted_date, '\n\n' )
+        print('\n\nSOBITIE = ', formatted_date, '\n\n' )  # 20.12.2024  18:30
         await callback.message.answer(f'Sobytie {formatted_date}')
         dialog_manager.dialog_data['real_time'] = formatted_date  # Здесь записывается заголовок напоминания  16.12.2024  15:55
 
