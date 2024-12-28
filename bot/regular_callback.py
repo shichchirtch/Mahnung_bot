@@ -98,6 +98,7 @@ async def button_minut_clicked(callback: CallbackQuery, widget: Button,
 
 async def button_zapusk_clicked_for_month(callback: CallbackQuery, widget: Button,
                                 dialog_manager: DialogManager):
+    dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.next()
 
 async def on_photo_sent_for_month(message: Message, widget: MessageInput, dialog_manager: DialogManager):

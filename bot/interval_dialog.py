@@ -74,7 +74,7 @@ async def button_hour_for_interval_clicked(callback: CallbackQuery, widget: Butt
                 'button_20': '20', 'button_21': '21', 'button_22': '22', 'button_23': '23',
                 }
     lan = await return_lan(callback.from_user.id)
-    await callback.message.answer(f'{chas_selekted[lan]} {uhr_dict[callback.data]}')
+    await callback.message.answer(f'{chas_selekted[lan]} <b>{uhr_dict[callback.data]}</b>')
     dialog_manager.dialog_data['hours'] = int(uhr_dict[callback.data]) * 3600
     dialog_manager.dialog_data['minuts'] = 0
     dialog_manager.dialog_data['capture'] = ''
@@ -135,9 +135,9 @@ async def button_zapusk_clicked_for_interval(callback: CallbackQuery, widget: Bu
         dialog_manager.dialog_data['start_time'] = str(form_vremya)
         formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")  # 2024-11-21 15:55:00 <class 'str'>
         print('\n\nSOBITIE = ', formatted_date, '\n\n')  # 20.12.2024  18:30
-        await callback.message.answer(f'Event {formatted_date}')
+        await callback.message.answer(f'✅ Event <b>{formatted_date}</b>')
         dialog_manager.dialog_data['zagolovok'] = formatted_date  # Здесь записывается заголовок напоминания  16.12.2024  15:55
-        dialog_manager.show_mode = ShowMode.EDIT
+        dialog_manager.show_mode = ShowMode.SEND
         await dialog_manager.next()
     else:
         await callback.message.answer(text=car_time[lan])
