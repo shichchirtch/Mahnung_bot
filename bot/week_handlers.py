@@ -30,7 +30,7 @@ class WEEK_MAHNUNG(StatesGroup):
 
 async def getter_for_capture_week(dialog_manager: DialogManager, event_from_user: User,**kwargs):
     lan = await return_lan(event_from_user.id)
-    return {'enter_capture':enter_capture[lan]}
+    return {'enter_capture': enter_capture[lan]}
 
 async def get_enter_capture_week(dialog_manager: DialogManager, event_from_user: User,**kwargs):
     lan = await return_lan(event_from_user.id)
@@ -38,13 +38,13 @@ async def get_enter_capture_week(dialog_manager: DialogManager, event_from_user:
 
 async def get_weekdays(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
-    monday = {'ru':'Понедельник', 'en':'Monday'}
-    tuesday = {'ru':'Вторник', 'en':'Tuesday'}
-    wensday = {'ru':'Среда', 'en':'Wednesday'}
-    thursday = {'ru':'Четверг', 'en':'Thursday'}
-    friday = {'ru':'Пятница', 'en':'Friday'}
-    saturday = {'ru':'Суббота', 'en':'Saturday'}
-    sunday = {'ru':'Воскресенье', 'en':'Sunday'}
+    monday = {'ru':'Понедельник', 'en':'Monday', 'de':'Montag', 'tr':'Pazartesi', 'uk':'Понеділок', 'ar':'الاثنين', 'fa':'دوشنبه'}
+    tuesday = {'ru':'Вторник', 'en':'Tuesday', 'de':'Dienstag','tr':'Salı', 'uk':'Вівторок', 'ar':'يوم الثلاثاء','fa':'سه شنبه'}
+    wensday = {'ru':'Среда', 'en':'Wednesday', 'de':'Mittwoch', 'tr':'Çarşamba', 'uk':'Середа', 'ar':'الأربعاء', 'fa':'چهارشنبه'}
+    thursday = {'ru':'Четверг', 'en':'Thursday', 'de':'Donnerstag', 'tr':'Perşembe', 'uk':'Четвер', 'ar':'يوم الخميس', 'fa':'پنج شنبه'}
+    friday = {'ru':'Пятница', 'en':'Friday', 'de':'Freitag', 'tr':'Cuma', 'uk':"П'ятниця", 'ar':'جمعة', 'fa':'جمعه'}
+    saturday = {'ru':'Суббота', 'en':'Saturday', 'de':'Samstag', 'tr':'Cumartesi', 'uk':'Субота','ar':'السبت', 'fa':'شنبه'}
+    sunday = {'ru':'Воскресенье', 'en':'Sunday', 'de':'Sonntag', 'tr':'Pazar', 'uk':'неділя','ar':'الأحد', 'fa':'یکشنبه'}
     day_of_week = [
         (f"{monday[lan]}", '0'),
         (f"{tuesday[lan]}", '1'),

@@ -52,7 +52,7 @@ async def button_day_clicked(callback: CallbackQuery, widget: Button,
         temp_sending_data = day_dict[callback.data]
         sending_data = temp_sending_data.split(',')[-1]
     else:
-        sending_data = 'last day of month or 31'
+        sending_data = f'{last_31[lan]} 31'
     if not t:
         await callback.message.answer(f'{sobytie_sluchitsa[lan]} <b>{sending_data}</b>')
 
