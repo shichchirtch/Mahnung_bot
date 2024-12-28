@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Row
-from aiogram_dialog.widgets.kbd import Button, Cancel
+from aiogram_dialog.widgets.kbd import Button, Cancel, Next
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from bot_instans import dp, bot_storage_key,  ZAPUSK
 from lexicon import *
@@ -18,8 +18,25 @@ class DAY_MAHNUNG(StatesGroup):
     first = State()
     choose_time_during_day = State()
     run_day_scheduler = State()
+    ask_capture = State()
+    accept_capture = State()
     day_sent_mahnung_data = State()
     day_return_to_basic = State()
+
+async def getter_for_capture_day(dialog_manager: DialogManager, event_from_user: User,**kwargs):
+    lan = await return_lan(event_from_user.id)
+    return {'enter_capture':enter_capture[lan]}
+
+async def get_enter_capture_day(dialog_manager: DialogManager, event_from_user: User,**kwargs):
+    lan = await return_lan(event_from_user.id)
+    return {'data_capture':not_text_capture_send[lan]}
+
+async def accept_foto_for_day(message: Message, widget: MessageInput, dialog_manager: DialogManager):
+    foto_id = message.photo[-1].file_id
+    dialog_manager.dialog_data['titel'] = ''
+    dialog_manager.dialog_data['foto_id'] = foto_id
+    dialog_manager.show_mode = ShowMode.SEND
+    await dialog_manager.next()
 
 async def on_confirm_hours_in_days_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
@@ -50,14 +67,16 @@ async def button_hour_for_day_clicked(callback: CallbackQuery, widget: Button,
     if temp_hours:
         if hour_mahnung not in temp_hours:  # Если 2 раза нажимается одна и та же кнопка
             new_hours = temp_hours + ','+hour_mahnung
+            # print('new_hour = ', new_hours)
         else:
             new_hours = temp_hours
     else:
         new_hours = hour_mahnung
-    print('59 new_hours = ', new_hours)
+    # print('59 new_hours = ', new_hours)
     dialog_manager.dialog_data['hours'] = new_hours
-    await callback.message.answer(text=f'{for_days_arbeit_stunde[lan]} {new_hours}')
-    # dialog_manager.show_mode = ShowMode.SEND
+    dialog_manager.dialog_data['capture'] = ''
+    await callback.message.answer(text=f'{for_days_arbeit_stunde[lan]} <b>{new_hours}</b>')
+
 
 async def days_choosing_hour_getter(
                              dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
@@ -83,7 +102,8 @@ async def day_button_minut_clicked(callback: CallbackQuery, widget: Button,
                     }
         dialog_manager.dialog_data['minuts'] = min_dict[callback.data]
         lan = await return_lan(callback.from_user.id)
-        await callback.message.answer(text=knopka_nazata[lan])
+        strocka = f'{real_min_selekted[lan]}  <b>{min_dict[callback.data]}</b>\n\n{knopka_nazata[lan]}'
+        await callback.message.answer(text=strocka)
 
 async def button_zapusk_clicked_for_day(callback: CallbackQuery, widget: Button,
                                     dialog_manager: DialogManager, *args, **kwargs):
@@ -97,7 +117,7 @@ async def button_zapusk_clicked_for_day(callback: CallbackQuery, widget: Button,
         await dialog_manager.next()
     else:
         await callback.message.answer(text_for_day_2[lan])
-        dialog_manager.show_mode = ShowMode.SEND
+        dialog_manager.show_mode = ShowMode.EDIT
 
 async def message_text_handler_for_days(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
@@ -110,7 +130,7 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
     minuts = dialog_manager.dialog_data['minuts']
     str_folge = right_folge = ''
     digit_arr = []
-    if len(chas)>2:
+    if len(chas)>2: # 01
         # print('mehr 2 titel')
         for stunde in chas.split(','):
             digit_arr.append(int(stunde))
@@ -119,46 +139,47 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
             right_folge+=str(int_stunde)+','
             str_folge+=str(int_stunde)
         chas = right_folge[:-1]
+        # print('\n\nchas = ', chas)
     else:
         str_folge = chas
+        # print('### srt folge = ', str_folge)
 
     dialog_manager.dialog_data['hours'] = chas
     real_time_key = str_folge + minuts  # 121050 - составная часть ключа id scheduler
-    print('real_time_key = ', real_time_key)
-    real_time = f'{daily[lan]} {str_folge}:{minuts}'  # '8, 20, 17:15'
-    print('real_time = ', real_time)
+    # print('real_time_key = ', real_time_key)
+    real_time = f'{daily[lan]} {chas} : {minuts}'  # '8, 20, 17:15'
+    # print('real_time = ', real_time)
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': None, 'za_sutki': None,
-                    'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
+                    'selector': 'D', 'real_time': real_time, 'capture':'','job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
-    if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
+    if real_time_key not in b_u_dict:  # Если такого времени еще не забухено
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
         dialog_manager.show_mode = ShowMode.SEND
         await message.delete()
-        await dialog_manager.next()
+        await dialog_manager.switch_to(DAY_MAHNUNG.run_day_scheduler)
     else:
         await message.answer(error_same_time[lan])
         dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await dialog_manager.done()
 
 
-async def on_photo_sent_for_day(message: Message, widget:
-                                MessageInput, dialog_manager: DialogManager, *args, **kwargs):
-    user_id = str(message.from_user.id)
-    foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
-    lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['foto_id'] = foto_id
+async def form_mahnung_ohne_capture_day(cb: CallbackQuery, widget:
+                                Button, dialog_manager: DialogManager, *args, **kwargs):
+    user_id = str(cb.from_user.id)
+    lan = await return_lan(cb.from_user.id)
+    foto_id = dialog_manager.dialog_data['foto_id']
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
     str_folge = right_folge = ''
     digit_arr = []
-    if len(chas) > 1:
-        # print('mehr 1')
+    if len(chas) > 2:  # 01
+        # print('mehr 2 titel')
         for stunde in chas.split(','):
             digit_arr.append(int(stunde))
         sort_arr = sorted(digit_arr)
@@ -166,20 +187,68 @@ async def on_photo_sent_for_day(message: Message, widget:
             right_folge += str(int_stunde) + ','
             str_folge += str(int_stunde)
         chas = right_folge[:-1]
+    else:
+        str_folge = chas
 
     dialog_manager.dialog_data['hours'] = chas
-    real_time_key = chas + minuts  # 121050 - составная часть ключа id scheduler
+    real_time_key = str_folge + minuts  # 121050 - составная часть ключа id scheduler
 
-    real_time = f'{daily[lan]} {chas}:{minuts}'  # 'Dayly 17:15'
+    real_time = f'{daily[lan]} {chas} : {minuts}'  # 'Dayly 17:15'
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
 
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
-                    'selector': 'D', 'real_time': real_time, 'job_id': real_time_key}
+                    'selector': 'D', 'real_time': real_time, 'capture':'','job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
     if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+        await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
+        await cb.message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await cb.message.delete()
+        await dialog_manager.switch_to(DAY_MAHNUNG.run_day_scheduler)
+    else:
+        await cb.message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
+
+async def set_capture_day(message: Message, widget:
+                                MessageInput, dialog_manager: DialogManager, *args, **kwargs):
+    user_id = str(message.from_user.id)
+    lan = await return_lan(message.from_user.id)
+    foto_id = dialog_manager.dialog_data['foto_id']
+    dialog_manager.dialog_data['titel'] = ''
+    chas = dialog_manager.dialog_data['hours']
+    minuts = dialog_manager.dialog_data['minuts']
+    dialog_manager.dialog_data['capture'] = message.text
+    str_folge = right_folge = ''
+    digit_arr = []
+    if len(chas) > 2:  # 01
+        # print('mehr 2 titel')
+        for stunde in chas.split(','):
+            digit_arr.append(int(stunde))
+        sort_arr = sorted(digit_arr)
+        for int_stunde in sort_arr:
+            right_folge += str(int_stunde) + ','
+            str_folge += str(int_stunde)
+        chas = right_folge[:-1]
+    else:
+        str_folge = chas
+
+    dialog_manager.dialog_data['hours'] = chas
+    real_time_key = str_folge + minuts  # 121050 - составная часть ключа id scheduler
+
+    real_time = f'{daily[lan]} {chas} : {minuts}'  # 'Dayly 17:15'
+    dialog_manager.dialog_data['real_time'] = real_time
+    dialog_manager.dialog_data['key'] = real_time_key
+
+    pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
+                    'selector': 'D', 'real_time': real_time, 'capture':message.text,'job_id': real_time_key}
+    bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
+    if real_time_key not in b_u_dict:
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
         dialog_manager.show_mode = ShowMode.SEND
@@ -211,7 +280,6 @@ async def day_get_runner(dialog_manager: DialogManager, event_from_user: User, *
     return getter_data
 
 
-
 async def day_reset_funk_not_for_uniqe(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
     print('reset funk day not_for_uniqe works')
@@ -222,6 +290,20 @@ async def day_return_getter(dialog_manager: DialogManager, event_from_user: User
     lan = await return_lan(event_from_user.id)
     getter_data = {'day_accepted': accepted_uniq[lan], 'day_return_to_basic':return_to_basic[lan]}
     return getter_data
+
+async def message_not_text_handler_in_capture_day(message: Message, widget: MessageInput,
+        dialog_manager: DialogManager) -> None:
+    dialog_manager.show_mode = ShowMode.NO_UPDATE
+    lan = await return_lan(message.from_user.id)
+    await message.answer(not_text_capture_send[lan])
+
+async def return_to_hours(cb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+    del dialog_manager.dialog_data['hours']
+    dialog_manager.dialog_data['minuts'] = ''
+    dialog_manager.show_mode = ShowMode.EDIT
+    await dialog_manager.back()
+
+#####################################################################################################
 
 day_mahnung_dialog = Dialog(
     Window(  # Окно отправляющее клаву из часов
@@ -280,7 +362,7 @@ day_mahnung_dialog = Dialog(
             Button(text=Const('45'), id='button_45', on_click=day_button_minut_clicked),
             Button(text=Const('50'), id='button_50', on_click=day_button_minut_clicked),
             Button(text=Const('55'), id='button_55', on_click=day_button_minut_clicked), ),
-        Row(
+        Row(Button(Const('◀️'),id='back_to_tage_week',on_click=return_to_hours),
             Button(text=Format('{form_grafik_dayly_mahnungen}'), id='day_zapusk', on_click=button_zapusk_clicked_for_day),
         ),
         state=DAY_MAHNUNG.choose_time_during_day,
@@ -294,15 +376,47 @@ day_mahnung_dialog = Dialog(
             content_types=ContentType.TEXT,
         ),
         MessageInput(
-            func=on_photo_sent_for_day,
+            func=accept_foto_for_day,
             content_types=ContentType.PHOTO,
         ),
         MessageInput(
             func=message_not_foto_handler,
             content_types=ContentType.ANY,
         ),
+        Cancel(Const('◀️'),
+               id='Cancel_for_uniq_day'),
         state=DAY_MAHNUNG.day_sent_mahnung_data,
         getter=day_get_for_input_data # Из input_getter
+    ),
+
+    Window(  # Окно предлагающее ввести капчу
+        Format('{enter_capture}'),  # Хотите сделать подпись по фотографией ?
+        Cancel(Const('◀️'),
+               id='return_to_basic'),
+        Row(Next(Const('😃'),
+                 id='yes_capture'),
+            Button(Const('❌'),
+                   id='no_capture',
+                   on_click=form_mahnung_ohne_capture_day)),
+
+        state=DAY_MAHNUNG.ask_capture,
+        getter=getter_for_capture_day
+    ),
+
+    Window(  # Окно принимающее capture
+        Format(text='{data_capture}'),  # Отправьте capture
+        MessageInput(
+            func=set_capture_day,
+            content_types=ContentType.TEXT,
+        ),
+        MessageInput(
+            func=message_not_text_handler_in_capture_day,
+            content_types=ContentType.ANY,
+        ),
+        Cancel(Const('◀️'),
+               id='Cancel_for_uniq_day'),
+        state=DAY_MAHNUNG.accept_capture,
+        getter=get_enter_capture_day
     ),
 
     Window(  # Окно запускающее шедулер

@@ -1,4 +1,4 @@
-
+from datetime import datetime
 
 def titel_check(name: str) -> str:
     if isinstance(name, str):
@@ -37,5 +37,12 @@ def week_day_bearbeiten(digit_list:list):
         s+=week_dict[int(x)] + ', '
     return s[:-2]
 
-
+def seconds_to_date_string(lst_str):
+    arr = []
+    for sobitie in lst_str:
+        date = datetime.utcfromtimestamp(int(sobitie))
+        liter_data = date.strftime("%Y-%m-%d")
+        arr.append(liter_data)
+    # print('arr = ', arr)
+    return arr
 

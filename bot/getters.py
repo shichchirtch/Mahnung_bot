@@ -6,23 +6,25 @@ from postgres_functions import return_lan
 
 
 
-async def get_languages(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    print('get_lang works')
+async def get_set_or_show(dialog_manager: DialogManager, event_from_user: User, **kwargs):
+    # print('get_lang works')
     lan = await return_lan(event_from_user.id)
     returned_data = show_or_set[lan]
     set_r = new_mahnung[lan]
     see_r = see_reminder_list[lan]
     return {'knopka': returned_data, 'set_r':set_r, 'see_r':see_r}
 
-async def get_spam(dialog_manager: DialogManager, **kwargs):
+async def get_spam(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     spam = [('🤢','1'), ('😃','2')]
-    lan = dialog_manager.dialog_data['lan']
+    lan = await return_lan(event_from_user.id)
     sp = spam_vopros[lan]
     return {"spam_data": spam, 'lan':sp}
 
 async def get_type(dialog_manager: DialogManager, event_from_user: User,**kwargs):
     lan = await return_lan(event_from_user.id)
     return {'type':get_m_type[lan], 'reg':regular_mahnung[lan], 'uniq':unique_mahnung[lan]}
+
+
 
 async def  select_data(dialog_manager: DialogManager, event_from_user: User,**kwargs):
     lan = await return_lan(event_from_user.id)
@@ -44,15 +46,6 @@ async def form_mahnung_getter(dialog_manager: DialogManager, event_from_user: Us
         getter_data = {'text_for_3_wind': choose_minuts[lan], 'choosing_data':True, 'form_grafik_mahnungen':form_grafik[lan] }
     else:
         getter_data = {'text_for_3_wind': car_time[lan], 'choosing_data':False}
-    return getter_data
-
-
-async def choosing_minut_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    lan = await return_lan(event_from_user.id)
-    if dialog_manager.dialog_data['choosing_data']:
-        getter_data = {'text_for_4_wind': zapuskaem_scheduler[lan], 'choosing_data':True, 'remind_me':remind_me[lan] }
-    else:
-        getter_data = {'text_for_4_wind': car_time[lan], 'choosing_data':False}
     return getter_data
 
 

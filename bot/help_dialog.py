@@ -12,7 +12,6 @@ from postgres_functions import get_user_count, return_lan, insert_timezone, inse
 from aiogram_dialog.widgets.input import MessageInput
 
 
-
 class HELP_DIAL(StatesGroup):
     erst = State()
     reset_lan = State()
@@ -29,39 +28,43 @@ class REVIEW(StatesGroup):
 async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
     taily_users = await get_user_count()
-    print('taily_users = ', taily_users)
+    # print('taily_users = ', taily_users)
     getter_data = {'help_text': help_text[lan],
                    'back': f'⏪  👮🏼‍♂️🧑🏼‍🚒👩🏻👨🏼‍🦱👩🏽‍🦱   {taily_users}',
                    're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
                    'show_presentation': show_presentation[lan],
                    'reset_tz':'⏱️      🔁     ⏰',
-                   'rew_1':send_review[lan],
-                   # 'skolko_format':'NUMBERS 👥 '
-                   }
+                   'rew_1':send_review[lan]}
     return getter_data
-
 
 async def go_to_previous(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     await dialog_manager.done()
 
 
 async def go_to_reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    print('go to reset lan works')
     await dialog_manager.next()
 
 
 async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
-    chosing_presentation = get_lynk[lan]
-    await callback.message.answer(text=chosing_presentation)
+    video_dict = {
+        'ru':'BAACAgIAAxkBAAINBWdv5xZKBAjtV3p-ThlpdMpMxxsIAAJXXQACyNSAS8TQD540NahaNgQ',
+        'de':'BAACAgIAAxkBAAINB2dv51Z2PSjMkJJ7iDekP1ILLfe-AAJgXQACyNSAS0cioGi1tLHANgQ',
+        'en': 'BAACAgIAAxkBAAINCWdv55OChWWsivD2Mh24Xu-tmdT1AAJmXQACyNSAS4acmJy9HHuWNgQ',
+        'uk': 'BAACAgIAAxkBAAINC2dv58vjGzSfUhgDFrFU0KKi_eDEAAJoXQACyNSAS1saFWdD3RVMNgQ',
+        'tr': 'BAACAgIAAxkBAAINDWdv5_pUe5r4RWpF3gbR4tewdbHRAAJrXQACyNSAS4FWc2TO_UqqNgQ',
+        'ar': 'BAACAgIAAxkBAAIND2dv6CtbhHF9JkjgUHkLuoygaS4jAAJyXQACyNSAS_u0bAKvuUczNgQ',
+        'fa': 'BAACAgIAAxkBAAINEWdv6FQeAAENqqFOe2SDyq6wWWOp5AACeV0AAsjUgEu5SVCREBByGjYE'}
+    # chosing_presentation = get_lynk[lan]
+    await callback.message.answer_video(video=video_dict[lan], caption=opisanie_rolika[lan])
+    # await callback.message.answer(text=chosing_presentation)
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-    await asyncio.sleep(3)
+    await asyncio.sleep(2)
     await dialog_manager.done()
 
 
-
 async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    print('reset lan works')
+    # print('reset lan works')
     old_lan = await return_lan(callback.from_user.id)
     new_lan = callback.data
     if old_lan != new_lan:
@@ -124,7 +127,7 @@ async def message_text_handler_for_review(message: Message, widget: MessageInput
 
 async def message_not_text_handler(message: Message, widget: MessageInput,
         dialog_manager: DialogManager) -> None:
-    print('message_not_text_handler works ')
+    # print('message_not_text_handler works ')
     dialog_manager.show_mode = ShowMode.NO_UPDATE
     lan = await return_lan(message.from_user.id)
     await message.answer(data_mahnung_nur_text[lan])

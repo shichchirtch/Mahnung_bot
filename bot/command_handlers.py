@@ -9,28 +9,23 @@ from help_dialog import HELP_DIAL
 from admin_dialog import ADMIN
 from postgres_functions import check_user_in_table, insert_new_user_in_table
 from aiogram_dialog.api.entities.modes import StartMode, ShowMode
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import DialogManager
-from show_handlers import SHOW_MAHNUNG
-from postgres_functions import return_lan, return_last, insert_last_null
+from postgres_functions import return_lan, insert_last_null
 from lexicon import *
-# from aiogram.exceptions import MessageNotModified
-
-
-
 
 ch_router = Router()
+
 
 @ch_router.message(CommandStart())
 async def command_start_process(message:Message, dialog_manager: DialogManager, state:FSMContext):
     user_name = message.from_user.first_name
     user_id = message.from_user.id
     if not await check_user_in_table(user_id):
-        print('start if works')
+        print(f'\n\nBOT START {message.from_user.first_name}, {message.from_user.id}\n\n')
         await insert_new_user_in_table(user_id, user_name)
-        await state.set_data({'del_msg':[],'lan':'ru', 'tz':''})
         bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-        bot_dict[message.from_user.id] = {}  # Создаю пустой словарь для заметок юзера
+        bot_dict[message.from_user.id] = {'uniq':{}, 'reg':{}}  # Создаю пустой словарь для заметок юзера
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=f'👋\n\n<b>Hello, {message.from_user.first_name}!</b>\n'
             'This is a bot scheduler. Tell me when an important event happens'
@@ -49,7 +44,7 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
 async def basic_menu_start(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
     await message.answer('return to basic window')
-    print('dialog_manager.dialog_data = ', dialog_manager.dialog_data)
+    print('Command("basic_menu") dialog_manager.dialog_data = ', dialog_manager.dialog_data)
     dialog_manager.dialog_data.clear()
     await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
     await asyncio.sleep(1)
@@ -58,7 +53,7 @@ async def basic_menu_start(message: Message, dialog_manager: DialogManager):
 
 @ch_router.message(Command('help'))
 async def basic_menu_help(message: Message, dialog_manager: DialogManager):
-    await message.answer(text='help works')
+    # await message.answer(text='help works')
     await dialog_manager.start(state=HELP_DIAL.erst)
     await asyncio.sleep(1)
     await message.delete()
@@ -72,7 +67,7 @@ async def admin_enter(message: Message, dialog_manager: DialogManager):
 
 
 
-@ch_router.callback_query(USER_BAZA_FILTER())
+@ch_router.callback_query(USER_BAZA_FILTER())   # delete
 async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, state:FSMContext, *args, **kwargs):
     """Хэндлер удаояет напоминание по кнопке"""
     print('cb data = ', cb.data)
@@ -80,11 +75,12 @@ async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, s
     user_id = str(cb.from_user.id)
     await insert_last_null(cb.from_user.id)
     us_dict = await state.get_data()
-    us_dict['del_msg'].append(str(cb.data))
     bot_dict = await dp.storage.get_data(key=bot_storage_key)
-    us_bot_dict = bot_dict[user_id]
+    us_bot_dict = bot_dict[user_id]['reg']
     mahn_id = str(cb.data)
+    us_unuq_dict =  bot_dict[user_id]['uniq']
     if mahn_id in us_bot_dict:
+        print('\n\ninto reg')
         try:
             scheduler_id = str(user_id) + mahn_id
             # print('scheduler_id = ', scheduler_id)
@@ -105,6 +101,19 @@ async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, s
                 await cb.message.delete()  # Убираем клавиатуру
             except Exception:
                 print("Клавиатура уже была удалена")
+
+    elif mahn_id in us_unuq_dict:
+        print('uniq teil\n\n')
+        del us_unuq_dict[mahn_id]
+        await dp.storage.update_data(key=bot_storage_key, data=bot_dict)
+        stroka = f'{deleted[lan]}\n\nid = {mahn_id}'
+        try:
+            print('DELETE MESSAGE\n\n')
+            await cb.message.delete()  # Убираем клавиатуру
+        except Exception:
+            print("Клавиатура уже была удалена")
+        await cb.message.answer(text=stroka)
+
     else:
         await cb.message.answer(text=no_id[lan])  # у вас нет напоминания с таким номером
     await asyncio.sleep(1)

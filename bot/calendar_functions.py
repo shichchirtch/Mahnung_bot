@@ -7,13 +7,13 @@ from scheduler_functions import scheduler_job, scheduler_za_sutki_job
 import datetime
 from postgres_functions import insert_timezone, return_lan, return_tz
 from lexicon import *
-from bot_instans import otvet_chas_dict, real_min_dict
+from bot_instans import tz_dict, real_min_dict
 
 
 async def set_user_tz(callback: CallbackQuery, widget: Button,
                       dialog_manager: DialogManager):
-    print('set_user_tz works')
-    print('callbac_data = ', callback.data)
+    # print('set_user_tz works')
+    # print('callbac_data = ', callback.data)
     tz_dict = {'tz_gleich': 'Europe/London',
                'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
                'tz_plus_2': "Europe/Kiev",
@@ -32,9 +32,9 @@ async def on_date_selected(callback: CallbackQuery, widget,
     await callback.message.answer(f"{uniqe_date_selekted[lan]}: {selected_date}")
     # print('callback.data = ', callback.data)  # 8CvuU6calendar:173274840
     day_data = int(callback.data.split(':')[1])  # 1732057200
-    print('\n\nday_data = ', datetime.datetime.fromtimestamp(day_data))  #  day_data =  2024-12-16 00:00:00
+    # print('\n\nday_data = ', datetime.datetime.fromtimestamp(day_data))  #  day_data =  2024-12-16 00:00:00
     in_stamp = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)  # day_data =  2024-12-16 00:00:00
-    print('NOW = ', in_stamp)
+    # print('NOW = ', in_stamp)
     current_day = int(in_stamp.timestamp())
     # print('cur day = ', current_day)
 
@@ -42,7 +42,7 @@ async def on_date_selected(callback: CallbackQuery, widget,
         manager.dialog_data['choosing_data'] = True
         manager.dialog_data['day'] = day_data
         temp_ditc = manager.dialog_data
-        print('\n\nmanager.dialog_data = ', temp_ditc)
+        # print('\n\nmanager.dialog_data = ', temp_ditc)
         await manager.next()
         manager.show_mode = ShowMode.SEND
     else:
@@ -75,20 +75,23 @@ async def button_uhr_clicked(callback: CallbackQuery, widget: Button,
     # print('temp day = ', temp_day, type(temp_day))
     additional_hours = int(uhr_dict[callback.data])
     lan = await return_lan(callback.from_user.id)
-
-    await callback.message.answer(f"{chas_selekted[lan]}: {otvet_chas_dict_uniq[callback.data]}")
-
-    if (temp_day + additional_hours) >= current_hour:
+    tz = await return_tz(callback.from_user.id)
+    # print('tz = ', tz_dict[tz])
+    await callback.message.answer(f"{chas_selekted[lan]}: <b>{otvet_chas_dict_uniq[callback.data]}</b>")
+    day_plus_hours = temp_day + additional_hours - tz_dict[tz]
+    # print('day_plus = ', f'{day_plus_hours - current_hour}')
+    if day_plus_hours >= current_hour:
         manager.dialog_data['choosing_data'] = True  # ставлю индикатор на True для геттера
         manager.dialog_data['hours'] = int(uhr_dict[callback.data])
         manager.dialog_data['minuts'] = 0
         # print("manager.dialog_data['hours'] = ", manager.dialog_data['hours'])
         # await callback.message.answer(uhr_dict[callback.data])
         await manager.next()
-        # manager.show_mode = ShowMode.SEND
+        manager.show_mode = ShowMode.EDIT
     else:
         manager.dialog_data['choosing_data'] = False
         await callback.message.answer(text=car_time[lan])
+        manager.show_mode = ShowMode.SEND
         await manager.done()
 
 
@@ -101,14 +104,13 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
     dialog_manager.dialog_data['minuts'] = int(min_dict[callback.data])
     # print("dialog_manager.dialog_data['minuts'] = ", dialog_manager.dialog_data['minuts'])
     lan = await return_lan(callback.from_user.id)
-    await callback.message.answer(f"{real_min_selekted[lan]}: {real_min_dict[callback.data]}")
+    await callback.message.answer(f"{real_min_selekted[lan]}: <b>{real_min_dict[callback.data]}</b>")
     await callback.message.answer(text=knopka_nazata[lan])
 
 
 async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
                                 dialog_manager: DialogManager):
-    '''Запускает напоминание'''
-    # print('\n\nButton zapusk_clicked work\n\n')
+    '''Формирует время'''
 
     tz_dict_int = {'Europe/London': 0,
                    'Europe/Berlin': 1,  # tz_plus_1
@@ -121,7 +123,8 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
     user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
-
+    # null_day = str(dialog_manager.dialog_data['day'])  # Для кастомного календаря
+    # dialog_manager.dialog_data['time_code'] = null_day
     current_minut = int(in_stamp.timestamp())  # 1732800900
     razniza_vo_vremeni = tz_dict_int[user_tz] * 3600
     # print('temp_dict = ',dialog_manager.dialog_data)
@@ -131,46 +134,33 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
 
     lan = await return_lan(user_id)
     if real_event_time >= current_minut + razniza_vo_vremeni:  #  !!! razniza_vo_vremeni - это по сути и есть таймзона передаваемая в шедулер
-        # print('\n\nstr 123')
         dialog_manager.dialog_data['choosing_data'] = True
 
         form_vremya = datetime.datetime.fromtimestamp(real_event_time)
         formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")  # 2024-11-21 15:55:00 <class 'str'>
-        print('\n\nSOBITIE = ', formatted_date, '\n\n' )  # 20.12.2024  18:30
-        await callback.message.answer(f'Sobytie {formatted_date}')
+        # print('\n\nSOBITIE = ', formatted_date, '\n\n' )  # 20.12.2024  18:30
+        await callback.message.answer(f'Event {formatted_date}')
         dialog_manager.dialog_data['real_time'] = formatted_date  # Здесь записывается заголовок напоминания  16.12.2024  15:55
 
         za_chas = real_event_time - 3600  # Вычитаю час
-        # zuruck_zu_time = datetime.datetime.fromtimestamp(za_chas)
-        # Форматирование времени в формат MM:HH
-        # formatted_time = zuruck_zu_time.strftime("%H:%M")
-        # print('za_chas = ', formatted_time)
-
         za_sutki = real_event_time - 86400  # Вычитаю сутки
-        # print('za sutki = ', za_sutki)
-        # zuruck_zu_time_za_sutki = datetime.datetime.fromtimestamp(za_sutki)
-        # Форматирование времени в формат MM:HH
-        # formatted_time = zuruck_zu_time_za_sutki.strftime("%d.%m.%Y %H:%M")
-        # print('za sutki = ', formatted_time)
+
         if current_minut + razniza_vo_vremeni + 86400 < real_event_time:
             dialog_manager.dialog_data['za_sutki'] = za_sutki
             dialog_manager.dialog_data['za_chas'] = za_sutki + 82800   # (86400 - 3600)
         else:
             dialog_manager.dialog_data['za_sutki'] = ''  # Если напоминание меньше, чем через сутки - ставлю сутки None
-            if real_event_time - (current_minut + razniza_vo_vremeni)<=3600:
-                # print('##Block if works')
-                dialog_manager.dialog_data['za_chas'] = current_minut + razniza_vo_vremeni + 60  # прибавляю 30 секунд, если напоминанеи меньше чем за час
-                # print('current_minut+90 = ', current_minut + 90)
-
+            if real_event_time - (current_minut + razniza_vo_vremeni) <= 3600:
+                dialog_manager.dialog_data['za_chas'] = current_minut + razniza_vo_vremeni + 65  # прибавляю 65 секунд, если напоминанеи меньше чем за час
             else:
-                # print('### esle block')
                 dialog_manager.dialog_data['za_chas'] = za_chas
 
-        dialog_manager.show_mode = ShowMode.SEND
+        dialog_manager.show_mode = ShowMode.EDIT
         await dialog_manager.next()
     else:
         dialog_manager.dialog_data['choosing_data'] = False
         await callback.message.answer(text=car_time[lan])
+        dialog_manager.show_mode = ShowMode.SEND
         await dialog_manager.done()
 
 
@@ -181,12 +171,15 @@ async def set_titel_name(callback: CallbackQuery, widget: Button,  # Попро�
 
 async def pre_scheduler(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
-    print('\n\nWe are into pre_scheduler\n\n')
+    # print('\n\nWe are into pre_scheduler\n\n')
     user_id = callback.from_user.id
     dialog_dict = dialog_manager.dialog_data
     tz = await return_tz(user_id)
-    scheduler_job(user_id, dialog_dict, tz)  # Запуск планировщика
-    if dialog_dict['za_sutki']:
-        scheduler_za_sutki_job(user_id, dialog_dict, tz)
+    try:
+        scheduler_job(user_id, dialog_dict, tz)  # Запуск планировщика
+        if dialog_dict['za_sutki']:
+            scheduler_za_sutki_job(user_id, dialog_dict, tz)
+    except Exception as e: #ConflictingIdError:
+        print('\n\n',f'183 {e}')
     await dialog_manager.next()
     dialog_manager.show_mode = ShowMode.SEND

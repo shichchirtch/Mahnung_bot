@@ -6,6 +6,8 @@ redis==5.0.0b2
 apscheduler==3.10.4
 translators==5.9.2
 aiogram-dialog==2.1.0
+babel==2.16.0
+
 
 
 

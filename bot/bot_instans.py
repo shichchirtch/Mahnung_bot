@@ -10,8 +10,6 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 
 
-
-
 key_builder = DefaultKeyBuilder(with_destiny=True)
 
 using_redis = Redis(host=settings.REDIS_HOST)
@@ -46,8 +44,22 @@ class WORK_WITH_SCHED(StatesGroup):
     uhr = State()
     minuten = State()
     titel = State()
+    ask_capture = State()
+    enter_capture = State()
     vor_mahnung = State()
     nach_mahnung_accepting = State()
+
+class MONAT_MAHNUNG(StatesGroup):
+    general = State()
+    taily = State()
+    napominalka_start = State()
+    nach_napom = State()
+    hour = State()
+    minuten = State()
+    get_content = State()
+    ask_capture = State()
+    accept_capture = State()
+    choose_type = State()
 
 otvet_chas_dict = {'button_00': '00', 'button_1': '01', 'button_2': '02', 'button_3': '03',
                 'button_4': '04', 'button_5': '05', 'button_6': '06', 'button_7': '07',
@@ -99,4 +111,14 @@ async def queue_sender_message(chat_id: int, content: str, content_type: str = "
         "content": content,
         "caption": caption
     })
+
+
+class LAST_MAHNUNG(StatesGroup):
+    indefinite = State()
+    single = State()
+
+
+tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400, 'Asia/Yekaterinburg':18000, 'Asia/Novosibirsk':21600, 'Europe/London':0}
+
+
 

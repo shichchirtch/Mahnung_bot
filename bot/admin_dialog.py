@@ -62,13 +62,13 @@ async def message_sender(slovo:str, lan:str, temp_dict:dict)->str:
 async def sending_msg(cb:CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
         temp_dict = {}
         text_from_admin = dialog_manager.dialog_data['admin_msg']
-        spam_list = await return_user_wanted_spam()  # Делаю запрос к постгресу
-        for us_tuple in spam_list:
+        spam_list = await return_user_wanted_spam()  # Делаю запрос к постгресу [(66234524532, 'ru'), (63234524532, 'ru')]
+        for us_tuple in spam_list:  # us_tuple =  (66234524532, 'ru')
             lan = us_tuple[1]
             # print('lan = ', lan)
             chat_id = us_tuple[0]
             if not text_from_admin.startswith('🔸'):  # Сообщение без ссылки на бота
-                spam = await message_sender(text_from_admin[1:], lan, temp_dict)
+                spam = await message_sender(text_from_admin[1:], lan, temp_dict) # Отсоединяю 🔸
             else:
                 temp_text, bot_teil = text_from_admin.split('@') # Сообщение со ссылкой на бот
                 halb_spam = await message_sender(temp_text, lan, temp_dict)
@@ -80,7 +80,7 @@ async def sending_msg(cb:CallbackQuery, widget: Button, dialog_manager: DialogMa
                 pass
             except Exception as ex:
                 print(f'Admin sending exception happend  {ex}')
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.2)  # Жду 0.2 секунды
         temp_dict.clear()
         await cb.message.answer('Mailing done')
         await dialog_manager.done()
@@ -105,7 +105,7 @@ admin_dialog = Dialog(
 
         state=ADMIN.first,
     ),
-    Window(  # Окно принимающее содержание напоминания и формирующее ЭК Mahnung
+    Window(  #
         Const(text='введите текст сообщения'),
         MessageInput(
             func=accepet_admin_message,

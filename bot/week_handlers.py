@@ -3,7 +3,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog import Dialog, Window
 import operator
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Row,  Column, Cancel
+from aiogram_dialog.widgets.kbd import Row,  Column, Cancel, Next
 from aiogram_dialog.widgets.kbd import Button, ManagedMultiselect, Multiselect
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from bot_instans import dp, bot_storage_key,  ZAPUSK
@@ -22,8 +22,19 @@ class WEEK_MAHNUNG(StatesGroup):
     choose_hour = State()
     choose_min = State()
     sent_mahnung_data = State()
+    ask_capture = State()
+    accept_capture = State()
     run_scheduler = State()
     week_return_to_basic = State()
+
+
+async def getter_for_capture_week(dialog_manager: DialogManager, event_from_user: User,**kwargs):
+    lan = await return_lan(event_from_user.id)
+    return {'enter_capture':enter_capture[lan]}
+
+async def get_enter_capture_week(dialog_manager: DialogManager, event_from_user: User,**kwargs):
+    lan = await return_lan(event_from_user.id)
+    return {'data_capture':not_text_capture_send[lan]}
 
 async def get_weekdays(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
@@ -49,7 +60,6 @@ async def category_filled(callback: CallbackQuery, checkbox: ManagedMultiselect,
                           **kwargs):
     '''Функция формирует список с днями недели'''
     choose = checkbox.get_checked()
-    # print('choose = ', choose)  # choose =  ['mon']
     dialog_manager.dialog_data['week_days'] = choose
 
 
@@ -77,7 +87,12 @@ async def button_hour_for_week_clicked(callback: CallbackQuery, widget: Button,
                 }
     hour_mahnung = uhr_dict[callback.data]
     dialog_manager.dialog_data['hours'] = hour_mahnung
+    dialog_manager.dialog_data['minuts'] = '00'
+    dialog_manager.dialog_data['capture'] = ''
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+    lan = await return_lan(callback.from_user.id)
+    strocka = f'{chas_selekted[lan]}  <b>{uhr_dict[callback.data]}</b>'
+    await callback.message.answer(text=strocka)
     await dialog_manager.next()
 
 async def week_choosing_hour_getter(
@@ -102,19 +117,15 @@ async def week_button_minut_clicked(callback: CallbackQuery, widget: Button,
                     }
         dialog_manager.dialog_data['minuts'] = min_dict[callback.data]
         lan = await return_lan(callback.from_user.id)
-        await callback.message.answer(text=knopka_nazata[lan])
+        strocka = f'{real_min_selekted[lan]}  <b>{min_dict[callback.data]}</b>\n\n{knopka_nazata[lan]}'
+        await callback.message.answer(text=strocka)
 
 async def button_zapusk_clicked_for_week(callback: CallbackQuery, widget: Button,
                                     dialog_manager: DialogManager, *args, **kwargs):
-    lan = await return_lan(callback.from_user.id)
     dialog_manager.dialog_data['tz'] = await return_tz(callback.from_user.id)
-    text_for_week_3 = vibor_minut
-    if 'minuts' in dialog_manager.dialog_data:
-        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
-        await dialog_manager.next()
-    else:
-        await callback.message.answer(text_for_week_3[lan])
-        dialog_manager.show_mode = ShowMode.SEND
+    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+    await dialog_manager.next()
+
 
 async def message_text_handler_for_week(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
@@ -123,7 +134,7 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
     dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
     days_list = dialog_manager.dialog_data['week_days']
-    print('days = ', days_list)
+    # print('days = ', days_list)
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
     day_digit = week_days = ''
@@ -135,36 +146,35 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
     dialog_manager.dialog_data['week_days'] = week_days[:-1]
     new_days = week_day_bearbeiten(digit_arr)
     real_time_key = day_digit + chas + minuts  # 121050 - составная часть ключа id scheduler
-    print('real_time_key = ', real_time_key)
+    # print('real_time_key = ', real_time_key)
     real_time = f'{new_days}, {chas}:{minuts}'  # 'Mon, Tue, 17:15'
-    print('real_time_key = ', real_time_key)
+    # print('real_time_key = ', real_time_key)
     dialog_manager.dialog_data['real_time'] = real_time
     dialog_manager.dialog_data['key'] = real_time_key
 
     pseudo_class = {'titel': titel, 'foto_id': '', 'za_chas': None, 'za_sutki': None,
-                    'selector': 'W', 'real_time': real_time, 'job_id': real_time_key}
+                    'selector': 'W', 'real_time': real_time, 'capture':'', 'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
     if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
         dialog_manager.show_mode = ShowMode.SEND
         await message.delete()
-        await dialog_manager.next()
+        await dialog_manager.switch_to(WEEK_MAHNUNG.run_scheduler)
     else:
         await message.answer(error_same_time[lan])
         dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await dialog_manager.done()
 
 
-async def on_photo_sent_for_week(message: Message, widget:
-                                MessageInput, dialog_manager: DialogManager, *args, **kwargs):
-    user_id = str(message.from_user.id)
-    foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
-    lan = await return_lan(message.from_user.id)
+async def set_foto_mahnung_ohne_capture(cb: CallbackQuery, widget:
+                                Button, dialog_manager: DialogManager, *args, **kwargs):
+    user_id = str(cb.from_user.id)
+    foto_id = dialog_manager.dialog_data['foto_id']
+    lan = await return_lan(cb.from_user.id)
     days_list = dialog_manager.dialog_data['week_days']
-    dialog_manager.dialog_data['foto_id'] = foto_id
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
@@ -184,20 +194,62 @@ async def on_photo_sent_for_week(message: Message, widget:
 
     dialog_manager.dialog_data['real_time'] = real_time
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
-                    'selector': 'W', 'real_time': real_time, 'job_id': real_time_key}
+                    'selector': 'W', 'real_time': real_time, 'capture':'','job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
-    b_u_dict = bot_dict[user_id]  # получаю словарь юзера
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
     if real_time_key not in b_u_dict:
-        bot_dict[user_id][real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
+        await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
+        await cb.message.answer(text=gut[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await cb.message.delete()
+        await dialog_manager.switch_to(WEEK_MAHNUNG.run_scheduler)
+    else:
+        await cb.message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
+        await dialog_manager.done()
+
+async def set_capture_week(message: Message, widget:
+                                MessageInput, dialog_manager: DialogManager, *args, **kwargs):
+    user_id = str(message.from_user.id)
+    foto_id = dialog_manager.dialog_data['foto_id']
+    lan = await return_lan(message.from_user.id)
+    days_list = dialog_manager.dialog_data['week_days']
+    dialog_manager.dialog_data['titel'] = ''
+    chas = dialog_manager.dialog_data['hours']
+    minuts = dialog_manager.dialog_data['minuts']
+    dialog_manager.dialog_data['capture'] = message.text
+
+    day_digit = week_days = ''
+    digit_arr = []
+    for day in days_list:
+        week_days += day + ','
+        day_digit += day
+        digit_arr.append(int(day))
+    dialog_manager.dialog_data['week_days'] = week_days[:-1]
+
+    new_days = week_day_bearbeiten(digit_arr)
+    real_time_key = day_digit + chas + minuts  # 121050 - составная часть ключа id scheduler
+    dialog_manager.dialog_data['key'] = real_time_key
+    real_time = f'{new_days}, {chas}:{minuts}'  # 'Mon, Tue, 17:15'
+
+    dialog_manager.dialog_data['real_time'] = real_time
+    pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
+                    'selector': 'W', 'real_time': real_time, 'capture':message.text,'job_id': real_time_key}
+    bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
+    b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
+    if real_time_key not in b_u_dict:
+        b_u_dict[real_time_key] = pseudo_class  # Записываю в словарь бота ЭК манунг
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
         await message.answer(text=gut[lan])
-        dialog_manager.show_mode = ShowMode.SEND
+        dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await message.delete()
-        await dialog_manager.next()
+        await dialog_manager.switch_to(WEEK_MAHNUNG.run_scheduler)
     else:
         await message.answer(error_same_time[lan])
         dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
         await dialog_manager.done()
+
 
 async def week_get_for_input_data(dialog_manager: DialogManager,
                                   event_from_user: User, *args, **kwargs):
@@ -207,7 +259,7 @@ async def week_get_for_input_data(dialog_manager: DialogManager,
 
 async def pre_week_sched(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
-    print('\n\nWe are into pre_sched\n\n')
+    # print('\n\nWe are into pre_sched\n\n')
     dialog_dict = dialog_manager.dialog_data
     user_id = callback.from_user.id
     week_sched(user_id, dialog_dict)  # Запуск планировщика
@@ -224,7 +276,7 @@ async def week_get_runner(dialog_manager: DialogManager, event_from_user: User, 
 
 async def week_reset_funk_not_for_uniqe(callback: CallbackQuery, widget:Button,
                      dialog_manager: DialogManager, *args, **kwargs):
-    print('reset funk week not_for_uniqe works')
+    # print('reset funk week not_for_uniqe works')
     dialog_manager.dialog_data.clear() # Очищаю словарь
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
 
@@ -233,6 +285,33 @@ async def week_return_getter(dialog_manager: DialogManager, event_from_user: Use
     getter_data = {'week_accepted': accepted_uniq[lan], 'week_return_to_basic':return_to_basic[lan]}
     return getter_data
 
+
+async def accept_foto_for_week(message: Message, widget: MessageInput, dialog_manager: DialogManager):
+    # Получаем ID фото
+    # print('accept_foto_for_week works')
+    foto_id = message.photo[-1].file_id  # Берем последнее фото (наибольшего размера)
+    dialog_manager.dialog_data['titel'] = ''
+    dialog_manager.dialog_data['foto_id'] = foto_id
+    dialog_manager.show_mode = ShowMode.SEND
+    await dialog_manager.next()
+
+
+async def message_not_text_handler_in_capture_week(message: Message, widget: MessageInput,
+        dialog_manager: DialogManager) -> None:
+    dialog_manager.show_mode = ShowMode.NO_UPDATE
+    lan = await return_lan(message.from_user.id)
+    await message.answer(not_text_capture_send[lan])
+
+
+async def return_to_weekday(cb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+    dialog_manager.dialog_data['hours']=''
+    dialog_manager.show_mode = ShowMode.EDIT
+    await dialog_manager.back()
+
+async def return_to_hours(cb: CallbackQuery, widget: Button, dialog_manager: DialogManager):
+    dialog_manager.dialog_data['minuts'] = ''
+    dialog_manager.show_mode = ShowMode.EDIT
+    await dialog_manager.back()
 
 week_mahnung_dialog = Dialog(
     Window(  # Окно отправляющее клаву c днями недели
@@ -288,6 +367,7 @@ week_mahnung_dialog = Dialog(
             Button(text=Const('22'), id='button_22', on_click=button_hour_for_week_clicked),
             Button(text=Const('23'), id='button_23', on_click=button_hour_for_week_clicked)
         ),
+        Button(Const('◀️'),id='back_to_tage_week',on_click=return_to_weekday),
         state=WEEK_MAHNUNG.choose_hour,
         getter=week_choosing_hour_getter
     ),
@@ -310,7 +390,7 @@ week_mahnung_dialog = Dialog(
             Button(text=Const('45'), id='button_45', on_click=week_button_minut_clicked),
             Button(text=Const('50'), id='button_50', on_click=week_button_minut_clicked),
             Button(text=Const('55'), id='button_55', on_click=week_button_minut_clicked), ),
-        Row(
+        Row(Button(Const('◀️'),id='back_to_tage_week', on_click=return_to_hours),
             Button(text=Format('{form_grafik_week_mahnungen}'), id='week_zapusk', on_click=button_zapusk_clicked_for_week),
         ),
         state=WEEK_MAHNUNG.choose_min,
@@ -324,15 +404,47 @@ week_mahnung_dialog = Dialog(
             content_types=ContentType.TEXT,
         ),
         MessageInput(
-            func=on_photo_sent_for_week,
+            func=accept_foto_for_week,
             content_types=ContentType.PHOTO,
         ),
         MessageInput(
             func=message_not_foto_handler,
             content_types=ContentType.ANY,
         ),
+        Cancel(Const('◀️'),
+               id='Cancel_for_uniq_day'),
         state=WEEK_MAHNUNG.sent_mahnung_data,
         getter=week_get_for_input_data # Из input_getter
+    ),
+
+    Window(  # Окно предлагающее ввести капчу
+        Format('{enter_capture}'),  # Хотите сделать подпись по фотографией ?
+        Cancel(Const('◀️'),
+               id='return_to_basic'),
+        Row(Next(Const('😃'),
+                 id='yes_capture'),
+            Button(Const('❌'),
+                   id='no_capture',
+                   on_click=set_foto_mahnung_ohne_capture)),
+
+        state=WEEK_MAHNUNG.ask_capture,
+        getter=getter_for_capture_week
+    ),
+
+    Window(  # Окно принимающее capture
+        Format(text='{data_capture}'),  # Отправьте capture
+        MessageInput(
+            func=set_capture_week,
+            content_types=ContentType.TEXT,
+        ),
+        MessageInput(
+            func=message_not_text_handler_in_capture_week,
+            content_types=ContentType.ANY,
+        ),
+        Cancel(Const('◀️'),
+               id='Cancel_for_uniq_day'),
+        state=WEEK_MAHNUNG.accept_capture,
+        getter=get_enter_capture_week
     ),
 
     Window(  # Окно запускающее шедулер
