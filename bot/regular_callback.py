@@ -54,7 +54,7 @@ async def button_day_clicked(callback: CallbackQuery, widget: Button,
     else:
         sending_data = 'last day of month or 31'
     if not t:
-        await callback.message.answer(f'{sobytie_sluchitsa[lan]} {sending_data}')
+        await callback.message.answer(f'{sobytie_sluchitsa[lan]} <b>{sending_data}</b>')
 
 
 async def approve_choise(callback: CallbackQuery, widget: Button,

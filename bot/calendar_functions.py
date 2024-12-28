@@ -104,8 +104,8 @@ async def button_min_clicked(callback: CallbackQuery, widget: Button,
     dialog_manager.dialog_data['minuts'] = int(min_dict[callback.data])
     # print("dialog_manager.dialog_data['minuts'] = ", dialog_manager.dialog_data['minuts'])
     lan = await return_lan(callback.from_user.id)
-    await callback.message.answer(f"{real_min_selekted[lan]}: <b>{real_min_dict[callback.data]}</b>")
-    await callback.message.answer(text=knopka_nazata[lan])
+    await callback.message.answer(f"{real_min_selekted[lan]}: <b>{real_min_dict[callback.data]}</b>\n\n{knopka_nazata[lan]}")
+
 
 
 async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
@@ -139,7 +139,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
         form_vremya = datetime.datetime.fromtimestamp(real_event_time)
         formatted_date = form_vremya.strftime("%d.%m.%Y  %H:%M")  # 2024-11-21 15:55:00 <class 'str'>
         # print('\n\nSOBITIE = ', formatted_date, '\n\n' )  # 20.12.2024  18:30
-        await callback.message.answer(f'Event {formatted_date}')
+        await callback.message.answer(f'✅ <b>Event {formatted_date}</b>')
         dialog_manager.dialog_data['real_time'] = formatted_date  # Здесь записывается заголовок напоминания  16.12.2024  15:55
 
         za_chas = real_event_time - 3600  # Вычитаю час
