@@ -29,7 +29,9 @@ async def set_user_tz(callback: CallbackQuery, widget: Button,
 async def on_date_selected(callback: CallbackQuery, widget,
                            manager: DialogManager, selected_date: date):
     lan = await return_lan(callback.from_user.id)
-    await callback.message.answer(f"{uniqe_date_selekted[lan]}: {selected_date}")
+
+    form_date = selected_date.strftime("%d.%m.%Y")
+    await callback.message.answer(f"✔️ {uniqe_date_selekted[lan]}: <b>{form_date}</b>")
     # print('callback.data = ', callback.data)  # 8CvuU6calendar:173274840
     day_data = int(callback.data.split(':')[1])  # 1732057200
     # print('\n\nday_data = ', datetime.datetime.fromtimestamp(day_data))  #  day_data =  2024-12-16 00:00:00
@@ -41,8 +43,6 @@ async def on_date_selected(callback: CallbackQuery, widget,
     if current_day <= day_data:
         manager.dialog_data['choosing_data'] = True
         manager.dialog_data['day'] = day_data
-        temp_ditc = manager.dialog_data
-        # print('\n\nmanager.dialog_data = ', temp_ditc)
         await manager.next()
         manager.show_mode = ShowMode.SEND
     else:
@@ -155,7 +155,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
             else:
                 dialog_manager.dialog_data['za_chas'] = za_chas
 
-        dialog_manager.show_mode = ShowMode.EDIT
+        dialog_manager.show_mode = ShowMode.SEND
         await dialog_manager.next()
     else:
         dialog_manager.dialog_data['choosing_data'] = False

@@ -164,7 +164,7 @@ async def on_date_selected(callback: ChatEvent, widget: ManagedCalendar,
             mahn_data = mahnung["real_time"]
             user_mahnung_key = mahnung['job_id']
             capture = mahnung['capture']
-            if (int_key + 86400) >= now:  # События в Будущем. События в жель события считаются будущими событиями.
+            if (int_key + 86400) >= now:  # События в Будущем. События в день события считаются будущими событиями.
                 # print('????????????????????????????????')
                 if not mahnung['foto_id']:  # Для текстовых напоминаний
                     formed_text = f'🔺 <b>{mahn_data}</b>\n\n{mahnung["titel"]}\n\n<i>id Mahnung</i>  {user_mahnung_key}'  # \n\n<i>ID Mahnung  {za_chas_key}</i>'
@@ -179,7 +179,7 @@ async def on_date_selected(callback: ChatEvent, widget: ManagedCalendar,
 
                 await asyncio.sleep(0.8)
                 manager.show_mode = ShowMode.DELETE_AND_SEND
-            else:
+            else:  # События в Прошлом. События в день события считаются будущими событиями.
                 if len(msg_list) == 1:
                     # print('*******************************')
                     mahn_button = InlineKeyboardButton(text='delete', callback_data=str_key)
@@ -195,36 +195,36 @@ async def on_date_selected(callback: ChatEvent, widget: ManagedCalendar,
                                              caption=f'🔕 {mahn_data}\n\n{capture}',
                                              reply_markup=delet_kb)
                         await asyncio.sleep(0.25)
-                    await insert_last_1(callback.from_user.id)
+                    await insert_last_1(callback.from_user.id)  #  Переводит значение last в  True
                     manager.show_mode = ShowMode.DELETE_AND_SEND
                     await manager.start(state=LAST_MAHNUNG.single)
                 else:
                     counter += 1
-                    if counter < len(msg_list):
+                    if counter < len(msg_list): # Кнопка DELETE не подставляется, а дописывается текст большого сообщения
                         if not mahnung['foto_id']:  # Для текстовых напоминаний
                             formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}'  # \n\n<i>ID Mahnung  {za_chas_key}</i>'
                             await bot.send_message(chat_id=callback.from_user.id, text=formed_text)
-                            await asyncio.sleep(0.25)
+                            await asyncio.sleep(0.1)
                         else:
                             await bot.send_photo(chat_id=callback.from_user.id, photo=mahnung['foto_id'],
                                              caption=f'🔕 {mahn_data}\n\n{capture}')
-                            await asyncio.sleep(0.25)
-                    else:
+                            await asyncio.sleep(0.1)
+                    else:  # Для последнего сообщения в списке дня подставляется кнопка DELETE
                         mahn_button = InlineKeyboardButton(text='delete', callback_data=str_key)
                         delet_kb = InlineKeyboardMarkup(inline_keyboard=[[mahn_button]])
                         if not mahnung['foto_id']:  # Для текстовых напоминаний
                             formed_text = f'🔕 <b>{mahn_data}</b>\n\n{mahnung["titel"]}'  # \n\n<i>ID Mahnung  {za_chas_key}</i>'
                             await bot.send_message(chat_id=callback.from_user.id, text=formed_text,
                                                reply_markup=delet_kb)
-                            await asyncio.sleep(0.25)
+                            await asyncio.sleep(0.1)
                         else:
                             await bot.send_photo(chat_id=callback.from_user.id, photo=mahnung['foto_id'],
                                                      caption=f'🔕 {mahn_data}\n\n{capture}',
                                                      reply_markup=delet_kb)
-                        await insert_last_1(callback.from_user.id)
+                        await insert_last_1(callback.from_user.id)  # Переводит last  в True
                         manager.show_mode = ShowMode.SEND
                         await manager.start(state=LAST_MAHNUNG.single)
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
 
 
 async def selection_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):

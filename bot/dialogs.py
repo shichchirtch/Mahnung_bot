@@ -321,7 +321,7 @@ uniqe_dialog = Dialog(
         getter=get_titel
     ),
 
-    Window( # Окно предлагающее ввести капчу
+    Window( # Окно предлагающее ввести capture
         Format('{enter_capture}'),  # Хотите сделать подпись по фотографией ?
         Cancel(Const('◀️'),
              id='return_to_basic'),

@@ -22,6 +22,7 @@ class ADMIN(StatesGroup):
 async def button_zagruz_db(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     with open('save_db.pkl', 'rb') as file:
         recover_base = pickle.load(file)
+        # print('ZAGRUZ recover base = ', recover_base)
         await dp.storage.set_data(key=bot_storage_key, data=recover_base)
     await callback.message.answer('База данных успешно загружена !')
     await dialog_manager.done()  # выход из режима админа
@@ -31,6 +32,8 @@ async def button_save_db(callback: CallbackQuery, widget: Button, dialog_manager
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
     with open('save_db.pkl', 'wb') as file:
         pickle.dump(bot_dict, file)
+    bot_dict = await dp.storage.get_data(key=bot_storage_key)
+    # print('SAVE bot_dict = ', bot_dict)
     await callback.message.answer('База данных успешно записана !')
     await dialog_manager.done()  # выход из режима админа
 
@@ -103,7 +106,7 @@ admin_dialog = Dialog(
                 on_click=button_save_db),
             ),
 
-        state=ADMIN.first,
+        state=ADMIN.first
     ),
     Window(  #
         Const(text='введите текст сообщения'),
@@ -120,7 +123,6 @@ admin_dialog = Dialog(
                 id='send_msg',
                 on_click=sending_msg),
         state=ADMIN.admin_send_msg)
-
 )
 
 

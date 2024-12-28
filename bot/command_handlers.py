@@ -70,17 +70,16 @@ async def admin_enter(message: Message, dialog_manager: DialogManager):
 @ch_router.callback_query(USER_BAZA_FILTER())   # delete
 async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, state:FSMContext, *args, **kwargs):
     """Хэндлер удаояет напоминание по кнопке"""
-    print('cb data = ', cb.data)
+    # print('cb data = ', cb.data)
     lan = await return_lan(cb.from_user.id)
     user_id = str(cb.from_user.id)
-    await insert_last_null(cb.from_user.id)
-    us_dict = await state.get_data()
+    await insert_last_null(cb.from_user.id)  # Вот здесь меняется индикатор last
     bot_dict = await dp.storage.get_data(key=bot_storage_key)
     us_bot_dict = bot_dict[user_id]['reg']
     mahn_id = str(cb.data)
     us_unuq_dict =  bot_dict[user_id]['uniq']
     if mahn_id in us_bot_dict:
-        print('\n\ninto reg')
+        # print('\n\ninto reg')
         try:
             scheduler_id = str(user_id) + mahn_id
             # print('scheduler_id = ', scheduler_id)
@@ -89,7 +88,7 @@ async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, s
             stroka = f'{deleted[lan]}\n\nid = {mahn_id}'
             scheduler.remove_job(scheduler_id)
             try:
-                print('DELETE MESSAGE\n\n')
+                # print('DELETE MESSAGE\n\n')
                 await cb.message.delete()  # Убираем клавиатуру
             except Exception:
                 print("Клавиатура уже была удалена")
@@ -97,18 +96,18 @@ async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, s
         except Exception as ex:  # JobLookupError:
             await cb.message.answer(f'{deleted_past[lan]}\n\nid = {mahn_id}')
             try:
-                print('DELETE MESSAGE\n\n')
+                # print('DELETE MESSAGE\n\n')
                 await cb.message.delete()  # Убираем клавиатуру
             except Exception:
                 print("Клавиатура уже была удалена")
 
     elif mahn_id in us_unuq_dict:
-        print('uniq teil\n\n')
+        # print('uniq teil\n\n')
         del us_unuq_dict[mahn_id]
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)
         stroka = f'{deleted[lan]}\n\nid = {mahn_id}'
         try:
-            print('DELETE MESSAGE\n\n')
+            # print('DELETE MESSAGE\n\n')
             await cb.message.delete()  # Убираем клавиатуру
         except Exception:
             print("Клавиатура уже была удалена")

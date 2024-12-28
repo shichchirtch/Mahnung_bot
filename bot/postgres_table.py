@@ -21,7 +21,7 @@ class User(Base):
     lan: Mapped[str] = mapped_column(String, default='', nullable=True)
     spam: Mapped[str] = mapped_column(String, default='', nullable=True)
     tz: Mapped[str] = mapped_column(String, default='', nullable=True)
-    last: Mapped[str] = mapped_column(String, default='', nullable=True)
+    last: Mapped[str] = mapped_column(String, default='', nullable=True)  # Это индикатор '' или '1'
     spisok_uniq_events: Mapped[list] = mapped_column(ARRAY(String), default=[], nullable=True)
 
 
