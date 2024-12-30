@@ -55,6 +55,7 @@ async def basic_menu_start(message: Message, dialog_manager: DialogManager):
     await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
     await asyncio.sleep(2)
     await message.delete()
+    await asyncio.sleep(0.5)
     await att.delete()
 
 
