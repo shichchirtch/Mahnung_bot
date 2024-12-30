@@ -33,7 +33,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
         await insert_timezone(event_from_user.id, 'Europe/Moscow')
     taily_users = await get_user_count()
     # print('taily_users = ', taily_users)
-    getter_data = {'help_text': help_text[lan],
+    getter_data = {'help_text': f'<b>{help_text[lan]}</b>',
                    'back': f'⏪  👮🏼‍♂️🧑🏼‍🚒👩🏻👨🏼‍🦱👩🏽‍🦱   {taily_users}',
                    're_set_lan': '🇩🇪 🇬🇧 🇺🇦 🇹🇷 🇮🇷 🇸🇦 🇷🇺',
                    'show_presentation': show_presentation[lan],
