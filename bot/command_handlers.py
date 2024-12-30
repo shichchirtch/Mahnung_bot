@@ -40,8 +40,10 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
             await insert_lan(message.from_user.id, 'ru')
             await insert_timezone(message.from_user.id, 'Europe/Moscow')
         await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
-        await message.answer(text='Bot was restated on server')
+        att = await message.answer(text='Bot was restated on server')
         await message.delete()
+        await asyncio.sleep(2.5)
+        await att.delete()
 
 
 @ch_router.message(Command('basic_menu'))

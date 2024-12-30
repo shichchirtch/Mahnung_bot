@@ -114,7 +114,7 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
     att = await callback.message.answer(text=f'{reset_tz[lan]} <b>{tz}</b>')
     await dialog_manager.done()
     dialog_manager.show_mode = ShowMode.SEND
-    await asyncio.sleep(2)
+    await asyncio.sleep(3)
     await att.delete()
 #############################################################################################
 
