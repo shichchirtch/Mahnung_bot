@@ -43,7 +43,7 @@ async def choosing_data_getter(dialog_manager: DialogManager, event_from_user: U
 async def form_mahnung_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
     if dialog_manager.dialog_data['choosing_data']:
-        getter_data = {'text_for_3_wind': choose_minuts[lan], 'choosing_data':True, 'form_grafik_mahnungen':form_grafik[lan] }
+        getter_data = {'text_for_3_wind': choose_minuts[lan], 'choosing_data':True }
     else:
         getter_data = {'text_for_3_wind': car_time[lan], 'choosing_data':False}
     return getter_data

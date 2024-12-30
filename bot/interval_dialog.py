@@ -52,8 +52,9 @@ async def accept_foto_for_day(message: Message, widget: MessageInput, dialog_man
 
 async def interval_input(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     lan = await return_lan(message.from_user.id)
-    input_data = int(message.text)
-    if 1 < input_data < 366:
+
+    input_data = message.text
+    if input_data.isdigit() and 1 < int(input_data) < 366:
         dialog_manager.dialog_data['interval'] = message.text
         dialog_manager.show_mode = ShowMode.SEND
         await asyncio.sleep(0.4)
@@ -91,7 +92,7 @@ async def days_choosing_hour_getter( dialog_manager: DialogManager, event_from_u
 async def day_get_minuts( dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
     text_for_days_2_window = vibor_minut
-    getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan], 'form_grafik_dayly_mahnungen': form_grafik[lan]}
+    getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan]}
     return getter_data
 
 async def day_button_minut_clicked(callback: CallbackQuery, widget: Button,
@@ -386,7 +387,7 @@ interval_mahnung_dialog = Dialog(
             Button(text=Const('50'), id='button_50', on_click=day_button_minut_clicked),
             Button(text=Const('55'), id='button_55', on_click=day_button_minut_clicked), ),
         Row(Button(text=Const('◀️'), id='minuts_back', on_click=return_to_set_hours),
-            Button(text=Format('{form_grafik_dayly_mahnungen}'), id='day_zapusk', on_click=button_zapusk_clicked_for_interval),
+            Button(text=Const('▶️'), id='day_zapusk', on_click=button_zapusk_clicked_for_interval),
         ),
         state=INTERVAL.choose_minuts,
         getter=day_get_minuts

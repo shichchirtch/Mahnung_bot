@@ -106,7 +106,7 @@ async def week_choosing_hour_getter(
 async def week_get_minuts( dialog_manager: DialogManager,event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
     text_for_week_3_window = vibor_minut
-    getter_data = {'text_for_3_week_wind': text_for_week_3_window[lan], 'form_grafik_week_mahnungen':form_grafik[lan]}
+    getter_data = {'text_for_3_week_wind': text_for_week_3_window[lan]}
     return getter_data
 
 async def week_button_minut_clicked(callback: CallbackQuery, widget: Button,
@@ -391,7 +391,7 @@ week_mahnung_dialog = Dialog(
             Button(text=Const('50'), id='button_50', on_click=week_button_minut_clicked),
             Button(text=Const('55'), id='button_55', on_click=week_button_minut_clicked), ),
         Row(Button(Const('◀️'),id='back_to_tage_week', on_click=return_to_hours),
-            Button(text=Format('{form_grafik_week_mahnungen}'), id='week_zapusk', on_click=button_zapusk_clicked_for_week),
+            Button(text=Const('▶️'), id='week_zapusk', on_click=button_zapusk_clicked_for_week),
         ),
         state=WEEK_MAHNUNG.choose_min,
         getter=week_get_minuts

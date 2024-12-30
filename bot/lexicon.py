@@ -94,13 +94,13 @@ return_to_basic = {'ru': 'Вернуться в основное окно', 'en'
                    'tr': 'Back to set new reminder', 'de': 'Zurück, um eine neue Mahnung festzulegen',
                    'uk': 'Назад до встановлення нового нагадування', 'ar': 'العودة إلى تعيين تذكير جديد', }
 
-knopka_nazata = {'ru': 'Нажмите кнопку под клавиатурой минут, чтобы подтвердить действие',
-                 'en': 'Press the button below the minutes keypad to confirm the action',
-                 'tr': 'İşlemi onaylamak için dakika tuş takımının altındaki düğmeye basın',
-                 'de': 'Drücken Sie die Taste unter der Minutentastatur, um die Aktion zu bestätigen',
-                 'uk': 'Натисніть кнопку під клавіатурою хвилин, щоб підтвердити дію',
-                 'ar': 'اضغط على الزر الموجود أسفل لوحة مفاتيح الدقائق لتأكيد الإجراء',
-                 'fa': 'دکمه زیر صفحه کلید دقیقه را فشار دهید تا عملکرد را تأیید کنید'
+knopka_nazata = {'ru': 'Нажмите кнопку ▶️ под клавиатурой минут, чтобы подтвердить действие',
+                 'en': 'Press the button ▶️ below the minutes keypad to confirm the action',
+                 'tr': 'İşlemi onaylamak için dakika tuş takımının altındaki düğmeye basın ▶️',
+                 'de': 'Drücken Sie die Taste ▶️ unter der Minutentastatur, um die Aktion zu bestätigen',
+                 'uk': 'Натисніть кнопку ▶️ під клавіатурою хвилин, щоб підтвердити дію',
+                 'ar': 'اضغط على الزر الموجود أسفل لوحة مفاتيح الدقائق لتأكيد الإجراء▶️',
+                 'fa': 'دکمه زیر صفحه کلید دقیقه را فشار دهید تا عملکرد را تأیید کنید▶️'
                  }
 
 set_titel = {'ru': '<b>Отправьте мне текст напоминания или фотографию</b>',

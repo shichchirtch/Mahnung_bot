@@ -18,7 +18,7 @@ class User(Base):
     index: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
     tg_us_id: Mapped[int] = mapped_column(BigInteger) # tg user id
     user_name: Mapped[str] = mapped_column(String(200), nullable=False)
-    lan: Mapped[str] = mapped_column(String, default='', nullable=True)
+    lan: Mapped[str] = mapped_column(String, default='ru', nullable=True)
     spam: Mapped[str] = mapped_column(String, default='', nullable=True)
     tz: Mapped[str] = mapped_column(String, default='', nullable=True)
     last: Mapped[str] = mapped_column(String, default='', nullable=True)  # Это индикатор '' или '1'

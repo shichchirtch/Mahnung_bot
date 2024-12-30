@@ -295,7 +295,7 @@ uniqe_dialog = Dialog(
             Button(Const('◀️'),
             id='back_to_hours',
             on_click=return_to_hours),
-            Button(text=Format('{form_grafik_mahnungen}'), id='zapusk', on_click=button_zapusk_clicked),
+            Button(text=Const('▶️'), id='zapusk', on_click=button_zapusk_clicked),
         ),
         state=WORK_WITH_SCHED.minuten,
         getter=form_mahnung_getter

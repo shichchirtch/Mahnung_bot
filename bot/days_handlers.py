@@ -89,7 +89,7 @@ async def days_choosing_hour_getter(
 async def day_get_minuts( dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
     text_for_days_2_window = vibor_minut
-    getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan], 'form_grafik_dayly_mahnungen': form_grafik[lan]}
+    getter_data = {'text_for_2_day_wind': text_for_days_2_window[lan]}
     return getter_data
 
 
@@ -363,7 +363,7 @@ day_mahnung_dialog = Dialog(
             Button(text=Const('50'), id='button_50', on_click=day_button_minut_clicked),
             Button(text=Const('55'), id='button_55', on_click=day_button_minut_clicked), ),
         Row(Button(Const('◀️'),id='back_to_tage_week',on_click=return_to_hours),
-            Button(text=Format('{form_grafik_dayly_mahnungen}'), id='day_zapusk', on_click=button_zapusk_clicked_for_day),
+            Button(text=Const('▶️'), id='day_zapusk', on_click=button_zapusk_clicked_for_day),
         ),
         state=DAY_MAHNUNG.choose_time_during_day,
         getter=day_get_minuts

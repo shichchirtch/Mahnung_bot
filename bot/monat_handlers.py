@@ -42,7 +42,7 @@ async def choosing_data_for_monat_getter(dialog_manager: DialogManager, event_fr
 
 async def form_mahnung_for_monat_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
-    getter_data = {'text_for_3_wind': choose_minuts[lan],  'form_grafik_mahnungen':form_grafik[lan]}
+    getter_data = {'text_for_3_wind': choose_minuts[lan]}
     return getter_data
 
 async def get_titel_for_monat(dialog_manager: DialogManager, event_from_user: User, **kwargs):
@@ -331,7 +331,7 @@ Window(
         Row(Button(Const('◀️'),
             id='back_to_stunde',
             on_click=return_to_hours),
-            Button(text=Format('{form_grafik_mahnungen}'), id='zapusk', on_click=button_zapusk_clicked_for_month),
+            Button(text=Const('▶️'), id='zapusk', on_click=button_zapusk_clicked_for_month),
         ),
         state=MONAT_MAHNUNG.minuten,
         getter=form_mahnung_for_monat_getter

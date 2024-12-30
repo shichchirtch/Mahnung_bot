@@ -8,7 +8,9 @@ from postgres_functions import insert_lan, insert_lan_in_spam, return_lan, retur
 async def set_lan(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     lan = callback.data
     us_lan_in_postgress = await return_lan(callback.from_user.id)
-    if us_lan_in_postgress != lan:
+    if not us_lan_in_postgress:
+        await insert_lan(callback.from_user.id, 'ru')
+    elif us_lan_in_postgress != lan:
         await insert_lan(callback.from_user.id, lan)  # Вставляю язык в постгрес
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
     await dialog_manager.next()

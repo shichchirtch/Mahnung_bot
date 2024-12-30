@@ -27,6 +27,9 @@ class REVIEW(StatesGroup):
 
 async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(event_from_user.id, 'ru')
     taily_users = await get_user_count()
     # print('taily_users = ', taily_users)
     getter_data = {'help_text': help_text[lan],
@@ -47,6 +50,9 @@ async def go_to_reset_lan(callback: CallbackQuery, widget: Button, dialog_manage
 
 async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(callback.from_user.id, 'ru')
     video_dict = {
         'ru':'BAACAgIAAxkBAAINBWdv5xZKBAjtV3p-ThlpdMpMxxsIAAJXXQACyNSAS8TQD540NahaNgQ',
         'de':'BAACAgIAAxkBAAINB2dv51Z2PSjMkJJ7iDekP1ILLfe-AAJgXQACyNSAS0cioGi1tLHANgQ',
@@ -78,7 +84,10 @@ async def reset_lan(callback: CallbackQuery, widget: Button, dialog_manager: Dia
 
 async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
-    # print('89 lan = ', lan)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(event_from_user.id, 'ru')
+
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time_reset':f'<b>{bot_time_now[lan]} {bot_time}</b>',
@@ -109,6 +118,9 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
 
 async def get_review_enter(dialog_manager: DialogManager, event_from_user: User, *args, **kwargs):
     lan = await return_lan(event_from_user.id)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(event_from_user.id, 'ru')
     getter_data = {'write_review': write_review[lan]}
     return getter_data
 
@@ -117,6 +129,9 @@ async def message_text_handler_for_review(message: Message, widget: MessageInput
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
 
     lan = await return_lan(message.from_user.id)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(message.from_user.id, 'ru')
     user_id = str(message.from_user.id)
     user_name = message.from_user.first_name
     join_text = f'User_id {user_id}, user_name  {user_name} send MESSAGE {message.text}'
@@ -130,6 +145,9 @@ async def message_not_text_handler(message: Message, widget: MessageInput,
     # print('message_not_text_handler works ')
     dialog_manager.show_mode = ShowMode.NO_UPDATE
     lan = await return_lan(message.from_user.id)
+    if not lan:
+        lan = 'ru'
+        await insert_lan(message.from_user.id, 'ru')
     await message.answer(data_mahnung_nur_text[lan])
 
 
