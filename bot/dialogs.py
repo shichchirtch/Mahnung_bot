@@ -145,7 +145,7 @@ async def return_to_hours(cb: CallbackQuery, widget: Button, dialog_manager: Dia
 
 zapusk_dialog = Dialog(
     Window(
-        Const('Choose Language'),
+        Const('<b>Choose Language</b>'),
         Button(text=Const('🇩🇪'),
                id='de',
                on_click=set_lan),

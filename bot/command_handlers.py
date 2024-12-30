@@ -11,7 +11,7 @@ from postgres_functions import check_user_in_table, insert_new_user_in_table
 from aiogram_dialog.api.entities.modes import StartMode, ShowMode
 from aiogram.types import Message, CallbackQuery
 from aiogram_dialog import DialogManager
-from postgres_functions import return_lan, insert_last_null
+from postgres_functions import return_lan, insert_last_null, insert_lan, insert_timezone
 from lexicon import *
 
 ch_router = Router()
@@ -35,6 +35,10 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
     else:
         print('start else works')
         await insert_new_user_in_table(user_id, user_name)
+        lan = await return_lan(message.from_user.id)
+        if not lan:
+            await insert_lan(message.from_user.id, 'ru')
+            await insert_timezone(message.from_user.id, 'Europe/Moscow')
         await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
         await message.answer(text='Bot was restated on server')
         await message.delete()
@@ -43,7 +47,7 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
 @ch_router.message(Command('basic_menu'))
 async def basic_menu_start(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
-    await message.answer('return to basic window')
+    await message.answer('<i>return to basic window</i>')
     print('Command("basic_menu") dialog_manager.dialog_data = ', dialog_manager.dialog_data)
     dialog_manager.dialog_data.clear()
     await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай

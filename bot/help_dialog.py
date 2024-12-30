@@ -30,6 +30,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
     if not lan:
         lan = 'ru'
         await insert_lan(event_from_user.id, 'ru')
+        await insert_timezone(event_from_user.id, 'Europe/Moscow')
     taily_users = await get_user_count()
     # print('taily_users = ', taily_users)
     getter_data = {'help_text': help_text[lan],

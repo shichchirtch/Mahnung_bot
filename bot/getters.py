@@ -2,13 +2,17 @@ from aiogram.types import User
 from aiogram_dialog import DialogManager
 from lexicon import *
 import datetime
-from postgres_functions import return_lan
+from postgres_functions import return_lan, insert_lan, insert_timezone
 
 
 
 async def get_set_or_show(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     # print('get_lang works')
     lan = await return_lan(event_from_user.id)
+    if not lan:
+        await insert_lan(event_from_user.id, 'ru')
+        await insert_timezone(event_from_user.id, 'Europe/Moscow')
+        lan = 'ru'
     returned_data = show_or_set[lan]
     set_r = new_mahnung[lan]
     see_r = see_reminder_list[lan]
