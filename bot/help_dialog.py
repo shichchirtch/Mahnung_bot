@@ -176,7 +176,7 @@ dialog_help = Dialog(
         getter=get_help_1),
 
     Window(
-        Const('Choose Language'),
+        Const('<b>Choose Language</b>'),
         Button(text=Const('🇩🇪'),
                id='de',
                on_click=reset_lan),
