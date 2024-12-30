@@ -110,10 +110,11 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
     tz = tz_dict[callback.data]
     dialog_manager.dialog_data['tz']=tz
     await insert_timezone(user_id, tz)
-    att = await callback.message.answer(text=f'Now your TimeZone is {tz}')
+    lan = await return_lan(callback.from_user.id)
+    att = await callback.message.answer(text=f'{reset_tz[lan]} <b>{tz}</b>')
     await dialog_manager.done()
     dialog_manager.show_mode = ShowMode.SEND
-    await asyncio.sleep(3)
+    await asyncio.sleep(2)
     await att.delete()
 #############################################################################################
 
@@ -158,9 +159,6 @@ dialog_help = Dialog(
         Button(text=Format('{back}'),
                id='go_to_previous_window',
                on_click=go_to_previous),
-        # Button(text=Format('{skolko_format}'),
-        #        id='skolko_id',
-        #        on_click=skolko_back),
         Button(text=Format('{re_set_lan}'),  #  Кнопка продолжает этот же диалог
                id='lan_reset',
                on_click=go_to_reset_lan),
