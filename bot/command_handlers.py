@@ -49,12 +49,13 @@ async def command_start_process(message:Message, dialog_manager: DialogManager, 
 @ch_router.message(Command('basic_menu'))
 async def basic_menu_start(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
-    await message.answer('<i>return to basic window</i>')
+    att = await message.answer('<i>return to basic window</i>')
     print('Command("basic_menu") dialog_manager.dialog_data = ', dialog_manager.dialog_data)
     dialog_manager.dialog_data.clear()
     await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
-    await asyncio.sleep(1)
+    await asyncio.sleep(2)
     await message.delete()
+    await att.delete()
 
 
 @ch_router.message(Command('help'))
