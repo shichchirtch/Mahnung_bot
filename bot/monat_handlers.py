@@ -28,7 +28,7 @@ async def get_monat_mahnungen_first_window(dialog_manager: DialogManager, event_
 
 async def get_30_days(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
-    getter_data = {'text_for_day_choose': text_for_day_choose[lan], 'approve_choise':approve_choise_lexicon[lan]}
+    getter_data = {'text_for_day_choose': text_for_monat_choose[lan], 'approve_choise':approve_choise_lexicon[lan]}
     return getter_data
 
 async def getter_for_capture_monat(dialog_manager: DialogManager, event_from_user: User,**kwargs):

@@ -237,6 +237,16 @@ text_for_day_choose = {'ru': 'Выберите число в которое пр
                        'ar': 'حدد التاريخ الذي يحدث فيه الحدث المعتاد، وسيقوم الروبوت بإرسال تذكير إليك قبل يوم وساعة من الحدث',
                        }
 
+text_for_monat_choose = {'ru': 'Выберите числа в которые происходит регулярное событие, бот пришлет вам напоминание'
+                             ' за сутки и в выбранную дату',
+                       'en': 'Select the dates on which a regular event occurs, the bot will send you a reminder 24 hours in advance and on the selected date',
+                       'tr': 'Düzenli bir etkinliğin gerçekleştiği tarihleri ​​seçin, bot size bir gün önceden ve seçilen tarihte bir hatırlatma gönderecektir',
+                       'de': 'Wählen Sie die Daten aus, an denen ein regelmäßiges Ereignis stattfindet. Der Bot sendet Ihnen einen Tag im Voraus und zum ausgewählten Datum eine Erinnerung',
+                       'uk': 'Виберіть числа, в які відбувається регулярна подія, бот надішле вам нагадування за добу і в обрану дату',
+                       'fa': 'تاریخ هایی را که در آن یک رویداد معمولی رخ می دهد انتخاب کنید، ربات یک روز قبل و در تاریخ انتخاب شده برای شما یادآوری ارسال می کند.',
+                       'ar': 'حدد التواريخ التي يحدث فيها حدث عادي، وسيرسل لك الروبوت تذكيرًا قبل يوم واحد وفي التاريخ المحدد',
+                       }
+
 zapusk_button = {'ru': '<b>Запускаем</b>  ⏱️', 'en': "<b>Let's launch</b>  ⏱️", 'tr': "Hadi başlayalım",
                  'fa': "بیایید راه اندازی کنیم",
                  'de': "<b>Lasst uns starten</b>  ⏱️", 'uk': "<b>Запускаємо</b> ⏱️", 'ar': "لنبدأ"}

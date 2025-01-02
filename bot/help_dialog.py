@@ -42,6 +42,7 @@ async def get_help_1(dialog_manager: DialogManager, event_from_user: User, *args
     return getter_data
 
 async def go_to_previous(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
+    dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
     await dialog_manager.done()
 
 
