@@ -109,6 +109,7 @@ async def button_zapusk_clicked_for_day(callback: CallbackQuery, widget: Button,
                                     dialog_manager: DialogManager, *args, **kwargs):
     lan = await return_lan(callback.from_user.id)
     dialog_manager.dialog_data['tz']=await return_tz(callback.from_user.id)
+    dialog_manager.dialog_data['capture'] = ''  # Устанавлию в  dialog data ключ capture
     text_for_day_2 = {'ru': 'Выберите минуты', 'en': 'Choose an minutes', 'tr': 'Bir dakika seçin',
                       'uk': 'Виберіть хвилини', 'de': 'Wählen Sie eine Minute',
                       'fa': 'یک دقیقه انتخاب کنید', 'ar': 'اختر دقيقة' }

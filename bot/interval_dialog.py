@@ -9,7 +9,7 @@ from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Row
 from aiogram_dialog.widgets.kbd import Button, Cancel, Next, Calendar
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
-from bot_instans import dp, bot_storage_key, real_min_dict, ZAPUSK
+from bot_instans import dp, bot_storage_key, real_min_dict, ZAPUSK, tz_dict
 from lexicon import *
 from aiogram_dialog.widgets.input import  MessageInput
 from scheduler_functions import interval_sched
@@ -111,19 +111,11 @@ async def button_zapusk_clicked_for_interval(callback: CallbackQuery, widget: Bu
                                     dialog_manager: DialogManager, *args, **kwargs):
     '''Формирует время'''
 
-    tz_dict_int = {'Europe/London': 0,
-                   'Europe/Berlin': 1,  # tz_plus_1
-                   "Europe/Kiev": 2,
-                   'Europe/Moscow': 3,
-                   'Europe/Samara': 4,
-                   "Asia/Yekaterinburg": 5,
-                   'Asia/Novosibirsk': 6}
-
     user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
     current_minut = int(in_stamp.timestamp())  # 1732800900
-    razniza_vo_vremeni = tz_dict_int[user_tz] * 3600
+    razniza_vo_vremeni = tz_dict[user_tz] #tz_dict_int[user_tz] * 3600
     random_add_sec = random.randint(1, 20)
     real_event_time = dialog_manager.dialog_data['day'] + \
                       dialog_manager.dialog_data['hours'] + \

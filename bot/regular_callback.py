@@ -15,7 +15,7 @@ async def go_to_regular(callback: CallbackQuery, widget: Button, dialog_manager:
 
 
 async def go_to_31(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager, *args, **kwargs):
-    dialog_manager.dialog_data['capture'] = ''
+    dialog_manager.dialog_data['capture'] = '' # Устанавлию в  dialog data ключ capture
     dialog_manager.dialog_data['choosing_data'] = ''   # Устанавливаю ключ на случай ошибки
     dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.next()

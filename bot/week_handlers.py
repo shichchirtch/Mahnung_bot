@@ -123,6 +123,7 @@ async def week_button_minut_clicked(callback: CallbackQuery, widget: Button,
 async def button_zapusk_clicked_for_week(callback: CallbackQuery, widget: Button,
                                     dialog_manager: DialogManager, *args, **kwargs):
     dialog_manager.dialog_data['tz'] = await return_tz(callback.from_user.id)
+    dialog_manager.dialog_data['capture'] = ''  # Устанавлию в  dialog data ключ capture
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND
     await dialog_manager.next()
 
@@ -134,7 +135,6 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
     dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
     days_list = dialog_manager.dialog_data['week_days']
-    # print('days = ', days_list)
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
     day_digit = week_days = ''
@@ -178,7 +178,6 @@ async def set_foto_mahnung_ohne_capture(cb: CallbackQuery, widget:
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
-
     day_digit = week_days = ''
     digit_arr = []
     for day in days_list:
