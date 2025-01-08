@@ -41,11 +41,10 @@ async  def get_interval_input_data(dialog_manager: DialogManager, event_from_use
     lan = await return_lan(event_from_user.id)
     return {'interval_data': enter_enterval[lan]}
 
-async def accept_foto_for_day(message: Message, widget: MessageInput, dialog_manager: DialogManager):
+async def accept_foto_for_interval(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     foto_id = message.photo[-1].file_id
     dialog_manager.dialog_data['titel'] = ''
     dialog_manager.dialog_data['foto_id'] = foto_id
-    dialog_manager.dialog_data['capture'] = ''
     dialog_manager.show_mode = ShowMode.SEND
     await dialog_manager.next()
 
@@ -392,7 +391,7 @@ interval_mahnung_dialog = Dialog(
             content_types=ContentType.TEXT,
         ),
         MessageInput(
-            func=accept_foto_for_day,
+            func=accept_foto_for_interval,
             content_types=ContentType.PHOTO,
         ),
         MessageInput(

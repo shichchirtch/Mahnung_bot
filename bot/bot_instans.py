@@ -121,12 +121,26 @@ class LAST_MAHNUNG(StatesGroup):
 tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400,
            'Asia/Yekaterinburg':18000, 'Asia/Omsk':21600, 'Europe/London':0,
             'Asia/Novosibirsk':25200,  # +7
-             'Asia/Krasnoyarsk':28800,  # +8
-            'Asia/Irkutsk':32400,   # +9
-            'Asia/Chita':36000,   # +10
-            'Asia/Vladivostok': 39600,  # +11
-             'Asia/Magadan' : 43200    # +12
+            'Asia/Irkutsk':28800,   # +8
+            'Asia/Chita':32400,   # +9
+            'Asia/Vladivostok': 36000,  # +10
+             'Asia/Magadan' : 39600,    # +11
+           'Asia/Kamchatka':43200  # +12
            }
 
+tz_dict_letter = {'tz_gleich': 'Europe/London',
+                  'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
+                  'tz_plus_2': "Europe/Kiev",  # +2
+                  'tz_plus_3': 'Europe/Moscow',  # +3
+                  'tz_plus_4': 'Europe/Samara',  # +4
+                  'tz_plus_5': "Asia/Yekaterinburg",  # +5
+                  'tz_plus_6': 'Asia/Omsk',  # +6
+                  'tz_plus_7': 'Asia/Novosibirsk',  # +7
+                  'tz_plus_8': 'Asia/Krasnoyarsk',  # +8
+                  'tz_plus_9': 'Asia/Irkutsk',  # +9
+                  'tz_plus_10': 'Asia/Chita',  # +10
+                  'tz_plus_11': 'Asia/Vladivostok',  # +11
+                  'tz_plus_12': 'Asia/Magadan'  # +12
+                  }
 
 

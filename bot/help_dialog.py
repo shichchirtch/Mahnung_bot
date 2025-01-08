@@ -10,6 +10,7 @@ import asyncio
 import datetime
 from postgres_functions import get_user_count, return_lan, insert_timezone, insert_lan
 from aiogram_dialog.widgets.input import MessageInput
+from bot_instans import tz_dict_letter
 
 
 class HELP_DIAL(StatesGroup):
@@ -108,21 +109,7 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
     print('reset_user_tz works')
     user_id = callback.from_user.id
-    tz_dict = {'tz_gleich': 'Europe/London',
-               'tz_plus_1': 'Europe/Berlin',
-               'tz_plus_2': "Europe/Kiev",
-               'tz_plus_3': 'Europe/Moscow',
-               'tz_plus_4': 'Europe/Samara',
-               'tz_plus_5': "Asia/Yekaterinburg",
-               'tz_plus_6': 'Asia/Omsk',    # +6
-               'tz_plus_7': 'Asia/Novosibirsk',  # +7
-               'tz_plus_8': 'Asia/Krasnoyarsk',  # +8
-               'tz_plus_9': 'Asia/Irkutsk',   # +9
-               'tz_plus_10': 'Asia/Chita',   # +10
-               'tz_plus_11': 'Asia/Vladivostok',  # +11
-               'tz_plus_12': 'Asia/Magadan'     # +12
-               }
-    tz = tz_dict[callback.data]
+    tz = tz_dict_letter[callback.data] # from bot_instans
     dialog_manager.dialog_data['tz']=tz
     await insert_timezone(user_id, tz)
     lan = await return_lan(callback.from_user.id)
