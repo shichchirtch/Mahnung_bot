@@ -70,7 +70,14 @@ async def get_timezone_info(dialog_manager: DialogManager, event_from_user: User
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time':f'<b>{bot_time_now[lan]} {bot_time}</b>',
                    'gleich':us_tz_gleich[lan], 'plus_1':us_tz_plus_1[lan], 'plus_2':us_tz_plus_2[lan], 'plus_3':us_tz_plus_3[lan],
-                   'plus_4':us_tz_plus_4[lan], 'plus_5':us_tz_plus_5[lan], 'plus_6':us_tz_plus_6[lan],}
+                   'plus_4':us_tz_plus_4[lan], 'plus_5':us_tz_plus_5[lan], 'plus_6':us_tz_plus_6[lan],
+                   'plus_7': us_tz_plus_7[lan],
+                   'plus_8': us_tz_plus_8[lan],
+                   'plus_9': us_tz_plus_9[lan],
+                   'plus_10': us_tz_plus_10[lan],
+                   'plus_11': us_tz_plus_11[lan],
+                   'plus_12': us_tz_plus_12[lan],
+                   }
     return getter_data
 
 

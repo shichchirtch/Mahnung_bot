@@ -344,6 +344,7 @@ us_tz_plus_2 = {'ru': 'Моё время на 2 часа больше', 'en': 'M
 us_tz_plus_3 = {'ru': 'Моё время на 3 часа больше', 'en': 'My time is 3 hours mehr', 'fa': 'زمان من 3 ساعت مهر است',
                 'tr': 'Benim zamanım 3 saat daha fazla', 'de': 'Meine Zeit beträgt 3 Stunden mehr',
                 'uk': 'Мій час 3 години більше', 'ar': 'وقتي هو 3 ساعات أكثر', }
+
 us_tz_plus_4 = {'ru': 'Моё время на 4 часа больше', 'en': 'My time is 4 hours mehr', 'fa': 'زمان  من4  ساعت مهر است',
                 'tr': 'Benim zamanım 4 saat daha fazla', 'de': 'Meine Zeit beträgt 4 Stunden mehr',
                 'uk': 'Мій час 4 години більше', 'ar': 'وقتي هو4  ساعات أكثر', }
@@ -353,8 +354,31 @@ us_tz_plus_5 = {'ru': 'Моё время на 5 часов больше', 'en': 
                 'uk': 'Мій час 5 години більше', 'ar': 'وقتي هو 5 ساعات أكثر', }
 
 us_tz_plus_6 = {'ru': 'Моё время на 6 часов больше', 'en': 'My time is 6 hours mehr', 'fa': 'زمان من 6 ساعت مهر است',
-                'tr': 'Benim zamanım 3 saat daha fazla', 'de': 'Meine Zeit beträgt 3 Stunden mehr',
+                'tr': 'Benim zamanım 6 saat daha fazla', 'de': 'Meine Zeit beträgt 6 Stunden mehr',
                 'uk': 'Мій час 6 години більше', 'ar': 'وقتي هو 6 ساعات أكثر', }
+
+us_tz_plus_7 = {'ru': 'Моё время на 7 часов больше', 'en': 'My time is 7 hours mehr', 'fa': 'زمان من 7 ساعت مهر است',
+                'tr': 'Benim zamanım 7 saat daha fazla', 'de': 'Meine Zeit beträgt 7 Stunden mehr',
+                'uk': 'Мій час 7 години більше', 'ar': 'وقتي هو 7 ساعات أكثر' }
+
+us_tz_plus_8 = {'ru': 'Моё время на 8 часов больше', 'en': 'My time is 8 hours mehr', 'fa': 'زمان من 8 ساعت مهر است',
+                'tr': 'Benim zamanım 8 saat daha fazla', 'de': 'Meine Zeit beträgt 8 Stunden mehr',
+                'uk': 'Мій час 8 години більше', 'ar': 'وقتي هو 8 ساعات أكثر', }
+
+us_tz_plus_9 = {'ru': 'Моё время на 9 часов больше', 'en': 'My time is 9 hours mehr', 'fa': 'زمان من 9 ساعت مهر است',
+                'tr': 'Benim zamanım 9 saat daha fazla', 'de': 'Meine Zeit beträgt 9 Stunden mehr',
+                'uk': 'Мій час 9 години більше', 'ar': 'وقتي هو9 ساعات أكثر', }
+
+us_tz_plus_10 = {'ru': 'Моё время на 10 часов больше', 'en': 'My time is 10 hours mehr', 'fa': 'زمان من10 ساعت مهر است',
+                'tr': 'Benim zamanım 10 saat daha fazla', 'de': 'Meine Zeit beträgt 10 Stunden mehr',
+                'uk': 'Мій час 10 години більше', 'ar': 'وقتي هو 10 ساعات أكثر', }
+us_tz_plus_11 = {'ru': 'Моё время на 11 часов больше', 'en': 'My time is 11 hours mehr', 'fa': 'زمان من 11 ساعت مهر است',
+                'tr': 'Benim zamanım 11 saat daha fazla', 'de': 'Meine Zeit beträgt 11 Stunden mehr',
+                'uk': 'Мій час 11 години більше', 'ar': 'وقتي هو 11 ساعات أكثر'}
+
+us_tz_plus_12 = {'ru': 'Моё время на 12 часов больше', 'en': 'My time is 12 hours mehr', 'fa': 'زمان من 12 ساعت مهر است',
+                'tr': 'Benim zamanım 12 saat daha fazla', 'de': 'Meine Zeit beträgt 12 Stunden mehr',
+                'uk': 'Мій час 12 години більше', 'ar': 'وقتي هو12  ساعات أكثر', }
 
 send_review = {'ru': 'Написать отзыв', 'en': 'Write review', 'uk': 'Написати відгук', 'de': 'Rezension schreiben',
                'tr': 'İnceleme yaz', 'ar': 'كتابة مراجعة', 'fa': 'نوشتن نظر'}

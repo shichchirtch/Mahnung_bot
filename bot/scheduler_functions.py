@@ -104,8 +104,8 @@ async  def napominalka_async_for_month(user_id, mahnung_data, time_data, capture
             pass
 
 def napominalka_sync_for_month(user_id, dialog_dict:dict):
-    print('napominalka_sync works')
-    print('days = ', dialog_dict['day'])
+    # print('napominalka_sync works')
+    # print('days = ', dialog_dict['day'])
 
     temp_days = set(dialog_dict['day'].split(','))
     t = ''

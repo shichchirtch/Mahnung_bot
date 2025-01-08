@@ -14,14 +14,21 @@ async def set_user_tz(callback: CallbackQuery, widget: Button,
                       dialog_manager: DialogManager):
     # print('set_user_tz works')
     # print('callbac_data = ', callback.data)
-    tz_dict = {'tz_gleich': 'Europe/London',
+    tz_dict_letter = {'tz_gleich': 'Europe/London',
                'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
-               'tz_plus_2': "Europe/Kiev",
-               'tz_plus_3': 'Europe/Moscow',
-               'tz_plus_4': 'Europe/Samara',
-               'tz_plus_5': "Asia/Yekaterinburg",
-               'tz_plus_6': 'Asia/Novosibirsk'}
-    await insert_timezone(callback.from_user.id, tz_dict[callback.data])
+               'tz_plus_2': "Europe/Kiev", # +2
+               'tz_plus_3': 'Europe/Moscow', # +3
+               'tz_plus_4': 'Europe/Samara', # +4
+               'tz_plus_5': "Asia/Yekaterinburg",  # +5
+               'tz_plus_6': 'Asia/Omsk',    # +6
+               'tz_plus_7': 'Asia/Novosibirsk',  # +7
+               'tz_plus_8': 'Asia/Krasnoyarsk',  # +8
+               'tz_plus_9': 'Asia/Irkutsk',   # +9
+               'tz_plus_10': 'Asia/Chita',   # +10
+               'tz_plus_11': 'Asia/Vladivostok',  # +11
+               'tz_plus_12': 'Asia/Magadan'     # +12
+                }
+    await insert_timezone(callback.from_user.id, tz_dict_letter[callback.data])
     await dialog_manager.next()
     dialog_manager.show_mode = ShowMode.SEND
 
@@ -112,21 +119,13 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
                                 dialog_manager: DialogManager):
     '''Формирует время'''
 
-    tz_dict_int = {'Europe/London': 0,
-                   'Europe/Berlin': 1,  # tz_plus_1
-                   "Europe/Kiev": 2,
-                   'Europe/Moscow': 3,
-                   'Europe/Samara': 4,
-                   "Asia/Yekaterinburg": 5,
-                   'Asia/Novosibirsk': 6}
-
     user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
     # null_day = str(dialog_manager.dialog_data['day'])  # Для кастомного календаря
     # dialog_manager.dialog_data['time_code'] = null_day
     current_minut = int(in_stamp.timestamp())  # 1732800900
-    razniza_vo_vremeni = tz_dict_int[user_tz] * 3600
+    razniza_vo_vremeni = tz_dict[user_tz]   # tz_dict_int[user_tz] * 3600
     # print('temp_dict = ',dialog_manager.dialog_data)
     real_event_time = dialog_manager.dialog_data['day'] + \
                       dialog_manager.dialog_data['hours'] + \

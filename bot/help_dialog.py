@@ -2,7 +2,7 @@ from aiogram_dialog import Dialog, Window
 from aiogram.types import CallbackQuery, User, Message, ContentType
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog import DialogManager
-from aiogram_dialog.widgets.kbd import Button, Start
+from aiogram_dialog.widgets.kbd import Button, Start, Row
 from aiogram_dialog.api.entities.modes import ShowMode
 from lexicon import *
 from aiogram.fsm.state import State, StatesGroup
@@ -93,8 +93,15 @@ async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user
     current_time = datetime.datetime.now()
     bot_time = current_time.strftime("%H:%M")
     getter_data = {'bot_time_reset':f'<b>{bot_time_now[lan]} {bot_time}</b>',
-                   'gleich':us_tz_gleich[lan], 'plus_1':us_tz_plus_1[lan], 'plus_2':us_tz_plus_2[lan], 'plus_3':us_tz_plus_3[lan],
-                   'plus_4': us_tz_plus_4[lan], 'plus_5': us_tz_plus_5[lan], 'plus_6': us_tz_plus_6[lan]}
+                   'gleich':us_tz_gleich[lan], 'plus_1':'+ 1️⃣', 'plus_2':'+ 2️⃣', 'plus_3':'+ 3️⃣',
+                   'plus_4': '+ 4️⃣', 'plus_5': '+ 5️⃣', 'plus_6': '+ 6️⃣',
+                   'plus_7': '+ 7️⃣',
+                   'plus_8': '+ 8️⃣',
+                   'plus_9': '+ 9️⃣',
+                   'plus_10': '+ 🔟',
+                   'plus_11': '+ 1️⃣1️⃣',
+                   'plus_12': '+ 1️⃣2️⃣',
+                   }
     return getter_data
 
 async def reset_user_tz(callback: CallbackQuery, widget: Button,
@@ -107,7 +114,14 @@ async def reset_user_tz(callback: CallbackQuery, widget: Button,
                'tz_plus_3': 'Europe/Moscow',
                'tz_plus_4': 'Europe/Samara',
                'tz_plus_5': "Asia/Yekaterinburg",
-               'tz_plus_6': 'Asia/Novosibirsk'}
+               'tz_plus_6': 'Asia/Omsk',    # +6
+               'tz_plus_7': 'Asia/Novosibirsk',  # +7
+               'tz_plus_8': 'Asia/Krasnoyarsk',  # +8
+               'tz_plus_9': 'Asia/Irkutsk',   # +9
+               'tz_plus_10': 'Asia/Chita',   # +10
+               'tz_plus_11': 'Asia/Vladivostok',  # +11
+               'tz_plus_12': 'Asia/Magadan'     # +12
+               }
     tz = tz_dict[callback.data]
     dialog_manager.dialog_data['tz']=tz
     await insert_timezone(user_id, tz)
@@ -206,13 +220,25 @@ dialog_help = Dialog(
 reset_tz_dialog = Dialog(
     Window(
         Format('{bot_time_reset}'),
+        Row(
         Button(text=Format('{gleich}'), id='tz_gleich', on_click=reset_user_tz),
-        Button(text=Format('{plus_1}'), id='tz_plus_1', on_click=reset_user_tz),
+        Button(text=Format('{plus_1}'), id='tz_plus_1', on_click=reset_user_tz)),
+        Row(
         Button(text=Format('{plus_2}'), id='tz_plus_2', on_click=reset_user_tz),
-        Button(text=Format('{plus_3}'), id='tz_plus_3', on_click=reset_user_tz),
+        Button(text=Format('{plus_3}'), id='tz_plus_3', on_click=reset_user_tz)),
+        Row(
         Button(text=Format('{plus_4}'), id='tz_plus_4', on_click=reset_user_tz),
-        Button(text=Format('{plus_5}'), id='tz_plus_5', on_click=reset_user_tz),
+        Button(text=Format('{plus_5}'), id='tz_plus_5', on_click=reset_user_tz)),
+        Row(
         Button(text=Format('{plus_6}'), id='tz_plus_6', on_click=reset_user_tz),
+        Button(text=Format('{plus_7}'), id='tz_plus_7', on_click=reset_user_tz)),
+        Row(
+        Button(text=Format('{plus_8}'), id='tz_plus_8', on_click=reset_user_tz),
+        Button(text=Format('{plus_9}'), id='tz_plus_9', on_click=reset_user_tz)),
+        Row(
+        Button(text=Format('{plus_10}'), id='tz_plus_10', on_click=reset_user_tz),
+        Button(text=Format('{plus_11}'), id='tz_plus_11', on_click=reset_user_tz),
+        Button(text=Format('{plus_12}'), id='tz_plus_12', on_click=reset_user_tz)),
         state=RESET_TZ.one,
         getter=get_timezone_info_reset))
 

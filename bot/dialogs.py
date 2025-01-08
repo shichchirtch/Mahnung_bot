@@ -192,8 +192,14 @@ zapusk_dialog = Dialog(
         Button(text=Format('{plus_4}'), id='tz_plus_4', on_click=set_user_tz),
         Button(text=Format('{plus_5}'), id='tz_plus_5', on_click=set_user_tz),
         Button(text=Format('{plus_6}'), id='tz_plus_6', on_click=set_user_tz),
-            state=ZAPUSK.set_timezone,
-            getter=get_timezone_info),
+        Button(text=Format('{plus_7}'), id='tz_plus_7', on_click=set_user_tz),
+        Button(text=Format('{plus_8}'), id='tz_plus_8', on_click=set_user_tz),
+        Button(text=Format('{plus_9}'), id='tz_plus_9', on_click=set_user_tz),
+        Button(text=Format('{plus_10}'), id='tz_plus_10', on_click=set_user_tz),
+        Button(text=Format('{plus_11}'), id='tz_plus_11', on_click=set_user_tz),
+        Button(text=Format('{plus_12}'), id='tz_plus_12', on_click=set_user_tz),
+        state=ZAPUSK.set_timezone,
+        getter=get_timezone_info),
 
     Window( # Это корневое окно других диалогов
         Format('{knopka}'), # Создать напоминание или посмотреть мои напоминания

@@ -118,7 +118,15 @@ class LAST_MAHNUNG(StatesGroup):
     single = State()
 
 
-tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400, 'Asia/Yekaterinburg':18000, 'Asia/Novosibirsk':21600, 'Europe/London':0}
+tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400,
+           'Asia/Yekaterinburg':18000, 'Asia/Omsk':21600, 'Europe/London':0,
+            'Asia/Novosibirsk':25200,  # +7
+             'Asia/Krasnoyarsk':28800,  # +8
+            'Asia/Irkutsk':32400,   # +9
+            'Asia/Chita':36000,   # +10
+            'Asia/Vladivostok': 39600,  # +11
+             'Asia/Magadan' : 43200    # +12
+           }
 
 
 
