@@ -9,7 +9,6 @@ from config import settings
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 
-
 key_builder = DefaultKeyBuilder(with_destiny=True)
 
 using_redis = Redis(host=settings.REDIS_HOST)
@@ -19,24 +18,26 @@ redis_storage = RedisStorage(redis=using_redis, key_builder=key_builder)
 job_stores = {
     'default': RedisJobStore(
         host=settings.REDIS_HOST,  # Укажите IP адрес Redis контейнера  REDIS_HOST
-        db=0,              # Номер базы данных Redis
-        password=None      # Пароль, если требуется
+        db=0,  # Номер базы данных Redis
+        password=None  # Пароль, если требуется
     )
 }
 scheduler = AsyncIOScheduler(timezone='Europe/Moscow', jobstores=job_stores)
 
 bot = Bot(token=settings.BOT_TOKEN,
-              default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+          default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 bot_storage_key = StorageKey(bot_id=bot.id, user_id=bot.id, chat_id=bot.id)
 
 dp = Dispatcher(storage=redis_storage)
+
 
 class ZAPUSK(StatesGroup):
     set_lan = State()
     spam = State()
     set_timezone = State()
     add_show = State()
+
 
 class WORK_WITH_SCHED(StatesGroup):
     choose_regular_or_unique = State()
@@ -48,6 +49,7 @@ class WORK_WITH_SCHED(StatesGroup):
     enter_capture = State()
     vor_mahnung = State()
     nach_mahnung_accepting = State()
+
 
 class MONAT_MAHNUNG(StatesGroup):
     general = State()
@@ -61,21 +63,23 @@ class MONAT_MAHNUNG(StatesGroup):
     accept_capture = State()
     choose_type = State()
 
+
 otvet_chas_dict = {'button_00': '00', 'button_1': '01', 'button_2': '02', 'button_3': '03',
-                'button_4': '04', 'button_5': '05', 'button_6': '06', 'button_7': '07',
-                'button_8': '08', 'button_9': '09', 'button_10': '10', 'button_11': '11',
-                'button_12': '12', 'button_13': '13', 'button_14': '14', 'button_15': '15',
-                'button_16': '16', 'button_17': '17', 'button_18': '18', 'button_19': '19',
-                'button_20': '20', 'button_21': '21', 'button_22': '22', 'button_23': '23'}
+                   'button_4': '04', 'button_5': '05', 'button_6': '06', 'button_7': '07',
+                   'button_8': '08', 'button_9': '09', 'button_10': '10', 'button_11': '11',
+                   'button_12': '12', 'button_13': '13', 'button_14': '14', 'button_15': '15',
+                   'button_16': '16', 'button_17': '17', 'button_18': '18', 'button_19': '19',
+                   'button_20': '20', 'button_21': '21', 'button_22': '22', 'button_23': '23'}
 
 real_min_dict = {'button_00': '00', 'button_05': '05', 'button_10': '10', 'button_15': '15',
-                'button_20': '20', 'button_25': '25', 'button_30': '30', 'button_35': '35',
-                'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
-                }
-
+                 'button_20': '20', 'button_25': '25', 'button_30': '30', 'button_35': '35',
+                 'button_40': '40', 'button_45': '45', 'button_50': '50', 'button_55': '55',
+                 }
 
 # Очередь для сообщений
 message_queue = asyncio.Queue()
+
+
 # Фоновый воркер для обработки сообщений
 async def background_worker():
     while True:
@@ -94,6 +98,7 @@ async def background_worker():
             await asyncio.sleep(1)  # Повторная попытка через 1 секунду
         finally:
             await asyncio.sleep(0.05)  # Соблюдаем лимит Telegram API
+
 
 # Функция для добавления сообщений в очередь
 # Добавляем сообщение в очередь (для текстовых и фото сообщений)
@@ -118,29 +123,25 @@ class LAST_MAHNUNG(StatesGroup):
     single = State()
 
 
-tz_dict = {'Europe/Berlin':3600, 'Europe/Kiev':7200, 'Europe/Moscow':10800, 'Europe/Samara':14400,
-           'Asia/Yekaterinburg':18000, 'Asia/Omsk':21600, 'Europe/London':0,
-            'Asia/Novosibirsk':25200,  # +7
-            'Asia/Irkutsk':28800,   # +8
-            'Asia/Chita':32400,   # +9
-            'Asia/Vladivostok': 36000,  # +10
-             'Asia/Magadan' : 39600,    # +11
-           'Asia/Kamchatka':43200  # +12
-           }
+tz_dict = {'Europe/London': 0, 'Europe/Berlin': 3600, 'Europe/Kiev': 7200, 'Europe/Moscow': 10800,
+           'Europe/Samara': 14400, 'Asia/Yekaterinburg': 18000, 'Asia/Omsk': 21600,
+           'Asia/Novosibirsk': 25200,  # +7
+           'Asia/Irkutsk': 28800,  # +8
+           'Asia/Chita': 32400,  # +9
+           'Asia/Vladivostok': 36000,  # +10
+           'Asia/Magadan': 39600,  # +11
+           'Asia/Kamchatka': 43200}  # +12
 
-tz_dict_letter = {'tz_gleich': 'Europe/London',
-                  'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
+tz_dict_letter = {'tz_gleich': 'Europe/London', 'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
                   'tz_plus_2': "Europe/Kiev",  # +2
                   'tz_plus_3': 'Europe/Moscow',  # +3
                   'tz_plus_4': 'Europe/Samara',  # +4
                   'tz_plus_5': "Asia/Yekaterinburg",  # +5
                   'tz_plus_6': 'Asia/Omsk',  # +6
                   'tz_plus_7': 'Asia/Novosibirsk',  # +7
-                  'tz_plus_8': 'Asia/Krasnoyarsk',  # +8
-                  'tz_plus_9': 'Asia/Irkutsk',  # +9
-                  'tz_plus_10': 'Asia/Chita',  # +10
-                  'tz_plus_11': 'Asia/Vladivostok',  # +11
-                  'tz_plus_12': 'Asia/Magadan'  # +12
+                  'tz_plus_8': 'Asia/Irkutsk',  # +8
+                  'tz_plus_9': 'Asia/Chita',  # +9
+                  'tz_plus_10': 'Asia/Vladivostok',  # +10
+                  'tz_plus_11': 'Asia/Magadan',  # +11
+                  'tz_plus_12': 'Asia/Kamchatka'  # +12
                   }
-
-

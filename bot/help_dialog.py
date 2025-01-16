@@ -107,9 +107,9 @@ async def get_timezone_info_reset(dialog_manager: DialogManager, event_from_user
 
 async def reset_user_tz(callback: CallbackQuery, widget: Button,
                         dialog_manager: DialogManager):
-    print('reset_user_tz works')
     user_id = callback.from_user.id
     tz = tz_dict_letter[callback.data] # from bot_instans
+    print(f'user {user_id} {callback.from_user.first_name} REset tz {tz} \n\n')
     dialog_manager.dialog_data['tz']=tz
     await insert_timezone(user_id, tz)
     lan = await return_lan(callback.from_user.id)

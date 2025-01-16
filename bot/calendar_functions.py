@@ -13,7 +13,7 @@ from bot_instans import tz_dict, real_min_dict, tz_dict_letter
 async def set_user_tz(callback: CallbackQuery, widget: Button,
                       dialog_manager: DialogManager):
     # print('set_user_tz works')
-    # print('callbac_data = ', callback.data)
+    print(f'user{callback.from_user.id} {callback.from_user.first_name} set tz {callback.data} \n\n')
 
     await insert_timezone(callback.from_user.id, tz_dict_letter[callback.data])
     await dialog_manager.next()
