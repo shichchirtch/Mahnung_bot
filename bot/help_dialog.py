@@ -64,7 +64,7 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
         'tr': 'BAACAgIAAxkBAAINDWdv5_pUe5r4RWpF3gbR4tewdbHRAAJrXQACyNSAS4FWc2TO_UqqNgQ',
         'ar': 'BAACAgIAAxkBAAIND2dv6CtbhHF9JkjgUHkLuoygaS4jAAJyXQACyNSAS_u0bAKvuUczNgQ',
         'fa': 'BAACAgIAAxkBAAINEWdv6FQeAAENqqFOe2SDyq6wWWOp5AACeV0AAsjUgEu5SVCREBByGjYE'}
-    # chosing_presentation = get_lynk[lan]
+
     await callback.message.answer_video(video=video_dict[lan], caption=opisanie_rolika[lan])
     # await callback.message.answer(text=chosing_presentation)
     dialog_manager.show_mode = ShowMode.DELETE_AND_SEND

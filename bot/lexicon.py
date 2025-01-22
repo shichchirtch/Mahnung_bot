@@ -681,8 +681,7 @@ opisanie_rolika = {
           'der festgelegten Uhrzeit. Vergangene einmalige Ereignisse können durch Klicken auf die Schaltfläche gelöscht werden.\n'
           'Alle anderen Ereignisse werden durch Eingabe einer einmaligen Nummer gelöscht\n'
           'Einmalige Ereignisse werden im Kalender angezeigt\n'
-          '2 - Monatliche Ereignisse - Sie wählen das Datum, die Stunden und die Minuten aus. Der Bot erinnert Sie zweimal an dieses Ereignis - '
-          'am Tag vor und zur Uhrzeit des Ereignisses. Sie können eine beliebige Anzahl von Tagen in einem Monat auswählen\n'
+          '2 - Monatliche Ereignisse\n'
           '3 - Wöchentliche Ereignisse. Sie können einen bis sechs Wochentage auswählen. Der Bot sendet eine Erinnerung gemäß dem festgelegten Zeitplan\n'
           '4 - Tägliche Ereignisse. Sie können eine beliebige Anzahl von Stunden auswählen\n'
           '5 - Ereignisse mit einem Intervall von 2 bis 365 Tagen. Der Bot sendet Benachrichtigungen nach Zeitplan.',
