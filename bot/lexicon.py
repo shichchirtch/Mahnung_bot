@@ -318,7 +318,7 @@ lan_same = {'ru': 'Продолжаем коммуникацию на русск
 
 show_presentation = {'ru': 'Посмотреть видео инструкцию', 'en': 'See manual movie', 'ar': 'مشاهدة الفيلم اليدوي',
                      'fa': 'فیلم دستی را ببینید',
-                     'tr': 'Manuel filmi izleyin', 'de': 'Wir machen auf Deutsch weiter',
+                     'tr': 'Manuel filmi izleyin', 'de': 'Videoanleitung ansehen',
                      'uk': 'Переглянути відео вручну', }
 
 skolko_us = {'ru': 'Количество запусков бота', 'en': 'Quantity of bot launches',

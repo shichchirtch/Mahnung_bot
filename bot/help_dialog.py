@@ -57,8 +57,8 @@ async def provide_presentation(callback: CallbackQuery, widget: Button, dialog_m
         lan = 'ru'
         await insert_lan(callback.from_user.id, 'ru')
     video_dict = {
-        'ru':'BAACAgIAAxkBAAINBWdv5xZKBAjtV3p-ThlpdMpMxxsIAAJXXQACyNSAS8TQD540NahaNgQ',
-        'de':'BAACAgIAAxkBAAINB2dv51Z2PSjMkJJ7iDekP1ILLfe-AAJgXQACyNSAS0cioGi1tLHANgQ',
+        'ru': 'BAACAgIAAxkBAAINBWdv5xZKBAjtV3p-ThlpdMpMxxsIAAJXXQACyNSAS8TQD540NahaNgQ',
+        'de': 'BAACAgIAAxkBAAINB2dv51Z2PSjMkJJ7iDekP1ILLfe-AAJgXQACyNSAS0cioGi1tLHANgQ',
         'en': 'BAACAgIAAxkBAAINCWdv55OChWWsivD2Mh24Xu-tmdT1AAJmXQACyNSAS4acmJy9HHuWNgQ',
         'uk': 'BAACAgIAAxkBAAINC2dv58vjGzSfUhgDFrFU0KKi_eDEAAJoXQACyNSAS1saFWdD3RVMNgQ',
         'tr': 'BAACAgIAAxkBAAINDWdv5_pUe5r4RWpF3gbR4tewdbHRAAJrXQACyNSAS4FWc2TO_UqqNgQ',
