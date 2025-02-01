@@ -427,8 +427,8 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
                     counter = 1
                 else:
                     capture_mit_id = f"<b>{element['real_time']}</b>\n{element['capture']}\n<i>id  {element['job_id']}</i>"
-                    await bot.send_photo(chat_id=callback.from_user.id, photo=element["foto_id"],
-                                         caption=capture_mit_id)
+                    # await bot.send_photo(chat_id=callback.from_user.id, photo=element["foto_id"],
+                    #                      caption=capture_mit_id)
                     past_picture_events_list.append((element["foto_id"], capture_mit_id,))  # Добавляю картеж во временный список
                     await asyncio.sleep(0.2)
     if counter:
@@ -447,10 +447,11 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
             caption=first_capture,
             reply_markup=create_past_mahnung_keyboard(len_evens_in_past, page=0)
         )
-
-
-    manager.show_mode = ShowMode.DELETE_AND_SEND
-    await manager.next()
+        manager.show_mode = ShowMode.NO_UPDATE
+        await manager.done()
+    else:
+        manager.show_mode = ShowMode.DELETE_AND_SEND
+        await manager.next()
 
 
 
