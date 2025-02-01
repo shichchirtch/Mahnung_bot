@@ -169,14 +169,12 @@ async def page_moving(callback: CallbackQuery):
     await callback.answer()
 
 
-@ch_router.message(EXIT_FROM_PAST_BILD_MAHNUNG())
-async def exit_from_past_bild_mahnung(message: Message, dialog_manager: DialogManager):
+@ch_router.callback_query(EXIT_FROM_PAST_BILD_MAHNUNG())
+async def exit_from_past_bild_mahnung(cb: CallbackQuery, dialog_manager: DialogManager):
     await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
-    att = await message.answer('<i>return to basic window</i>')
+    att = await cb.message.answer('<i>return to basic window</i>')
     print('Command("basic_menu") dialog_manager.dialog_data = ', dialog_manager.dialog_data)
     dialog_manager.dialog_data.clear()
-    await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
-    await asyncio.sleep(2)
-    await message.delete()
-    await asyncio.sleep(0.5)
+    await insert_last_null(cb.from_user.id)  # Обнуляю строку на всякий случай
+    await asyncio.sleep(1.5)
     await att.delete()
