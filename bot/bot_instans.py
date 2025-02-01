@@ -145,3 +145,6 @@ tz_dict_letter = {'tz_gleich': 'Europe/London', 'tz_plus_1': 'Europe/Berlin',  #
                   'tz_plus_11': 'Asia/Magadan',  # +11
                   'tz_plus_12': 'Asia/Kamchatka'  # +12
                   }
+
+# Создаю глобальный словарь временных данных для хранения прошлых событий с картинками
+store_past_event = {}

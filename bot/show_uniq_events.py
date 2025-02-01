@@ -11,12 +11,13 @@ from aiogram_dialog.widgets.kbd import (Button, Row, Calendar, Cancel, Back,
 from datetime import date, datetime
 from aiogram_dialog.widgets.kbd.calendar_kbd import (DATE_TEXT, TODAY_TEXT, CalendarMonthView, CalendarScopeView,
                                                      CalendarYearsView)
-from bot_instans import bot, LAST_MAHNUNG, bot_storage_key, dp, tz_dict, scheduler, ZAPUSK
+from bot_instans import bot, LAST_MAHNUNG, bot_storage_key, dp, tz_dict, scheduler, ZAPUSK, store_past_event
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, User, Message
 from aiogram_dialog.widgets.kbd.calendar_kbd import CalendarDaysView, CalendarConfig
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from aiogram_dialog.widgets.input import TextInput, ManagedTextInput
 from babel.dates import get_day_names, get_month_names
+from dialog_functions import create_past_mahnung_keyboard
 
 
 class SHOW_UNIQ_EVENTS(StatesGroup):
@@ -416,6 +417,7 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
     big_msg = f'‼️ {uniq_past_event[lan]}\n\n'
     counter = 0
     second_counter = 0
+    past_picture_events_list = []
     for day, spispk in user_uniq_dict.items():
         if (int(day) + 86400) < NOW:
             second_counter += 1
@@ -427,6 +429,7 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
                     capture_mit_id = f"<b>{element['real_time']}</b>\n{element['capture']}\n<i>id  {element['job_id']}</i>"
                     await bot.send_photo(chat_id=callback.from_user.id, photo=element["foto_id"],
                                          caption=capture_mit_id)
+                    past_picture_events_list.append((element["foto_id"], capture_mit_id,))  # Добавляю картеж во временный список
                     await asyncio.sleep(0.2)
     if counter:
         await bot.send_message(chat_id=callback.from_user.id, text=big_msg)
@@ -434,6 +437,17 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
     if not second_counter:
         await bot.send_message(chat_id=callback.from_user.id, text=alles_in_future[lan])
         await asyncio.sleep(0.2)
+    if len(past_picture_events_list)>1:  # Если есть прошлые события с фото, хотя бы 2 - записиываю список в глобальный словарь
+        store_past_event[callback.from_user.id] = {'events':past_picture_events_list, 'index':0}
+        first_foto_id = past_picture_events_list[0][0]
+        first_capture = past_picture_events_list[0][1]
+        len_evens_in_past = len(past_picture_events_list)
+        await callback.message.answer_photo(
+            photo=first_foto_id,
+            caption=first_capture,
+            reply_markup=create_past_mahnung_keyboard(len_evens_in_past, page=0)
+        )
+
 
     manager.show_mode = ShowMode.DELETE_AND_SEND
     await manager.next()
@@ -514,7 +528,7 @@ custom_dialog = Dialog(
 )
 
 show_last_dialog = Dialog(
-    Window(  # Окно отправляющее прошедщие уникальные ивенты  ивенты
+    Window(  # Окно отправляющее прошедщие уникальные ивенты
         Format('{last_dialog_text}'),  # Если не хотите удалять сообщения - воспользутесь основным меню
         Format('{no_future_events}', when='no_mahnung'),
         Button(text=Const('◀️'),  # DELETE Удалить напоминания

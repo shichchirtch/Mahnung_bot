@@ -1,18 +1,20 @@
 from aiogram import Router
 import asyncio
 from aiogram.filters import CommandStart, Command
-from filters import IS_ADMIN, USER_BAZA_FILTER, USER_BAZA_TWO_FILTER
+from filters import IS_ADMIN, USER_BAZA_FILTER, USER_BAZA_TWO_FILTER, MOVE_PAGE, EXIT_FROM_PAST_BILD_MAHNUNG
 from dialogs import ZAPUSK
 from aiogram.fsm.context import FSMContext
-from bot_instans import dp, bot_storage_key, scheduler
+from bot_instans import dp, bot_storage_key, scheduler, store_past_event
 from help_dialog import HELP_DIAL
 from admin_dialog import ADMIN
 from postgres_functions import check_user_in_table, insert_new_user_in_table
 from aiogram_dialog.api.entities.modes import StartMode, ShowMode
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram_dialog import DialogManager
 from postgres_functions import return_lan, insert_last_null, insert_lan, insert_timezone
 from lexicon import *
+from aiogram.exceptions import TelegramBadRequest
+from dialog_functions import create_past_mahnung_keyboard
 
 ch_router = Router()
 
@@ -77,7 +79,7 @@ async def admin_enter(message: Message, dialog_manager: DialogManager):
 
 @ch_router.callback_query(USER_BAZA_FILTER())   # delete
 async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, state:FSMContext, *args, **kwargs):
-    """Хэндлер удаояет напоминание по кнопке"""
+    """Хэндлер удаляет напоминание по кнопке"""
     # print('cb data = ', cb.data)
     lan = await return_lan(cb.from_user.id)
     user_id = str(cb.from_user.id)
@@ -135,8 +137,46 @@ async def delete_last_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, s
 
 @ch_router.callback_query(USER_BAZA_TWO_FILTER())
 async def perxvat4ick_mahnung(cb:CallbackQuery, dialog_manager: DialogManager, state:FSMContext, *args, **kwargs):
-    """Хэндлер удаояет напоминание по кнопке"""
+    """Хэндлер удаляет напоминание по кнопке"""
     print('Perexvat4ic   cb data = ', cb.data)
     await cb.message.answer(text="➡️ /basic_menu")#no_id[lan])  #
 
 
+@ch_router.callback_query(MOVE_PAGE())
+async def page_moving(callback: CallbackQuery):
+    print(f'{callback.data = }')
+    user_id = callback.from_user.id
+    shift = -1 if callback.data == 'backward' else 1
+    print('shift = ', shift)
+    mahn_index = store_past_event[user_id]['index'] + shift
+    if mahn_index == (len(store_past_event[user_id]['events'])):
+        mahn_index = 0
+    if mahn_index == -1:
+        mahn_index = (len(store_past_event[user_id]['events'])-1)
+    store_past_event[user_id]['index'] = mahn_index  # Перезаписываю индекс страницы
+    len_evens_in_past = len(store_past_event[user_id]['events'])
+    past_event_picture_id = store_past_event[user_id]['events'][mahn_index][0]
+    past_event_picture_capture = store_past_event[user_id]['events'][mahn_index][1]
+
+    try:
+        await callback.message.edit_media(
+            media=InputMediaPhoto(
+                media=past_event_picture_id, caption=past_event_picture_capture),
+            reply_markup=create_past_mahnung_keyboard(len_evens_in_past, mahn_index)
+        )
+    except TelegramBadRequest:
+        print('Into Exeption')
+    await callback.answer()
+
+
+@ch_router.message(EXIT_FROM_PAST_BILD_MAHNUNG())
+async def exit_from_past_bild_mahnung(message: Message, dialog_manager: DialogManager):
+    await dialog_manager.start(state=ZAPUSK.add_show, mode=StartMode.RESET_STACK)
+    att = await message.answer('<i>return to basic window</i>')
+    print('Command("basic_menu") dialog_manager.dialog_data = ', dialog_manager.dialog_data)
+    dialog_manager.dialog_data.clear()
+    await insert_last_null(message.from_user.id)  # Обнуляю строку на всякий случай
+    await asyncio.sleep(2)
+    await message.delete()
+    await asyncio.sleep(0.5)
+    await att.delete()

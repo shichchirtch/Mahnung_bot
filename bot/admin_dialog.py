@@ -32,8 +32,6 @@ async def button_save_db(callback: CallbackQuery, widget: Button, dialog_manager
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
     with open('save_db.pkl', 'wb') as file:
         pickle.dump(bot_dict, file)
-    bot_dict = await dp.storage.get_data(key=bot_storage_key)
-    # print('SAVE bot_dict = ', bot_dict)
     await callback.message.answer('База данных успешно записана !')
     await dialog_manager.done()  # выход из режима админа
 

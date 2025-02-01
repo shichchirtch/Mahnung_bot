@@ -1,4 +1,5 @@
 from datetime import datetime
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def titel_check(name: str) -> str:
     if isinstance(name, str):
@@ -45,4 +46,14 @@ def seconds_to_date_string(lst_str):
         arr.append(liter_data)
     # print('arr = ', arr)
     return arr
+
+
+def create_past_mahnung_keyboard(len_mahnung_picture_list: int, page=1 ) -> InlineKeyboardMarkup:
+    print('page = ', page)
+    forward_button = InlineKeyboardButton(text=f'Total {len_mahnung_picture_list}  >>', callback_data='forward')
+    backward_button = InlineKeyboardButton(text=f'<< {page+1}', callback_data='backward')
+    exit_button = InlineKeyboardButton(text=f'◀️', callback_data='exit_from_past_bild_mahnung')
+    pagination_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[exit_button], [backward_button, forward_button]])
+    return pagination_keyboard
 

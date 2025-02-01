@@ -47,6 +47,17 @@ class IS_ADMIN(BaseFilter):
             return True
         return False
 
+class MOVE_PAGE(BaseFilter):
+    async def __call__(self, callback: CallbackQuery):
+        if callback.data in ['forward', 'backward']:
+            return True
+        return False
+
+class EXIT_FROM_PAST_BILD_MAHNUNG(BaseFilter):
+    async def __call__(self, callback: CallbackQuery):
+        if callback.data == 'exit_from_past_bild_mahnung':
+            return True
+        return False
 
 
 
