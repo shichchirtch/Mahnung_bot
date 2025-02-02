@@ -57,3 +57,21 @@ def create_past_mahnung_keyboard(len_mahnung_picture_list: int, page=1 ) -> Inli
         inline_keyboard=[[exit_button], [backward_button, forward_button]])
     return pagination_keyboard
 
+def format_time_ago(seconds: int) -> str:
+    days = seconds // 86400  # 1 день = 86400 секунд
+    years = days // 365
+    remaining_days = days % 365
+    months = remaining_days // 30  # усреднённое количество дней в месяце
+    days_left = remaining_days % 30
+
+    parts = []
+    if years:
+        parts.append(f"{years} year{'s' if years > 1 else ''}")
+    if months:
+        parts.append(f"{months} month{'s' if months > 1 else ''}")
+    if days_left:
+        parts.append(f"{days_left} day{'s' if days_left > 1 else ''}")
+    if not days:
+        return 'less 1 day ago'
+    return " ".join(parts) + " ago"
+

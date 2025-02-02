@@ -109,8 +109,6 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
     user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
-    # null_day = str(dialog_manager.dialog_data['day'])  # Для кастомного календаря
-    # dialog_manager.dialog_data['time_code'] = null_day
     current_minut = int(in_stamp.timestamp())  # 1732800900
     razniza_vo_vremeni = tz_dict[user_tz]   # tz_dict_int[user_tz] * 3600
     # print('temp_dict = ',dialog_manager.dialog_data)

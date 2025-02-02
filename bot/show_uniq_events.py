@@ -17,7 +17,7 @@ from aiogram_dialog.widgets.kbd.calendar_kbd import CalendarDaysView, CalendarCo
 from aiogram_dialog.api.entities.modes import ShowMode, StartMode
 from aiogram_dialog.widgets.input import TextInput, ManagedTextInput
 from babel.dates import get_day_names, get_month_names
-from dialog_functions import create_past_mahnung_keyboard
+from dialog_functions import create_past_mahnung_keyboard, format_time_ago
 
 
 class SHOW_UNIQ_EVENTS(StatesGroup):
@@ -418,15 +418,20 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
     counter = 0
     second_counter = 0
     past_picture_events_list = []
-    for day, spispk in user_uniq_dict.items():
-        if (int(day) + 86400) < NOW:
+    in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
+    current_seconds = int(in_stamp.timestamp())  # 1732800900
+    int_key_list =  sorted(map(int, user_uniq_dict))  # Создаю список интовых ключей. Не помню зачем я сделал ключи строками ?
+    for day in int_key_list: #user_uniq_dict.items():
+        if (day + 86400) < NOW:
             second_counter += 1
-            for element in spispk:
+            for element in user_uniq_dict[str(day)]:  # day - это отсортированные ключи в событиях юзера
+                proshlo_secund = current_seconds - int(element["job_id"])  # Вычисляю секунды с прошедшего события до сейчас
+                eto_bylo = format_time_ago(proshlo_secund)  # Получаю строку 6 years 2 months 20 days ago
                 if not element['foto_id']:
-                    big_msg += f'<b>{element["real_time"]}</b>\n{element["titel"]}\n<i>id  {element["job_id"]}</i>\n\n'
+                    big_msg += f'<b>{element["real_time"]}</b>\n{element["titel"]}\n<i>Event was {eto_bylo}\n\n'
                     counter = 1
                 else:
-                    capture_mit_id = f"<b>{element['real_time']}</b>\n{element['capture']}\n<i>id  {element['job_id']}</i>"
+                    capture_mit_id = f"<b>{element['real_time']}</b>\n{element['capture']}\n<i>Event was {eto_bylo}</i>"
                     # await bot.send_photo(chat_id=callback.from_user.id, photo=element["foto_id"],
                     #                      caption=capture_mit_id)
                     past_picture_events_list.append((element["foto_id"], capture_mit_id,))  # Добавляю картеж во временный список

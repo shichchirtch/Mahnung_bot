@@ -87,7 +87,7 @@ async def message_capture_handler(message: Message, widget: MessageInput, dialog
     lan = await return_lan(message.from_user.id)
     capture = message.text
     dialog_manager.dialog_data['titel'] = ''
-    za_chas = dialog_manager.dialog_data['za_chas']
+    za_chas = dialog_manager.dialog_data['za_chas']  # 1732800900
     foto_id = dialog_manager.dialog_data['foto_id']
     dialog_manager.dialog_data['capture'] = message.text
     spisok_uniq_za_chas = await return_spisok_uniq_events(message.from_user.id)
