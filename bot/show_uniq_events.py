@@ -428,7 +428,7 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
                 proshlo_secund = current_seconds - int(element["job_id"])  # Вычисляю секунды с прошедшего события до сейчас
                 eto_bylo = format_time_ago(proshlo_secund)  # Получаю строку 6 years 2 months 20 days ago
                 if not element['foto_id']:
-                    big_msg += f'<b>{element["real_time"]}</b>\n{element["titel"]}\n<i>Event was {eto_bylo}\n\n'
+                    big_msg += f'<b>{element["real_time"]}</b>\n{element["titel"]}\n<i>Event was {eto_bylo}</i>\n\n'
                     counter = 1
                 else:
                     capture_mit_id = f"<b>{element['real_time']}</b>\n{element['capture']}\n<i>Event was {eto_bylo}</i>"
