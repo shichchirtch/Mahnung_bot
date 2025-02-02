@@ -418,7 +418,7 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
     counter = 0
     second_counter = 0
     past_picture_events_list = []
-    in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
+    in_stamp = datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
     current_seconds = int(in_stamp.timestamp())  # 1732800900
     int_key_list =  sorted(map(int, user_uniq_dict))  # Создаю список интовых ключей. Не помню зачем я сделал ключи строками ?
     for day in int_key_list: #user_uniq_dict.items():
