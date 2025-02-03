@@ -124,8 +124,10 @@ async def message_text_handler_for_days(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
+    if len(titel) > 4000:
+        titel = titel[:4000]
+    dialog_manager.dialog_data['titel'] = titel
     chas = dialog_manager.dialog_data['hours']
     # print('chas  =', chas)
     minuts = dialog_manager.dialog_data['minuts']
@@ -222,7 +224,10 @@ async def set_capture_day(message: Message, widget:
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
-    dialog_manager.dialog_data['capture'] = message.text
+    capture = message.text
+    if len(capture)>800:
+        capture = capture[:800]
+    dialog_manager.dialog_data['capture'] = capture
     str_folge = right_folge = ''
     digit_arr = []
     if len(chas) > 2:  # 01

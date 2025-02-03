@@ -89,7 +89,9 @@ async def message_capture_handler(message: Message, widget: MessageInput, dialog
     dialog_manager.dialog_data['titel'] = ''
     za_chas = dialog_manager.dialog_data['za_chas']  # 1732800900
     foto_id = dialog_manager.dialog_data['foto_id']
-    dialog_manager.dialog_data['capture'] = message.text
+    if len(capture)>800:
+        capture = capture[:800]
+    dialog_manager.dialog_data['capture'] = capture
     spisok_uniq_za_chas = await return_spisok_uniq_events(message.from_user.id)
     if za_chas not in spisok_uniq_za_chas:
         str_za_chas = str(za_chas)

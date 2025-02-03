@@ -2,7 +2,7 @@ import asyncio
 from aiogram.types import Message
 from aiogram_dialog.widgets.input import ManagedTextInput, MessageInput
 from aiogram_dialog import DialogManager, ShowMode
-from bot_instans  import dp, bot_storage_key, scheduler, WORK_WITH_SCHED
+from bot_instans import dp, bot_storage_key, scheduler, WORK_WITH_SCHED
 from lexicon import *
 from postgres_functions import return_lan, return_spisok_uniq_events, insert_uniq_events
 
@@ -10,10 +10,12 @@ async def message_text_handler(message: Message, widget: MessageInput, dialog_ma
     """Хэндлер устанавливает текстовое напоминание"""
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['titel'] = message.text
+    titel = message.text
+    if len(titel) > 4000:
+        titel = titel[:4000]
+    dialog_manager.dialog_data['titel'] = titel
     dialog_manager.dialog_data['foto_id'] = ''
     dialog_manager.dialog_data['capture'] = ''
-    titel = message.text
     za_chas = dialog_manager.dialog_data['za_chas']  # Tут записаны инты
     spisok_uniq_za_chas = await return_spisok_uniq_events(message.from_user.id)
     if str(za_chas) not in spisok_uniq_za_chas:

@@ -67,8 +67,10 @@ async def mahnung_for_monat_accepted(dialog_manager: DialogManager, event_from_u
 async def message_text_handler_for_month(message: Message, widget: MessageInput, dialog_manager: DialogManager) -> None:
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
+    if len(titel) > 4000:
+        titel = titel[:4000]
+    dialog_manager.dialog_data['titel'] = titel
     days = dialog_manager.dialog_data['day']
     print('days = ', days)
     chas = dialog_manager.dialog_data['hours']
@@ -152,7 +154,10 @@ async def message_capture_handler_monat(message: Message, widget: MessageInput, 
     days = dialog_manager.dialog_data['day']
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
-    dialog_manager.dialog_data['capture'] = capture = message.text
+    capture = message.text
+    if len(capture) > 800:
+        capture = capture[:800]
+    dialog_manager.dialog_data['capture'] = capture
 
     day_list = days.split(',')
     days_ohne_koma = new_days = ''

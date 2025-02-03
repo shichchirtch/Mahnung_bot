@@ -132,8 +132,10 @@ async def message_text_handler_for_week(message: Message, widget: MessageInput,
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
+    if len(titel) > 4000:
+        titel = titel[:4000]
+    dialog_manager.dialog_data['titel'] = titel
     days_list = dialog_manager.dialog_data['week_days']
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
@@ -217,7 +219,10 @@ async def set_capture_week(message: Message, widget:
     dialog_manager.dialog_data['titel'] = ''
     chas = dialog_manager.dialog_data['hours']
     minuts = dialog_manager.dialog_data['minuts']
-    dialog_manager.dialog_data['capture'] = message.text
+    capture = message.text
+    if len(capture) > 800:
+        capture = capture[:800]
+    dialog_manager.dialog_data['capture'] = capture
 
     day_digit = week_days = ''
     digit_arr = []
@@ -234,7 +239,7 @@ async def set_capture_week(message: Message, widget:
 
     dialog_manager.dialog_data['real_time'] = real_time
     pseudo_class = {'titel': '', 'foto_id': foto_id, 'za_chas': None, 'za_sutki': None,
-                    'selector': 'W', 'real_time': real_time, 'capture':message.text,'job_id': real_time_key}
+                    'selector': 'W', 'real_time': real_time, 'capture':capture,'job_id': real_time_key}
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
     b_u_dict = bot_dict[user_id]['reg']  # получаю словарь юзера
     if real_time_key not in b_u_dict:

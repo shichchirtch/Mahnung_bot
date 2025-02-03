@@ -140,8 +140,10 @@ async def message_text_handler_for_interval(message: Message, widget: MessageInp
                                         dialog_manager: DialogManager, *args, **kwargs) -> None:
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['titel'] = message.text
     titel = message.text
+    if len(titel)>4000:
+        titel = titel[:4000]
+    dialog_manager.dialog_data['titel'] = titel
     job_id = dialog_manager.dialog_data['job_id']
     real_time = dialog_manager.dialog_data['zagolovok']  # 20.12.2024  18:30
     my_interval = dialog_manager.dialog_data['interval']
@@ -191,7 +193,10 @@ async def set_capture_interval(message: Message, widget:
                                 MessageInput, dialog_manager: DialogManager, *args, **kwargs):
     user_id = str(message.from_user.id)
     lan = await return_lan(message.from_user.id)
-    dialog_manager.dialog_data['capture'] = message.text
+    capture = message.text
+    if len(capture) > 800:
+        capture = capture[:800]
+    dialog_manager.dialog_data['capture'] = capture
     foto_id = dialog_manager.dialog_data['foto_id']
     job_id = dialog_manager.dialog_data['job_id']
     real_time = dialog_manager.dialog_data['zagolovok']  # 20.12.2024  18:30
