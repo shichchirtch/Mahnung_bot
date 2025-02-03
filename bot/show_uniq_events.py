@@ -385,10 +385,11 @@ async def public_future_list(callback: CallbackQuery, widget: Button, manager: D
     big_msg = f'‼️ {uniq_future_event[lan]}\n\n'
     counter = 0
     second_counter = 0
-    for day, spispk in user_uniq_dict.items():
-        if (int(day) + 86400) > NOW:  #  Прибавляю сутки времени для чтоы сегодняшние события считались будущими
+    int_key_list = sorted(map(int, user_uniq_dict))  # Создаю список интовых ключей.
+    for day in int_key_list:
+        if (day + 86400) > NOW:  #  Прибавляю сутки времени для чтоы сегодняшние события считались будущими
             second_counter += 1
-            for element in spispk:
+            for element in user_uniq_dict[str(day)]:  # day - это отсортированные ключи в событиях юзера:
                 if not element['foto_id']:
                     big_msg+=f'<b>{element["real_time"]}</b>\n{element["titel"]}\n<i>id  {element["job_id"]}</i>\n\n'
                     counter = 1
@@ -404,6 +405,7 @@ async def public_future_list(callback: CallbackQuery, widget: Button, manager: D
         await asyncio.sleep(0.2)
     manager.show_mode = ShowMode.DELETE_AND_SEND
     await manager.next()
+
 
 async def public_past_list(callback: CallbackQuery, widget: Button, manager: DialogManager,  *args, **kwargs ):
     bot_dict = await dp.storage.get_data(key=bot_storage_key)  # Получаю словарь бота
@@ -421,7 +423,7 @@ async def public_past_list(callback: CallbackQuery, widget: Button, manager: Dia
     in_stamp = datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
     current_seconds = int(in_stamp.timestamp())  # 1732800900
     int_key_list =  sorted(map(int, user_uniq_dict))  # Создаю список интовых ключей. Не помню зачем я сделал ключи строками ?
-    for day in int_key_list: #user_uniq_dict.items():
+    for day in int_key_list:
         if (day + 86400) < NOW:
             second_counter += 1
             for element in user_uniq_dict[str(day)]:  # day - это отсортированные ключи в событиях юзера
