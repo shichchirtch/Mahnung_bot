@@ -235,7 +235,7 @@ async def pre_interval_sched(callback: CallbackQuery, widget: Button,
 
 async def day_get_runner(dialog_manager: DialogManager, event_from_user: User, **kwargs):
     lan = await return_lan(event_from_user.id)
-    getter_data = {'text_for_day_sched': text_for_day[lan], 'day_remind_me':'▶️'}
+    getter_data = {'text_for_day_sched': text_interval_pusk[lan], 'day_remind_me':'▶️'}
     return getter_data
 
 
