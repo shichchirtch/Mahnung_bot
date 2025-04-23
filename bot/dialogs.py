@@ -36,11 +36,19 @@ async def get_pre_sheduler_window(dialog_manager: DialogManager, event_from_user
 
 async def accepting_foto(message: Message, widget: MessageInput, dialog_manager: DialogManager):
     print('accepting_foto works')
-    foto_id = message.photo[-1].file_id
-    dialog_manager.dialog_data['foto_id'] = foto_id
-    dialog_manager.dialog_data['capture'] = ''
-    dialog_manager.show_mode = ShowMode.SEND
-    await dialog_manager.next()
+    lan = await return_lan(message.from_user.id)
+    spisok_uniq_za_chas = await return_spisok_uniq_events(message.from_user.id)
+    za_chas = dialog_manager.dialog_data['za_chas']  # Tут записаны инты
+    if str(za_chas) not in spisok_uniq_za_chas:  # Если события ещё нет в списке событий, это часть Идентификационного номера
+        foto_id = message.photo[-1].file_id
+        dialog_manager.dialog_data['foto_id'] = foto_id
+        dialog_manager.dialog_data['capture'] = ''
+        dialog_manager.show_mode = ShowMode.SEND
+        await dialog_manager.next()
+    else:
+        await message.answer(error_same_time[lan])
+        dialog_manager.show_mode = ShowMode.SEND
+        await dialog_manager.done()
 
 async def set_foto_mahnung_ohne_capture(cb: CallbackQuery, widget: Button, dialog_manager: DialogManager) -> None:
     """Хэндлер формирует словарь с фото без подписи"""
@@ -66,6 +74,9 @@ async def set_foto_mahnung_ohne_capture(cb: CallbackQuery, widget: Button, dialo
         time_code = str(dialog_manager.dialog_data['day'])
         bot_dict[user_id]['uniq'].setdefault(time_code, []).append(pseudo_class)
         await dp.storage.update_data(key=bot_storage_key, data=bot_dict)  # Обновляю словарь бота
+
+        await insert_uniq_events(cb.from_user.id, str_za_chas)  # записываю уникальное событие в списоск
+
         await cb.message.answer(text=gut[lan])
         dialog_manager.show_mode = ShowMode.SEND
         await dialog_manager.switch_to(WORK_WITH_SCHED.vor_mahnung)
