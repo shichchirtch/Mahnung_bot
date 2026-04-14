@@ -43,7 +43,7 @@ async def message_sender(slovo:str, lan:str, temp_dict:dict)->str:
     if lan != 'en':
         try:
             if lan not in temp_dict:
-                res = translators.translate_text(query_text=slovo, from_language='en', to_language=lan, translator='alibaba')
+                res = translators.translate_text(query_text=slovo, from_language='en', to_language=lan, translator='google')
                 temp_dict[lan]=res
             else:  # Если перевод уже есть - то отправляй перевод и не переводи снова
                 res = temp_dict[lan]
@@ -64,7 +64,7 @@ async def sending_msg(cb:CallbackQuery, widget: Button, dialog_manager: DialogMa
         temp_dict = {}
         text_from_admin = dialog_manager.dialog_data['admin_msg']
         if text_from_admin.startswith('one'):
-            prefix, us_id, text_msg = text_from_admin.split('$')
+            prefix, us_id, text_msg = text_from_admin.split('$') # one$12345678$admin_text
             user_id = int(us_id)
             try:
                 await cb.bot.send_message(chat_id=user_id, text=text_msg)
