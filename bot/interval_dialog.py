@@ -113,7 +113,7 @@ async def button_zapusk_clicked_for_interval(callback: CallbackQuery, widget: Bu
     user_tz = await return_tz(callback.from_user.id)
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
-    current_minut = int(in_stamp.timestamp())  + 3600  # 1732800900  # дозаписываю летнее время франфурта, зимой нужно будет +7200
+    current_minut = int(in_stamp.timestamp())  # 1732800900
     razniza_vo_vremeni = tz_dict[user_tz] #tz_dict_int[user_tz] * 3600
     random_add_sec = random.randint(1, 20)
     real_event_time = dialog_manager.dialog_data['day'] + \
