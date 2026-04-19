@@ -110,7 +110,7 @@ async def button_zapusk_clicked(callback: CallbackQuery, widget: Button,
     user_id = callback.from_user.id
     in_stamp = datetime.datetime.now().replace(second=0, microsecond=0)  # 2024-12-05 19:56:00
     current_minut = int(in_stamp.timestamp())  # 1732800900
-    razniza_vo_vremeni = tz_dict[user_tz]   # tz_dict_int[user_tz] * 3600
+    razniza_vo_vremeni = tz_dict[user_tz] + 3600 # дозаписываю летнее время франфурта, зимой нужно будет +7200  # tz_dict_int[user_tz] * 3600
     # print('temp_dict = ',dialog_manager.dialog_data)
     real_event_time = dialog_manager.dialog_data['day'] + \
                       dialog_manager.dialog_data['hours'] + \
@@ -164,6 +164,6 @@ async def pre_scheduler(callback: CallbackQuery, widget: Button,
         if dialog_dict['za_sutki']:
             scheduler_za_sutki_job(user_id, dialog_dict, tz)
     except Exception as e: #ConflictingIdError:
-        print('\n\n',f'183 {e}')
+        print('\n\n',f'167 {e}')
     await dialog_manager.next()
     dialog_manager.show_mode = ShowMode.SEND
