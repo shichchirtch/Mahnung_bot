@@ -131,34 +131,35 @@ tz_dict = {'Europe/London': 0, 'Europe/Berlin': 3600, 'Europe/Kiev': 7200, 'Euro
            'Asia/Magadan': 39600,  # +11
            'Asia/Kamchatka': 43200}  # +12
 
-# tz_dict_letter = {'tz_gleich': 'Europe/London', 'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
-#                   'tz_plus_2': "Europe/Kiev",  # +2
-#                   'tz_plus_3': 'Europe/Moscow',  # +3
-#                   'tz_plus_4': 'Europe/Samara',  # +4
-#                   'tz_plus_5': "Asia/Yekaterinburg",  # +5
-#                   'tz_plus_6': 'Asia/Omsk',  # +6
-#                   'tz_plus_7': 'Asia/Novosibirsk',  # +7
-#                   'tz_plus_8': 'Asia/Irkutsk',  # +8
-#                   'tz_plus_9': 'Asia/Chita',  # +9
-#                   'tz_plus_10': 'Asia/Vladivostok',  # +10
-#                   'tz_plus_11': 'Asia/Magadan',  # +11
-#                   'tz_plus_12': 'Asia/Kamchatka'  # +12
-#                   }
+tz_dict_letter = {'tz_gleich': 'Europe/London', 'tz_plus_1': 'Europe/Berlin',  # tz_plus_1
+                    'tz_plus_2': 'Europe/Berlin',
+                  'tz_plus_3': "Europe/Kiev",  # +2
+                  'tz_plus_4': 'Europe/Moscow',  # +3
+                  'tz_plus_5': 'Europe/Samara',  # +4
+                  'tz_plus_6': "Asia/Yekaterinburg",  # +5
+                  'tz_plus_7': 'Asia/Omsk',  # +6
+                  'tz_plus_8': 'Asia/Novosibirsk',  # +7
+                  'tz_plus_9': 'Asia/Irkutsk',  # +8
+                  'tz_plus_10': 'Asia/Chita',  # +9
+                  'tz_plus_11': 'Asia/Vladivostok',  # +10
+                  'tz_plus_12': 'Asia/Magadan',  # +11
 
-tz_dict_letter = {
-    'tz_gleich': 'Europe/Berlin',
-    'tz_plus_1': 'Europe/Kiev',
-    'tz_plus_2': 'Europe/Moscow',
-    'tz_plus_3': 'Europe/Samara',
-    'tz_plus_4': 'Asia/Yekaterinburg',
-    'tz_plus_5': 'Asia/Omsk',
-    'tz_plus_6': 'Asia/Novosibirsk',
-    'tz_plus_7': 'Asia/Irkutsk',
-    'tz_plus_8': 'Asia/Chita',
-    'tz_plus_9': 'Asia/Vladivostok',
-    'tz_plus_10': 'Asia/Magadan',
-    'tz_plus_11': 'Asia/Kamchatka',
-}
+                  }
+
+# tz_dict_letter = {
+#     'tz_gleich': 'Europe/Berlin',
+#     'tz_plus_1': 'Europe/Kiev',
+#     'tz_plus_2': 'Europe/Moscow',
+#     'tz_plus_3': 'Europe/Samara',
+#     'tz_plus_4': 'Asia/Yekaterinburg',
+#     'tz_plus_5': 'Asia/Omsk',
+#     'tz_plus_6': 'Asia/Novosibirsk',
+#     'tz_plus_7': 'Asia/Irkutsk',
+#     'tz_plus_8': 'Asia/Chita',
+#     'tz_plus_9': 'Asia/Vladivostok',
+#     'tz_plus_10': 'Asia/Magadan',
+#     'tz_plus_11': 'Asia/Kamchatka',
+# }
 
 
 # Создаю глобальный словарь временных данных для хранения прошлых событий с картинками
